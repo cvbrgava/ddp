@@ -1,0 +1,57 @@
+* Z:\home\bhargava\ddp\SPICE\diffamp_Prasad.asc
+M3 out1neg cmfb1 0 0 CMOSN l=0.24u w=2u
+M1 out1neg inpositive N001 N001 CMOSP l=0.24u w=32u
+M0 N001 10umirror Vdd Vdd CMOSP l=0.24u w=64u
+M2 out1pos innegative N001 N001 CMOSP l=0.24u w=32u
+M4 out1pos cmfb1 0 0 CMOSN l=0.24u w=2u
+M5 10umirror 10umirror Vdd Vdd CMOSP l=0.24u w=6.4u
+I1 10umirror 0 10µ
+V4 Vdd 0 1.8
+C2 cmfb1 out1neg 1p
+C4 out1pos cmfb1 1p
+Mc1 N009 out1pos N007 N007 CMOSP l=0.24u w=3.2u
+M6 N009 out1neg N007 N007 CMOSP l=0.24u w=3.2u
+Mc2 cmfb1 N008 N007 N007 CMOSP l=0.24u w=6.4u
+Mc3 N009 N009 0 0 CMOSN l=0.24u w=0.4u
+Mc4 cmfb1 N009 0 0 CMOSN l=0.24u w=0.4u
+Mc5 N007 10umirror Vdd Vdd CMOSP l=0.24u w=12.8u
+Vcmref1 N008 0 0.63
+M7 Vop out1neg 0 0 CMOSN l=0.24u w=4u
+M8 Vop cfmb2 Vdd Vdd CMOSP l=0.24u w=16u
+M9 Vom out1pos 0 0 CMOSN l=0.24u w=4u
+M10 Vom cfmb2 Vdd Vdd CMOSP l=0.24u w=16u
+C1 N003 Vop 7p
+R1 out1neg N003 1k
+C3 N004 Vom 7p
+R2 out1pos N004 1k
+M11 N005 cmfb1 0 0 CMOSN l=0.24u w=4u
+M12 N002 N006 N005 N005 CMOSN l=0.24u w=2u
+M13 cfmb2 Vbias N005 N005 CMOSN l=0.24u w=2u
+M14 N002 N002 Vdd Vdd CMOSP l=0.24u w=8u
+M15 cfmb2 N002 Vdd Vdd CMOSP l=0.24u w=8u
+V1 Vbias 0 0.9
+R3 Vom N006 100k
+R4 N006 Vop 100k
+C5 Vom N006 1p
+C6 N006 Vop 1p
+C9 cfmb2 Vop 1p
+C10 Vom cfmb2 1p
+C7 Vop 0 5p
+C8 Vom 0 5p
+R5 Vop 0 5K
+R6 Vom 0 5K
+V2 P001 0 PULSE(0 -0.4 2us 1ns 1ns 50us 100us)
+V3 P002 0 PULSE(0 0.4 2us 1ns 1ns 50us 100us)
+C11 inpositive P002 1
+C12 innegative P001 1
+R7 innegative Vbias 10G
+R8 inpositive Vbias 10G
+.model NMOS NMOS
+.model PMOS PMOS
+.lib C:\Program Files\LTC\LTspiceIV\lib\cmp\standard.mos
+.INCLUDE tsmc018.lib
+;.INCLUDE opamp.sub
+.tran 0 50us 0
+;op
+.backanno
+.end

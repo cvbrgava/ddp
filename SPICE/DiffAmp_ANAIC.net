@@ -1,0 +1,52 @@
+* Z:\home\bhargava\ddp\SPICE\ass7\worked_1_closed_loop.asc
+.include tsmc018.lib
+M3 out1.m cmfb1 0 0 CMOSN l=0.24u w=2u
+M1 N001 in.p out1.m Vdd CMOSP l=0.24u w=32u
+M0 Vdd 10umirror N001 Vdd CMOSP l=0.24u w=64u
+M2 N001 in.m out1.p Vdd CMOSP l=0.24u w=32u
+M4 out1.p cmfb1 0 0 CMOSN l=0.24u w=2u
+M5 Vdd 10umirror 10umirror Vdd CMOSP l=0.24u w=6.4u
+I1 10umirror 0 10µ
+V4 Vdd 0 1.8
+C2 cmfb1 out1.m 1p
+C4 out1.p cmfb1 1p
+Mc1 N007 out1.p N011 Vdd CMOSP l=0.24u w=3.2u
+M6 N007 out1.m N011 Vdd CMOSP l=0.24u w=3.2u
+Mc2 N007 N010 cmfb1 Vdd CMOSP l=0.24u w=6.4u
+Mc3 N011 N011 0 0 CMOSN l=0.24u w=0.4u
+Mc4 cmfb1 N011 0 0 CMOSN l=0.24u w=0.4u
+Mc5 Vdd 10umirror N007 Vdd CMOSP l=0.24u w=12.8u
+Vcmref1 N010 0 0.63
+M7 Vop out1.m 0 0 CMOSN l=0.24u w=4u
+M8 Vdd cfmb2 Vop Vdd CMOSP l=0.24u w=16u
+M9 Vom out1.p 0 0 CMOSN l=0.24u w=4u
+M10 Vdd cfmb2 Vom Vdd CMOSP l=0.24u w=16u
+C1 N003 Vop 7p
+R1 out1.m N003 1k
+C3 N004 Vom 7p
+R2 out1.p N004 1k
+M11 N006 cmfb1 0 0 CMOSN l=0.24u w=4u
+M12 N002 N005 N006 0 CMOSN l=0.24u w=2u
+M13 cfmb2 Vbias N006 0 CMOSN l=0.24u w=2u
+M14 Vdd N002 N002 Vdd CMOSP l=0.24u w=8u
+M15 Vdd N002 cfmb2 Vdd CMOSP l=0.24u w=8u
+V1 Vbias 0 0.9
+R3 Vom N005 100k
+R4 N005 Vop 100k
+C5 Vom N005 1p
+C6 N005 Vop 1p
+V3 N009 Vbias DC=0 AC=1 sin(0 0.001 1000000)
+E2 N008 Vbias Vbias N009 1
+R5 in.m N008 10k
+R6 in.p N009 10k
+R7 Vom in.p 30K
+R8 Vop in.m 30K
+R9 Vbias Vop 5k
+R10 Vbias Vom 5k
+C7 Vbias Vop 5p
+C8 Vbias Vom 5p
+C9 cfmb2 Vop 1p
+C10 Vom cfmb2 1p
+
+.op
+.end
