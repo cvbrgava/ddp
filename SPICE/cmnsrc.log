@@ -1,54 +1,27 @@
 Circuit: * Z:\home\bhargava\ddp\SPICE\cmnsrc.asc
 
-Ignoring BSIM parameter XL
-Ignoring BSIM parameter XW
-Warning: Pd = 0 is less than W.
-Warning: Ps = 0 is less than W.
+Limiting fall time of source v2 to 1e-006
+Model "cmosn": Oxide thickness thinner than recommended for a level 1 MOSFET.
+Instance "m1": Length shorter than recommended for a level 1 MOSFET.
+Instance "m1": Width narrower than recommended for a level 1 MOSFET.
 Direct Newton iteration for .op point succeeded.
-Semiconductor Device Operating Points:
-                        --- BSIM3 MOSFETS ---
-Name:        m1
-Model:      cmosn
-Id:        7.64e-04
-Vgs:       3.85e+00
-Vds:       4.39e+00
-Vbs:       0.00e+00
-Vth:       4.27e-01
-Vdsat:     1.57e+00
-Gm:        1.99e-04
-Gds:       7.04e-06
-Gmb        9.77e-05
-Cbd:       0.00e+00
-Cbs:       0.00e+00
-Cgsov:     5.93e-16
-Cgdov:     5.93e-16
-Cgbov:     3.26e-19
-dQgdVgb:   2.86e-15
-dQgdVdb:  -5.84e-16
-dQgdVsb:  -2.40e-15
-dQddVgb:  -1.25e-15
-dQddVdb:   5.88e-16
-dQddVsb:   8.68e-16
-dQbdVgb:  -3.52e-16
-dQbdVdb:   8.18e-19
-dQbdVsb:   7.39e-17
+Heightened Def Con from 5.00101e-007 to 5.011e-007
 
-
-
-Date: Thu Sep 20 01:55:19 2012
-Total elapsed time: 0.125 seconds.
+Date: Mon Jan 21 09:51:16 2013
+Total elapsed time: 0.342 seconds.
 
 tnom = 27
 temp = 27
-method = trap
-totiter = 5
-traniter = 0
-tranpoints = 0
-accept = 0
-rejected = 0
+method = modified trap
+totiter = 481
+traniter = 476
+tranpoints = 91
+accept = 62
+rejected = 30
 matrix size = 7
 fillins = 0
 solver = Normal
-Matrix Compiler1: 214 bytes object code size
-Matrix Compiler2: 487 bytes object code size
+Matrix Compiler1: 250 bytes object code size  1.6/1.5/[1.4]
+Matrix Compiler2: 475 bytes object code size  1.5/1.8/[1.3]
+
 

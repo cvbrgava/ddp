@@ -1,47 +1,16 @@
 Circuit: * Z:\home\bhargava\ddp\SPICE\pmos_test.asc
 
-Ignoring BSIM parameter XL
-Ignoring BSIM parameter XW
-Warning: Pd = 0 is less than W.
-Warning: Ps = 0 is less than W.
-Direct Newton iteration for .op point succeeded.
-Semiconductor Device Operating Points:
-                        --- BSIM3 MOSFETS ---
-Name:        m1
-Model:      cmosp
-Id:       -9.04e-09
-Vgs:      -6.00e-01
-Vds:      -1.80e+00
-Vbs:       0.00e+00
-Vth:      -3.90e-01
-Vdsat:    -1.60e-01
-Gm:        8.49e-08
-Gds:       8.37e-11
-Gmb        2.54e-08
-Cbd:       0.00e+00
-Cbs:       0.00e+00
-Cgsov:     1.52e-16
-Cgdov:     1.52e-16
-Cgbov:     3.19e-17
-dQgdVgb:   5.23e-14
-dQgdVdb:  -1.33e-16
-dQgdVsb:  -4.91e-14
-dQddVgb:  -2.16e-14
-dQddVdb:   1.41e-16
-dQddVsb:   2.79e-14
-dQbdVgb:  -9.12e-15
-dQbdVdb:   2.40e-18
-dQbdVsb:  -6.86e-15
+Model "cmosp": Oxide thickness thinner than recommended for a level 1 MOSFET.
+Instance "m1": Length shorter than recommended for a level 1 MOSFET.
+Instance "m1": Width narrower than recommended for a level 1 MOSFET.
 
-
-
-Date: Fri Sep 28 02:04:05 2012
-Total elapsed time: 0.142 seconds.
+Date: Sun Jan 20 18:15:29 2013
+Total elapsed time: 0.444 seconds.
 
 tnom = 27
 temp = 27
 method = trap
-totiter = 4
+totiter = 3005
 traniter = 0
 tranpoints = 0
 accept = 0
@@ -49,6 +18,7 @@ rejected = 0
 matrix size = 4
 fillins = 0
 solver = Normal
-Matrix Compiler1: 118 bytes object code size
-Matrix Compiler2: 216 bytes object code size
+Matrix Compiler1: 82 bytes object code size  1.4/1.5/[1.3]
+Matrix Compiler2: 268 bytes object code size  1.5/1.7/[1.4]
+
 
