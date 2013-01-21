@@ -1,3 +1,7 @@
-# Sample text file
+## Dual Degree Project on Model order reduction
+
+The project aims at improving computational speed of the system solving using Arnoldi decomposition.
+
+
 
 
