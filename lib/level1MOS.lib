@@ -1,0 +1,10 @@
+* SPICE LEVEL 1 MODEL PARAMETERS
+* These parameters have been obtained from tsmc018.lib which is a LEVEL 49 library
+* The parameters which have no corresponding value in tsmc018.lib have been given the default values
+* PHI, NSUB and LD have been assigned default values.
+
+.model cmosn nmos ( level = 1  VTO = 0.55   KP = 335e-6   GAMMA = 0.55   PHI = 0.6   LAMBDA = 0.09   TOX = 4.1e-9   LD = 0   U0 = 273.8094484   NSUB = 1e15  CGDO=8.23E-10   CGSO=8.23E-10   CGBO=1E-12   CJ=9.466429E-4 MJ=0.3820266   CJSW=2.608154E-10   MJSW=0.102322   PB=0.8)
+
+ 
+
+.model cmosp pmos ( level = 1  VTO = -0.54   KP = 71e-6   GAMMA = 0.63   PHI = 0.6   LAMBDA = 0.09   TOX = 4.1e-9   LD = 0   U0 = 115.6894042   NSUB = 1e15  CGDO=6.35e-10  CGSO=6.35E-10   CGBO=1E-12   CJ=1.144521E-3 MJ=0.4099522   CJSW=2.490749E-10   MJSW=0.3478565   PB=0.8468686)
