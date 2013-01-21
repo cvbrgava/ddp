@@ -1,6 +1,6 @@
 ## Dual Degree Project on Model order reduction
 
-The project aims at improving computational speed of the system solving using Arnoldi decomposition.
+The final aim of the project is to implement model order reduction on Sigma Delta Convertor
 
 
 
