@@ -1,0 +1,217 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>config &mdash; Trajectory based Order Reduction 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Trajectory based Order Reduction 1.0 documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Trajectory based Order Reduction 1.0 documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for config</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">sympy</span>
+<span class="kn">from</span> <span class="nn">currenteqs</span> <span class="kn">import</span> <span class="n">current</span>
+
+<span class="kn">import</span> <span class="nn">os</span> 
+
+<span class="n">pwd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+<span class="n">config</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;Differential Amplifier&#39;</span><span class="p">,</span><span class="n">pwd</span><span class="p">]</span>
+
+<span class="c"># The functions in this library change with the circuit being used. </span>
+<span class="c"># All the state space equations go into the get_nonlinear_matrix() function</span>
+<span class="c"># The state space ordering is done by the get_stateorder() function</span>
+
+<span class="k">print</span> <span class="s">&quot;Working on&quot;</span><span class="p">,</span><span class="n">config</span><span class="p">[</span> <span class="mi">0</span> <span class="p">]</span>
+<span class="k">print</span> <span class="s">&quot;Configuration file location&quot;</span><span class="p">,</span> <span class="n">config</span><span class="p">[</span> <span class="mi">1</span> <span class="p">]</span> 
+<span class="k">print</span> <span class="s">&quot;-----------------------------------------------&quot;</span>
+<span class="c"># The following parameters are to be customized for the circuit being simulated</span>
+<span class="c"># These parameters are the bridge between the project and SPICE.</span>
+<span class="c">#-------------------------------------------------------------------------------------------- </span>
+<span class="n">order</span> <span class="o">=</span> <span class="mi">13</span>
+<span class="n">sim_begin</span> <span class="o">=</span> <span class="mf">2e-6</span>
+<span class="n">sim_end</span> <span class="o">=</span> <span class="mf">4.796677620601137e-006</span>
+<span class="n">file_voltage</span> <span class="o">=</span> <span class="s">&#39;./Data/voltage_diffamp.txt&#39;</span>
+<span class="n">file_current</span> <span class="o">=</span> <span class="s">&#39;./Data/currents.txt&#39;</span>
+<span class="n">file_netlist</span> <span class="o">=</span> <span class="s">&#39;./Data/diffamp.net&#39;</span>
+<span class="n">input_list</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;innegative&#39;</span><span class="p">,</span><span class="s">&#39;inpositive&#39;</span><span class="p">]</span> 
+<span class="n">output_list</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;out1pos&#39;</span><span class="p">,</span><span class="s">&#39;out1neg&#39;</span><span class="p">]</span>
+<span class="n">denominator</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="n">intg_end</span> <span class="o">=</span> <span class="mf">2e-7</span>
+<span class="c">#--------------------------------------------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="get_nonlinear_matrix"><a class="viewcode-back" href="../code.html#config.get_nonlinear_matrix">[docs]</a><span class="k">def</span> <span class="nf">get_nonlinear_matrix</span><span class="p">(</span><span class="n">state</span><span class="p">,</span><span class="n">regions</span><span class="p">,</span><span class="n">Vth</span><span class="p">):</span>
+	<span class="sd">&#39;&#39;&#39; </span>
+<span class="sd">	1.This function is instance specific. </span>
+<span class="sd">	2.All the state equations are defined in here</span>
+<span class="sd">	Input:</span>
+<span class="sd">		</span>
+<span class="sd">	state = symbolic vector with states defined it</span>
+<span class="sd">	regions = contains information regarding each transistor with the region of operation specified</span>
+<span class="sd">	Vth = dictionary with threshold voltages of each transistor</span>
+<span class="sd">	</span>
+<span class="sd">	Returns :</span>
+<span class="sd">	The symbolic expression with non-linear state space equations in it.&#39;&#39;&#39;</span>
+	
+	<span class="c"># Define all the parasitic capacitors in here. Generally we assume that they are constant. </span>
+	<span class="c"># Name the parasitics accordingly</span>
+	<span class="c">#-----------------------------------------------------------------------------------------------------</span>
+	<span class="n">Cpara_vdo</span><span class="o">=</span><span class="mf">1e-15</span>
+	<span class="n">Cpara_vd12</span><span class="o">=</span><span class="mf">1e-15</span>
+	<span class="n">Cpara_vd11</span><span class="o">=</span><span class="mf">1e-15</span>
+	<span class="n">Cpara_vcmfb2</span><span class="o">=</span><span class="mf">1e-15</span>
+	<span class="n">Cpara_vom</span><span class="o">=</span><span class="mf">1e-15</span>
+	<span class="n">Cpara_vop</span><span class="o">=</span><span class="mf">1e-15</span>
+	<span class="n">Cpara_vdc3</span><span class="o">=</span><span class="mf">1e-15</span>
+	<span class="n">Cpara_vdc5</span><span class="o">=</span><span class="mf">1e-15</span>
+	<span class="n">Cpara_vcmfb1</span><span class="o">=</span><span class="mf">1e-15</span>
+	<span class="n">Cpara_vd1</span><span class="o">=</span><span class="mf">1e-15</span>
+	<span class="n">Cpara_vd2</span><span class="o">=</span><span class="mf">1e-15</span>
+	<span class="c">#-----------------------------------------------------------------------------------------------------	</span>
+	<span class="c"># This provides a dictionary with</span>
+	<span class="c"># KEY	:	Name of the transistor</span>
+	<span class="c"># VALUE	:	Polynomial expansion of current equation at a particular linearization point </span>
+	<span class="c"># To access any current equation use I[ &#39;name of the transistor&#39; ] </span>
+	
+	<span class="n">I</span><span class="o">=</span><span class="p">{</span><span class="n">i</span><span class="p">:</span> <span class="n">current</span><span class="p">(</span><span class="n">regions</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">state</span><span class="p">,</span><span class="n">Vth</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">regions</span><span class="o">.</span><span class="n">keys</span><span class="p">()}</span>
+
+	
+	<span class="c"># The equations from here are all circuit dependant. Add your equations from here</span>
+	<span class="c"># NOTE:</span>
+	
+	<span class="c"># To access any current through a transistor use I[ &#39;name of transistor&#39; ], we assume this current is the DRAIN current</span>
+	<span class="c">#-----------------------------------------------------------------------------------------------------</span>
+	
+<span class="c">#    IIII = ( ( I[ &#39;m15&#39; ] - I[ &#39;m13&#39; ] ) / Cpara_vcmfb2 ) - ( ( I[ &#39;m10&#39; ] - I[ &#39;m9&#39; ] ) / Cpara_vom )</span>
+<span class="c">#    II = ( ( I [ &#39;m15&#39; ] - I[ &#39;m13&#39; ] ) / Cpara_vcmfb2 ) - ( ( I[ &#39;m8&#39; ] - I[ &#39;m7&#39; ] ) / Cpara_vop ) </span>
+<span class="c">#    cur=sympy.Matrix( ( ( IIII ) , ( II ) ) )</span>
+<span class="c">#    cap=sympy.Matrix( ( ( ( 1/1e-12 + 1/Cpara_vcmfb2 + 1/Cpara_vom ) , ( 1/Cpara_vcmfb2 ) ) , ( 1/Cpara_vcmfb2 , 1/1e-12 + 1/Cpara_vcmfb2 + 1/Cpara_vop ) ) )</span>
+	<span class="p">[</span><span class="n">IC10</span><span class="p">,</span><span class="n">IC9</span><span class="p">]</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="c">#cap.inv()*cur</span>
+	
+<span class="c">#    III = ( ( I[&#39;mc2&#39;] - I[ &#39;mc4&#39; ] ) / Cpara_vcmfb1 ) - ( ( state[&#39;ig9&#39;] + I[ &#39;m4&#39; ] - I[ &#39;m2&#39; ] ) / Cpara_vd2 ) </span>
+<span class="c">#    IV = ( ( I[ &#39;mc2&#39; ] - I[ &#39;mc4&#39; ] ) / Cpara_vcmfb1 ) - ( ( state[ &#39;ig7&#39; ] + I[ &#39;m3&#39; ] - I[ &#39;m1&#39; ] ) / Cpara_vd1 )</span>
+<span class="c">#    cap=sympy.Matrix( ( ( 1/7e-12 + 1/Cpara_vd2 + 1/Cpara_vcmfb1 , 1/Cpara_vcmfb1 ) , (Cpara_vcmfb1 ,1/7e-12 + 1/Cpara_vd1 + 1/Cpara_vcmfb1 ) ) )</span>
+<span class="c">#    cur=sympy.Matrix( ( ( III ) , ( IV ) ) )</span>
+	<span class="p">[</span><span class="n">IC4</span><span class="p">,</span><span class="n">IC2</span><span class="p">]</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="c">#cap.inv()*cur</span>
+	
+	<span class="n">vd0dot</span><span class="o">=</span><span class="p">(</span> <span class="o">-</span> <span class="n">I</span><span class="p">[</span> <span class="s">&#39;m1&#39;</span> <span class="p">]</span> <span class="o">-</span> <span class="n">I</span><span class="p">[</span> <span class="s">&#39;m2&#39;</span> <span class="p">]</span> <span class="o">+</span> <span class="n">I</span><span class="p">[</span> <span class="s">&#39;m0&#39;</span> <span class="p">]</span> <span class="p">)</span> <span class="o">/</span> <span class="n">Cpara_vdo</span>   <span class="c">#V Im0 V Im1 VIm2 chkd</span>
+	<span class="n">vd12dot</span><span class="o">=</span><span class="p">(</span> <span class="o">-</span><span class="n">I</span><span class="p">[</span> <span class="s">&#39;m12&#39;</span> <span class="p">]</span> <span class="o">+</span> <span class="n">I</span><span class="p">[</span> <span class="s">&#39;m14&#39;</span> <span class="p">]</span> <span class="p">)</span> <span class="o">/</span> <span class="n">Cpara_vd12</span>  <span class="c">#V Im14 V im12 chkd</span>
+	<span class="n">vd11dot</span><span class="o">=</span><span class="p">(</span> <span class="n">I</span><span class="p">[</span> <span class="s">&#39;m12&#39;</span> <span class="p">]</span> <span class="o">+</span> <span class="n">I</span><span class="p">[</span> <span class="s">&#39;m13&#39;</span> <span class="p">]</span> <span class="o">-</span> <span class="n">I</span><span class="p">[</span> <span class="s">&#39;m11&#39;</span> <span class="p">]</span> <span class="p">)</span> <span class="o">/</span> <span class="n">Cpara_vd11</span>    <span class="c">#V Im12 V Im13 V Im11 chkd</span>
+	<span class="n">vcmfb2dot</span><span class="o">=</span><span class="p">(</span> <span class="n">I</span><span class="p">[</span> <span class="s">&#39;m15&#39;</span> <span class="p">]</span> <span class="o">-</span> <span class="n">I</span><span class="p">[</span> <span class="s">&#39;m13&#39;</span> <span class="p">]</span> <span class="o">-</span> <span class="n">IC10</span> <span class="o">-</span> <span class="n">IC9</span> <span class="p">)</span> <span class="o">/</span> <span class="n">Cpara_vcmfb2</span>  <span class="c"># V Im15 &lt;IC9 &gt;IC10 V Im13</span>
+	<span class="n">vomdot</span><span class="o">=</span><span class="p">(</span> <span class="n">I</span><span class="p">[</span> <span class="s">&#39;m10&#39;</span> <span class="p">]</span> <span class="o">+</span> <span class="n">IC10</span> <span class="o">-</span> <span class="n">I</span><span class="p">[</span> <span class="s">&#39;m9&#39;</span> <span class="p">]</span> <span class="o">-</span> <span class="n">state</span><span class="p">[</span> <span class="s">&#39;ig9&#39;</span> <span class="p">]</span> <span class="p">)</span> <span class="o">/</span> <span class="n">Cpara_vom</span>   <span class="c"># &gt; IC10 V Im10 V Im9  &lt; ig9 chkd</span>
+	<span class="n">vopdot</span><span class="o">=</span><span class="p">(</span> <span class="n">I</span><span class="p">[</span> <span class="s">&#39;m8&#39;</span> <span class="p">]</span> <span class="o">+</span> <span class="n">IC9</span> <span class="o">-</span> <span class="n">I</span><span class="p">[</span> <span class="s">&#39;m7&#39;</span> <span class="p">]</span> <span class="o">-</span> <span class="n">state</span><span class="p">[</span> <span class="s">&#39;ig7&#39;</span> <span class="p">]</span> <span class="p">)</span> <span class="o">/</span> <span class="n">Cpara_vop</span>          <span class="c"># &lt; IC9 V Im8 V Im7  &gt; ig7 chkd</span>
+	<span class="n">vdc3dot</span><span class="o">=</span><span class="p">(</span> <span class="n">I</span><span class="p">[</span> <span class="s">&#39;mc1&#39;</span> <span class="p">]</span> <span class="o">+</span> <span class="n">I</span><span class="p">[</span> <span class="s">&#39;m6&#39;</span> <span class="p">]</span> <span class="o">-</span> <span class="n">I</span><span class="p">[</span> <span class="s">&#39;mc3&#39;</span> <span class="p">]</span> <span class="p">)</span> <span class="o">/</span> <span class="n">Cpara_vdc3</span>                 <span class="c"># V Imc1  V Im6 V Imc3 </span>
+	<span class="n">vdc5dot</span> <span class="o">=</span> <span class="p">(</span> <span class="o">-</span> <span class="n">I</span><span class="p">[</span> <span class="s">&#39;mc1&#39;</span> <span class="p">]</span> <span class="o">-</span> <span class="n">I</span><span class="p">[</span> <span class="s">&#39;m6&#39;</span> <span class="p">]</span> <span class="o">-</span> <span class="n">I</span><span class="p">[</span> <span class="s">&#39;mc2&#39;</span> <span class="p">]</span> <span class="o">+</span> <span class="n">I</span><span class="p">[</span> <span class="s">&#39;mc5&#39;</span> <span class="p">]</span> <span class="p">)</span> <span class="o">/</span> <span class="n">Cpara_vdc5</span>   <span class="c"># V Imc5 V Imc1 V Im6 V Imc2</span>
+	<span class="n">vcmfb1dot</span> <span class="o">=</span> <span class="p">(</span> <span class="n">I</span><span class="p">[</span> <span class="s">&#39;mc2&#39;</span> <span class="p">]</span> <span class="o">-</span> <span class="n">I</span><span class="p">[</span> <span class="s">&#39;mc4&#39;</span> <span class="p">]</span> <span class="o">-</span> <span class="n">IC2</span> <span class="o">-</span> <span class="n">IC4</span> <span class="p">)</span> <span class="o">/</span> <span class="n">Cpara_vcmfb1</span> <span class="c">#V Imc2 &lt; IC2 &gt;IC4 V Imc4</span>
+	<span class="n">vd1dot</span> <span class="o">=</span> <span class="p">(</span> <span class="n">state</span><span class="p">[</span> <span class="s">&#39;ig7&#39;</span> <span class="p">]</span> <span class="o">-</span> <span class="n">I</span><span class="p">[</span> <span class="s">&#39;m3&#39;</span> <span class="p">]</span> <span class="o">+</span> <span class="n">I</span><span class="p">[</span> <span class="s">&#39;m1&#39;</span> <span class="p">]</span> <span class="o">+</span> <span class="n">IC2</span> <span class="p">)</span> <span class="o">/</span> <span class="n">Cpara_vd1</span>   <span class="c"># &gt;ig7 V Im1 V Im3 &lt; IC2</span>
+	<span class="n">vd2dot</span> <span class="o">=</span> <span class="p">(</span> <span class="n">state</span><span class="p">[</span> <span class="s">&#39;ig9&#39;</span> <span class="p">]</span> <span class="o">-</span> <span class="n">I</span><span class="p">[</span> <span class="s">&#39;m4&#39;</span> <span class="p">]</span> <span class="o">+</span> <span class="n">I</span><span class="p">[</span> <span class="s">&#39;m2&#39;</span> <span class="p">]</span> <span class="o">+</span> <span class="n">IC4</span> <span class="p">)</span> <span class="o">/</span> <span class="n">Cpara_vd2</span>  <span class="c"># &lt; ig9 V Im2 V Im4 &gt; IC4</span>
+	<span class="n">ig9dot</span> <span class="o">=</span> <span class="mf">0.001</span> <span class="o">*</span> <span class="p">(</span> <span class="n">vomdot</span> <span class="o">-</span> <span class="p">(</span> <span class="n">state</span><span class="p">[</span> <span class="s">&#39;ig9&#39;</span> <span class="p">]</span> <span class="o">/</span> <span class="mf">7e-12</span> <span class="p">)</span> <span class="o">-</span> <span class="n">vd2dot</span> <span class="p">)</span> <span class="c"># &lt;ig9</span>
+	<span class="n">ig7dot</span> <span class="o">=</span> <span class="mf">0.001</span> <span class="o">*</span> <span class="p">(</span> <span class="n">vopdot</span> <span class="o">-</span> <span class="p">(</span> <span class="n">state</span><span class="p">[</span> <span class="s">&#39;ig7&#39;</span> <span class="p">]</span> <span class="o">/</span> <span class="mf">7e-12</span> <span class="p">)</span> <span class="o">-</span> <span class="n">vd1dot</span> <span class="p">)</span> <span class="c"># &gt; ig7</span>
+	
+	<span class="c">#-----------------------------------------------------------------------------------------------------</span>
+	
+	<span class="c"># The next line packs all the equations in a certain order which is binding. This order decides the state space co-ordinates</span>
+	<span class="c"># Ensure that the same ordering is maintained with the stateorder function.</span>
+	
+	<span class="n">eqs</span><span class="o">=</span><span class="n">sympy</span><span class="o">.</span><span class="n">Matrix</span><span class="p">(</span> <span class="p">[(</span><span class="n">vd0dot</span><span class="p">),(</span><span class="n">vd12dot</span><span class="p">),(</span><span class="n">vd11dot</span><span class="p">),(</span><span class="n">vcmfb2dot</span><span class="p">),(</span><span class="n">vomdot</span><span class="p">),(</span><span class="n">vopdot</span><span class="p">),(</span><span class="n">vdc3dot</span><span class="p">),(</span><span class="n">vdc5dot</span><span class="p">),(</span><span class="n">vcmfb1dot</span><span class="p">),(</span><span class="n">vd1dot</span><span class="p">),(</span><span class="n">vd2dot</span><span class="p">),(</span><span class="n">ig9dot</span><span class="p">),(</span><span class="n">ig7dot</span><span class="p">)]</span> <span class="p">)</span>
+	    
+	<span class="k">return</span> <span class="n">eqs</span>
+
+
+<span class="c"># Define the time dependant input signal. </span></div>
+<div class="viewcode-block" id="get_input_signals"><a class="viewcode-back" href="../code.html#config.get_input_signals">[docs]</a><span class="k">def</span> <span class="nf">get_input_signals</span><span class="p">(</span> <span class="n">t</span> <span class="p">):</span>
+	<span class="sd">&#39;&#39;&#39; Returns:</span>
+<span class="sd">	The values of all the inputs at any given time instant&#39;&#39;&#39;</span>
+
+	<span class="k">return</span> <span class="p">[</span><span class="mf">1.3</span><span class="p">,</span><span class="mf">0.5</span><span class="p">]</span>
+		
+</div>
+<div class="viewcode-block" id="get_stateorder"><a class="viewcode-back" href="../code.html#config.get_stateorder">[docs]</a><span class="k">def</span> <span class="nf">get_stateorder</span><span class="p">(</span><span class="n">state</span><span class="p">):</span>
+	<span class="sd">&#39;&#39;&#39; Returns stateorder, which is necessary for the construction of the state </span>
+<span class="sd">	Check with the state space equations and ensure that the same ordering is being followed&#39;&#39;&#39;</span>
+	
+	<span class="n">stateorder</span><span class="o">=</span><span class="n">sympy</span><span class="o">.</span><span class="n">Matrix</span><span class="p">([(</span><span class="n">state</span><span class="p">[</span><span class="s">&#39;n001&#39;</span><span class="p">]),(</span><span class="n">state</span><span class="p">[</span><span class="s">&#39;n002&#39;</span><span class="p">]),(</span><span class="n">state</span><span class="p">[</span><span class="s">&#39;n005&#39;</span><span class="p">]),(</span><span class="n">state</span><span class="p">[</span><span class="s">&#39;cfmb2&#39;</span><span class="p">]),(</span><span class="n">state</span><span class="p">[</span><span class="s">&#39;vom&#39;</span><span class="p">]),(</span><span class="n">state</span><span class="p">[</span><span class="s">&#39;vop&#39;</span><span class="p">]),(</span><span class="n">state</span><span class="p">[</span><span class="s">&#39;n009&#39;</span><span class="p">]),(</span><span class="n">state</span><span class="p">[</span><span class="s">&#39;n007&#39;</span><span class="p">]),(</span><span class="n">state</span><span class="p">[</span><span class="s">&#39;cmfb1&#39;</span><span class="p">]),(</span><span class="n">state</span><span class="p">[</span><span class="s">&#39;out1neg&#39;</span><span class="p">]),(</span><span class="n">state</span><span class="p">[</span><span class="s">&#39;out1pos&#39;</span><span class="p">]),(</span><span class="n">state</span><span class="p">[</span><span class="s">&#39;ig9&#39;</span><span class="p">]),(</span><span class="n">state</span><span class="p">[</span><span class="s">&#39;ig7&#39;</span><span class="p">])])</span>
+	<span class="k">return</span> <span class="n">stateorder</span>
+</pre></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Trajectory based Order Reduction 1.0 documentation</a> &raquo;</li>
+          <li><a href="index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Bhargava Chintalapati.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

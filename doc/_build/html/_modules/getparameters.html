@@ -1,0 +1,248 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>getparameters &mdash; Trajectory based Order Reduction 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Trajectory based Order Reduction 1.0 documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Trajectory based Order Reduction 1.0 documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for getparameters</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">csv</span>
+<span class="kn">import</span> <span class="nn">sympy</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">import</span> <span class="nn">prettytable</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">currenteqs</span> <span class="kn">import</span> <span class="n">region</span>
+
+<div class="viewcode-block" id="import_text"><a class="viewcode-back" href="../code.html#getparameters.import_text">[docs]</a><span class="k">def</span> <span class="nf">import_text</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">separator</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39; Import data from wave-form files exported from LTSPICE.</span>
+<span class="sd">	Generates a python dictionary for each row it reads with the column-name as the key.</span>
+<span class="sd">	Usage:</span>
+<span class="sd">		import_text(&lt;absolute_path&gt;,&#39;\t&#39;) use this for tab separated columns &#39;&#39;&#39;</span>
+	
+    <span class="n">reader</span><span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">DictReader</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">),</span> <span class="n">delimiter</span><span class="o">=</span><span class="n">separator</span><span class="p">,</span> <span class="n">skipinitialspace</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">reader</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">line</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">line</span>
+</div>
+<div class="viewcode-block" id="get_steadystate"><a class="viewcode-back" href="../code.html#getparameters.get_steadystate">[docs]</a><span class="k">def</span> <span class="nf">get_steadystate</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="n">initialcond</span><span class="p">,</span><span class="n">stateorder</span><span class="p">,</span><span class="n">final_time</span><span class="p">,</span><span class="n">order</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39; Provides the steady-state value for the given waveforms.</span>
+<span class="sd">	</span>
+<span class="sd">	current version however just takes the final-time ( obtained by visual inspection ) and provides the values at that time instant. </span>
+<span class="sd">	</span>
+<span class="sd">	Intended use of the function is this</span>
+
+<span class="sd">	if |x0 - xnew |/|x0| &lt; error :</span>
+<span class="sd">		count += 1</span>
+<span class="sd">	if count &gt;= some number :</span>
+<span class="sd">		return x0 </span>
+<span class="sd">	&#39;&#39;&#39;</span>
+	
+    <span class="k">print</span> <span class="s">&quot;Getting steady state ....&quot;</span>
+    <span class="n">pre</span><span class="o">=</span><span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">initialcond</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">stateorder</span><span class="p">[</span><span class="n">k</span><span class="p">])])</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">order</span><span class="p">)]</span>
+    <span class="n">count</span><span class="o">=</span><span class="mi">0</span>
+    <span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">import_text</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="s">&#39;</span><span class="se">\t</span><span class="s">&#39;</span><span class="p">):</span>
+        <span class="n">curt</span><span class="o">=</span><span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">stateorder</span><span class="p">[</span><span class="n">k</span><span class="p">])])</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">order</span><span class="p">)]</span>
+        <span class="n">diff</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">pre</span><span class="p">)</span><span class="o">-</span><span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">curt</span><span class="p">))</span>
+        <span class="n">pre</span><span class="o">=</span><span class="n">curt</span>
+        <span class="k">if</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s">&#39;time&#39;</span><span class="p">])</span><span class="o">==</span> <span class="n">final_time</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">curt</span>
+       
+     </div>
+<div class="viewcode-block" id="get_states"><a class="viewcode-back" href="../code.html#getparameters.get_states">[docs]</a><span class="k">def</span> <span class="nf">get_states</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+	<span class="sd">&#39;&#39;&#39; Given absolute path to the waveform files provides states needed for the system &#39;&#39;&#39;</span>
+	<span class="k">print</span> <span class="s">&quot;Getting states....&quot;</span>
+	<span class="n">initialcond</span><span class="o">=</span><span class="n">get_initialcond</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+	<span class="n">state</span><span class="o">=</span><span class="p">{}</span>
+	<span class="n">state</span><span class="p">[</span><span class="s">&#39;0&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">sympy</span><span class="o">.</span><span class="n">Symbol</span><span class="p">(</span><span class="s">&#39;0&#39;</span><span class="p">)</span>
+	<span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="n">initialcond</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+		<span class="n">state</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span><span class="o">=</span><span class="n">sympy</span><span class="o">.</span><span class="n">Symbol</span><span class="p">(</span><span class="n">ind</span><span class="p">)</span>
+	<span class="k">return</span> <span class="n">state</span>
+</div>
+<div class="viewcode-block" id="get_initialcond"><a class="viewcode-back" href="../code.html#getparameters.get_initialcond">[docs]</a><span class="k">def</span> <span class="nf">get_initialcond</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+	<span class="sd">&#39;&#39;&#39; Returns:</span>
+<span class="sd">	The initial condition given the absolute path to wave form files &#39;&#39;&#39;</span>
+	<span class="k">print</span> <span class="s">&quot;Getting initial conditions...&quot;</span>
+	<span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">import_text</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="s">&#39;</span><span class="se">\t</span><span class="s">&#39;</span><span class="p">):</span>
+		<span class="k">if</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s">&#39;time&#39;</span><span class="p">])</span><span class="o">==</span><span class="mi">0</span><span class="p">):</span>
+			<span class="n">initial</span> <span class="o">=</span> <span class="n">data</span>
+			<span class="n">initial</span><span class="p">[</span><span class="s">&#39;0&#39;</span><span class="p">]</span><span class="o">=</span> <span class="mi">0</span>
+			<span class="k">return</span> <span class="n">initial</span>	
+</div>
+<div class="viewcode-block" id="get_linpdiff"><a class="viewcode-back" href="../code.html#getparameters.get_linpdiff">[docs]</a><span class="k">def</span> <span class="nf">get_linpdiff</span><span class="p">(</span><span class="n">initial</span><span class="p">,</span><span class="n">steady</span><span class="p">,</span><span class="n">stateorder</span><span class="p">,</span><span class="n">order</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39; Provides the norm of the difference between the steady state and initial condition in state space </span>
+<span class="sd">	</span>
+<span class="sd">		Returns |x(initial) - x(steadystate)| = delta &#39;&#39;&#39;</span>
+    <span class="n">init</span><span class="o">=</span><span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">initial</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">stateorder</span><span class="p">[</span><span class="n">k</span><span class="p">])])</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">order</span><span class="p">)</span> <span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">init</span><span class="p">)</span><span class="o">-</span><span class="n">steady</span><span class="p">)</span><span class="o">/</span><span class="n">numpy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">init</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="get_linPoints"><a class="viewcode-back" href="../code.html#getparameters.get_linPoints">[docs]</a><span class="k">def</span> <span class="nf">get_linPoints</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="n">initialcond</span><span class="p">,</span><span class="n">delta</span><span class="p">,</span><span class="n">order</span><span class="p">,</span><span class="n">stateorder</span><span class="p">):</span>
+	<span class="sd">&#39;&#39;&#39;Choice of the points of linearization is done as follows</span>
+<span class="sd">	if |xnew - xi|/|xi| &lt; delta :</span>
+<span class="sd">		continue</span>
+<span class="sd">	else :</span>
+<span class="sd">	    x(i+1) = xnew</span>
+<span class="sd">	Returns the number of linearization points and the time&#39;s at which they were chosen</span>
+<span class="sd">	&#39;&#39;&#39;</span>
+	<span class="n">pre</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span> <span class="nb">float</span><span class="p">(</span> <span class="n">initialcond</span><span class="p">[</span> <span class="nb">str</span><span class="p">(</span><span class="n">stateorder</span><span class="p">[</span><span class="n">k</span><span class="p">])</span> <span class="p">]</span> <span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">order</span><span class="p">)</span> <span class="p">]</span> <span class="p">)</span>
+	<span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+	<span class="n">time</span> <span class="o">=</span> <span class="p">[]</span>
+	<span class="n">table</span> <span class="o">=</span> <span class="n">prettytable</span><span class="o">.</span><span class="n">PrettyTable</span><span class="p">(</span> <span class="p">[</span> <span class="s">&quot;Point&quot;</span><span class="p">,</span> <span class="s">&quot;|xnew - xi|/|xi|&quot;</span> <span class="p">,</span><span class="s">&quot;Time&quot;</span> <span class="p">]</span> <span class="p">)</span>
+	<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">import_text</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="s">&#39;</span><span class="se">\t</span><span class="s">&#39;</span><span class="p">):</span>
+		<span class="n">cur</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span> <span class="nb">float</span><span class="p">(</span><span class="n">i</span><span class="p">[</span> <span class="nb">str</span><span class="p">(</span> <span class="n">stateorder</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="p">)</span> <span class="p">]</span> <span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">order</span><span class="p">)</span> <span class="p">]</span> <span class="p">)</span>
+		<span class="n">diff</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span> <span class="n">numpy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">pre</span><span class="o">-</span><span class="n">cur</span><span class="p">)</span> <span class="o">/</span> <span class="n">numpy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">pre</span><span class="p">)</span> <span class="p">)</span>
+		<span class="k">if</span><span class="p">(</span><span class="n">diff</span> <span class="o">&gt;=</span> <span class="n">delta</span><span class="p">):</span>
+			<span class="n">pre</span> <span class="o">=</span> <span class="n">cur</span>
+			<span class="n">count</span> <span class="o">=</span> <span class="n">count</span><span class="o">+</span><span class="mi">1</span>
+			<span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span> <span class="p">[</span><span class="n">count</span><span class="p">,</span> <span class="n">diff</span><span class="p">,</span> <span class="n">i</span><span class="p">[</span><span class="s">&#39;time&#39;</span><span class="p">]</span> <span class="p">]</span> <span class="p">)</span>
+			<span class="n">time</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="nb">float</span><span class="p">(</span><span class="n">i</span><span class="p">[</span><span class="s">&#39;time&#39;</span><span class="p">])</span> <span class="p">)</span>
+	<span class="k">print</span> <span class="s">&quot;The Linearization points chosen if |xnew - xi|/|xi| &gt; &quot;</span><span class="p">,</span> <span class="n">delta</span>	
+	<span class="k">print</span> <span class="n">table</span>
+	<span class="k">return</span> <span class="n">count</span><span class="p">,</span><span class="n">time</span>
+        </div>
+<div class="viewcode-block" id="Sym2NumArray"><a class="viewcode-back" href="../code.html#getparameters.Sym2NumArray">[docs]</a><span class="k">def</span> <span class="nf">Sym2NumArray</span><span class="p">(</span><span class="n">F</span><span class="p">):</span>
+	<span class="sd">&#39;&#39;&#39; After evaluation of an expression in sympy, convert that array into a numpy readable array &#39;&#39;&#39;</span>
+	<span class="n">shapeF</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">shape</span>
+	<span class="n">B</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span> <span class="n">shapeF</span> <span class="p">)</span>
+	<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="mi">0</span> <span class="p">,</span> <span class="n">shapeF</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">):</span>
+		<span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span> <span class="p">,</span> <span class="n">shapeF</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="p">):</span>
+			<span class="n">B</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">sympy</span><span class="o">.</span><span class="n">N</span><span class="p">(</span> <span class="n">F</span><span class="p">[</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="p">)</span>
+	<span class="k">return</span> <span class="n">B</span>
+</div>
+<div class="viewcode-block" id="get_datapoints"><a class="viewcode-back" href="../code.html#getparameters.get_datapoints">[docs]</a><span class="k">def</span> <span class="nf">get_datapoints</span><span class="p">(</span> <span class="n">file_voltage</span><span class="p">,</span> <span class="n">count</span><span class="p">,</span> <span class="n">time</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39; Get snapshot of the system at required time instants </span>
+<span class="sd">    Returns :</span>
+<span class="sd">        Dictionary with state variable as key and value at the time instant as value&#39;&#39;&#39;</span>
+    <span class="n">datapoints</span><span class="o">=</span><span class="p">[{}</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">count</span><span class="p">)]</span>
+    <span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">import_text</span><span class="p">(</span><span class="n">file_voltage</span><span class="p">,</span><span class="s">&#39;</span><span class="se">\t</span><span class="s">&#39;</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">count</span><span class="p">):</span>
+            <span class="k">if</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s">&#39;time&#39;</span><span class="p">])</span><span class="o">==</span><span class="n">time</span><span class="p">[</span><span class="n">i</span><span class="p">]):</span>
+                <span class="n">datapoints</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="n">data</span>
+	<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">count</span><span class="p">):</span>
+		<span class="n">datapoints</span><span class="p">[</span> <span class="n">i</span> <span class="p">][</span><span class="s">&#39;0&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">return</span> <span class="n">datapoints</span>
+</div>
+<div class="viewcode-block" id="get_currents"><a class="viewcode-back" href="../code.html#getparameters.get_currents">[docs]</a><span class="k">def</span> <span class="nf">get_currents</span><span class="p">(</span> <span class="n">file_current</span><span class="p">,</span> <span class="n">count</span> <span class="p">,</span><span class="n">time</span><span class="p">):</span>
+	<span class="sd">&#39;&#39;&#39; Get snapshots of the currents through vairous transistors in the system.</span>
+<span class="sd">	Returns:</span>
+<span class="sd">		Dictionary containing transistor label as key and current at the time instant as the value&#39;&#39;&#39;</span>
+	<span class="n">currents</span> <span class="o">=</span> <span class="p">[</span> <span class="p">{}</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">count</span><span class="p">)</span> <span class="p">]</span>
+	<span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">import_text</span><span class="p">(</span><span class="n">file_current</span><span class="p">,</span><span class="s">&#39;</span><span class="se">\t</span><span class="s">&#39;</span><span class="p">):</span>
+		<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">count</span><span class="p">):</span>
+			<span class="k">if</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s">&#39;time&#39;</span><span class="p">])</span><span class="o">==</span><span class="n">time</span><span class="p">[</span><span class="n">i</span><span class="p">]):</span>
+				<span class="n">currents</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="n">data</span>
+	<span class="k">return</span> <span class="n">currents</span>
+</div>
+<div class="viewcode-block" id="get_inputorder"><a class="viewcode-back" href="../code.html#getparameters.get_inputorder">[docs]</a><span class="k">def</span> <span class="nf">get_inputorder</span><span class="p">(</span> <span class="n">state</span><span class="p">,</span><span class="n">inp_list</span><span class="p">):</span>
+	<span class="sd">&#39;&#39;&#39;Returns:</span>
+<span class="sd">	symbolic non-linear input vector </span>
+<span class="sd">	inp[0]</span>
+<span class="sd">	inp[0]**2</span>
+<span class="sd">	inp[0]**3</span>
+<span class="sd">	inp[1]</span>
+<span class="sd">	inp[1]**2</span>
+<span class="sd">	.</span>
+<span class="sd">	.	</span>
+<span class="sd">	.	</span>
+<span class="sd">	&#39;&#39;&#39;</span>
+	<span class="n">check</span> <span class="o">=</span> <span class="n">sympy</span><span class="o">.</span><span class="n">Matrix</span><span class="p">(</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span> <span class="p">(</span><span class="mi">3</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">inp_list</span><span class="p">),</span><span class="mi">1</span><span class="p">)</span> <span class="p">)</span> <span class="p">)</span>
+	<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">inp_list</span><span class="p">)</span> <span class="p">):</span>
+		<span class="n">check</span><span class="p">[</span><span class="mi">3</span><span class="o">*</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">state</span><span class="p">[</span><span class="n">inp_list</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span><span class="o">**</span><span class="mi">1</span>
+		<span class="n">check</span><span class="p">[</span><span class="mi">3</span><span class="o">*</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">state</span><span class="p">[</span><span class="n">inp_list</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span><span class="o">**</span><span class="mi">2</span>
+		<span class="n">check</span><span class="p">[</span><span class="mi">3</span><span class="o">*</span><span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">state</span><span class="p">[</span><span class="n">inp_list</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span><span class="o">**</span><span class="mi">3</span>
+	<span class="k">return</span> <span class="n">check</span>
+</div>
+<div class="viewcode-block" id="get_num_linP"><a class="viewcode-back" href="../code.html#getparameters.get_num_linP">[docs]</a><span class="k">def</span> <span class="nf">get_num_linP</span><span class="p">(</span><span class="n">count</span><span class="p">,</span><span class="n">order</span><span class="p">,</span><span class="n">datapoints</span><span class="p">,</span><span class="n">stateorder</span><span class="p">):</span>
+	<span class="sd">&#39;&#39;&#39;Returns:</span>
+<span class="sd">	numpy compatible array for the relavent state space values at linearization points&#39;&#39;&#39;</span>
+	<span class="n">linP</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">count</span><span class="p">,</span><span class="n">order</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+	<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">count</span><span class="p">):</span>
+		<span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">order</span><span class="p">):</span>
+			<span class="n">linP</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">k</span><span class="p">]</span><span class="o">=</span><span class="p">(</span><span class="n">datapoints</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="nb">str</span><span class="p">(</span><span class="n">stateorder</span><span class="p">[</span><span class="n">k</span><span class="p">])])</span>          
+	<span class="k">return</span> <span class="n">linP</span>
+</pre></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Trajectory based Order Reduction 1.0 documentation</a> &raquo;</li>
+          <li><a href="index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Bhargava Chintalapati.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>
