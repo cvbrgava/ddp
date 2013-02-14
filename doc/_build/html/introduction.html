@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Introduction to PWLMOR &mdash; Trajectory based Order Reduction 1.0 documentation</title>
+    <title>Motivation for Order Reduction &mdash; Trajectory based Order Reduction 1.0 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -25,8 +25,9 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="shortcut icon" href="_static/logo.ico"/>
     <link rel="top" title="Trajectory based Order Reduction 1.0 documentation" href="index.html" />
-    <link rel="next" title="This is a Title" href="example.html" />
+    <link rel="next" title="Auto generated documentation" href="code.html" />
     <link rel="prev" title="Welcome to Trajectory based Order Reduction’s documentation!" href="index.html" /> 
   </head>
   <body>
@@ -37,12 +38,15 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="example.html" title="This is a Title"
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="code.html" title="Auto generated documentation"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="index.html" title="Welcome to Trajectory based Order Reduction’s documentation!"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">Trajectory based Order Reduction 1.0 documentation</a> &raquo;</li> 
+        <li><a href="index.html">TPWL-MOR 1.0</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -51,16 +55,33 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="introduction-to-pwlmor">
-<h1>Introduction to PWLMOR<a class="headerlink" href="#introduction-to-pwlmor" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="motivation-for-order-reduction">
+<h1>Motivation for Order Reduction<a class="headerlink" href="#motivation-for-order-reduction" title="Permalink to this headline">¶</a></h1>
 <p>This is a project which merges Dynamical systems with Electrical Engineering. We here realize that naive choice of state variables is not computationally efficient. We can come up with a linear combination of state variables which make describing the system much more efficient than it is right now.</p>
 <div class="figure align-left">
 <img alt="_images/osciltr.png" src="_images/osciltr.png" />
+<p class="caption">Voltage Controlled Differential Oscillator</p>
 </div>
-<div class="figure align-right">
-<img alt="_images/2Dphasespace.png" src="_images/2Dphasespace.png" />
+<div class="figure align-center">
+<img alt="_images/2Dphasespace.png" src="_images/2Dphasespace.png" style="width: 350px; height: 350px;" />
+<p class="caption">State space of differential oscillator</p>
 </div>
-<p>This system has a 3D state space but is actually a 2D annular ring in 3D space. So we would not need all the three dimensions to describe this system. Rather a plane roughly passing through the annular ring will capture the details of the circuit.</p>
+<p>This system has a 3D state space but is actually a <strong>2D annular ring in 3D space</strong>. So we would not need all the three dimensions to describe this system. Rather a plane roughly passing through the annular ring will capture the details of the circuit.</p>
+<p>There are some circuits like this one, which inherently have a solution spanning a lower dimensional space in the actual state space. It is evident that dimensionality of such circuits can be reduced.</p>
+<div class="figure align-left">
+<img alt="_images/commonsource.png" src="_images/commonsource.png" style="width: 300px; height: 300px;" />
+<p class="caption">Commonsource amplifier</p>
+</div>
+<div class="figure align-center">
+<img alt="_images/1Dphasespace.png" src="_images/1Dphasespace.png" style="width: 300px; height: 300px;" />
+<p class="caption">State space of common source amplifier</p>
+</div>
+<p>There are few others which don;t inherently behave in the similar fashion, instead they show this feature under specific circumstances. The <em>common source amplifier</em>, which is a <strong>2-Dimensional</strong> circuit, produces an almost <strong>1-Dimensional</strong> response to a step input.
+This implies that we can again exploit this functionality and reduce the system for this particular input. Hence the name <strong>Trajectory based Order reduction.</strong></p>
+<div class="admonition-see-also admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference external" href="http://libgen.org/book/index.php?md5=6931A869174964929BA8726903086767">Non-Linear Dynamics and Chaos</a> by Steven Strogatz on understanding systems from state space perspective.</p>
+</div>
 </div>
 
 
@@ -69,12 +90,15 @@
       </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/logo.png" alt="Logo"/>
+            </a></p>
   <h4>Previous topic</h4>
   <p class="topless"><a href="index.html"
                         title="previous chapter">Welcome to Trajectory based Order Reduction&#8217;s documentation!</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="example.html"
-                        title="next chapter">This is a Title</a></p>
+  <p class="topless"><a href="code.html"
+                        title="next chapter">Auto generated documentation</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/introduction.txt"
@@ -104,12 +128,15 @@
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="example.html" title="This is a Title"
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="code.html" title="Auto generated documentation"
              >next</a> |</li>
         <li class="right" >
           <a href="index.html" title="Welcome to Trajectory based Order Reduction’s documentation!"
              >previous</a> |</li>
-        <li><a href="index.html">Trajectory based Order Reduction 1.0 documentation</a> &raquo;</li> 
+        <li><a href="index.html">TPWL-MOR 1.0</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

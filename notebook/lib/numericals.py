@@ -5,7 +5,12 @@ from sympy.parsing.sympy_parser import parse_expr
 from parsers import *
 from config import *
 from getparameters import Sym2NumArray
+from progressbar import *
 
+class Point(ProgressBarWidget):
+	def update(self,pbar):
+		return '%2d' % pbar.currval
+		
 def init_statematrices(count,order,input_list,output_list, stateorder):
 	''' Initialze all the state space matrices needed.
 	Input : 
@@ -50,8 +55,10 @@ def get_statematrices( linPJac, B, C, D, linPVal, inputm, count, order, regions,
 		B = input matrix
 		C = Output matrix
 		linPVal = Value of the system at some linearization point '''
+	widgets = ['Building State matrices @ Point',Point(),Bar('.')]
+	pbar = ProgressBar(widgets = widgets,maxval = count,term_width = 60).start()	
 	for linpt in range(count):
-		print "Building matrices for point",linpt+1,"...."
+		pbar.update( linpt + 1 )
 		eqs = get_nonlinear_matrix(state,regions[linpt],Vth)
 		
 		for i in range(order):
@@ -76,6 +83,7 @@ def get_statematrices( linPJac, B, C, D, linPVal, inputm, count, order, regions,
 	
 		#diff=(linPVal[linpt]-numpy.dot(linPJac[linpt],linP[linpt]))
 		#offset[linpt]=proj*diff
+	pbar.finish()
 	return linPJac, B, C, D, linPVal, inputm 
 
 # The following functions are used for integration of the PWL model

@@ -1,15 +1,13 @@
 import sympy
 from currenteqs import current
-import os 
 
-pwd = os.getcwd()
-config = ['Common source',pwd]
+# Add the name of the circuit being simulated here
+cirname = 'Common Source Amplifier'
 
-print "Working with", config[ 0 ]
-print "The config file located at", config[1]
 # The functions in this library change with the circuit being used. 
 # All the state space equations go into the get_nonlinear_matrix() function
 # The state space ordering is done by the get_stateorder() function
+print "Working on",cirname
 
 # The following parameters are to be customized for the circuit being simulated
 # These parameters are the bridge between the project and SPICE.

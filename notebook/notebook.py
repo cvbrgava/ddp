@@ -1,4 +1,5 @@
 import sympy
+import os
 from getparameters import *
 from currenteqs import *
 from parsers import *
@@ -27,6 +28,16 @@ def dervPWL(y,t):
 def normcalc( y ) :
 	norm = numpy.array([ 10**(-1*numpy.linalg.norm( linP[ i ] - y.reshape(order,1) )) for i in range(count) ])
 	return norm/norm.sum()
+
+def initialize():
+    if os.path.isfile('./config.py'):
+        print "Config file in ", os.path.abspath('./config.py')
+        print "-----------------------------------------------"
+    else:
+        print "Config file in PYTHONPATH"
+        print "-----------------------------------------------"
+
+initialize()
 
 initialcond = get_initialcond(file_voltage)
 

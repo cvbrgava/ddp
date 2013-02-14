@@ -25,8 +25,9 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="shortcut icon" href="_static/logo.ico"/>
     <link rel="top" title="Trajectory based Order Reduction 1.0 documentation" href="#" />
-    <link rel="next" title="Introduction to PWLMOR" href="introduction.html" /> 
+    <link rel="next" title="Motivation for Order Reduction" href="introduction.html" /> 
   </head>
   <body>
     <div class="related">
@@ -39,9 +40,9 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="introduction.html" title="Introduction to PWLMOR"
+          <a href="introduction.html" title="Motivation for Order Reduction"
              accesskey="N">next</a> |</li>
-        <li><a href="#">Trajectory based Order Reduction 1.0 documentation</a> &raquo;</li> 
+        <li><a href="#">TPWL-MOR 1.0</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -52,17 +53,32 @@
             
   <div class="section" id="welcome-to-trajectory-based-order-reduction-s-documentation">
 <h1>Welcome to Trajectory based Order Reduction&#8217;s documentation!<a class="headerlink" href="#welcome-to-trajectory-based-order-reduction-s-documentation" title="Permalink to this headline">¶</a></h1>
-<p>This is my introduction to this project
-Contents:</p>
+<p>Trajectory based Piecewise Linearization followed by Model Order Reduction, is a Dual Degree Project in the <a class="reference external" href="http://www.ee.iitm.ac.in">Electrical Engineering Department</a>, <a class="reference external" href="http://www.iitm.ac.in">IIT Madras</a>. This site intends to document the progress of the project and provide frame-work necessary to continue the work.</p>
+<p>Contents:</p>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction to PWLMOR</a></li>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Motivation for Order Reduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="code.html">Auto generated documentation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="code.html#numericals-module">numericals module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="code.html#currenteqs-module">currenteqs module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="code.html#config-module">config module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="code.html#getparameters-module">getparameters module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="code.html#parsers-module">Parsers module</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<p>The source code for the project is available on <a class="reference external" href="https://github.com/cvbrgava">git-hub</a>.</p>
+</div>
+<div class="section" id="test-cases">
+<h1>Test Cases<a class="headerlink" href="#test-cases" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Commonsource.html">Common Source Amplifier</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Commonsource.html#non-linear-integration-with-time-based-boundaries">Non-Linear Integration with time-based boundaries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Commonsource.html#non-linear-integration-with-state-based-boundaries">Non-Linear Integration with state-based boundaries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Commonsource.html#tpwl-integration">TPWL Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Commonsource.html#resources">Resources</a></li>
 </ul>
 </li>
 </ul>
@@ -76,11 +92,23 @@ Contents:</p>
 <li><a class="reference internal" href="search.html"><em>Search Page</em></a></li>
 </ul>
 </div>
-<div class="section" id="reports-submitted">
-<h1>Reports submitted<a class="headerlink" href="#reports-submitted" title="Permalink to this headline">¶</a></h1>
-<p>To check the correctness of the code we had to run a couple of checks on the level! model. The following results were obtained and have been juxtaposed with SPICE results</p>
+<div class="section" id="downloads">
+<h1>Downloads<a class="headerlink" href="#downloads" title="Permalink to this headline">¶</a></h1>
+<p>Recent presentation made on the status quo of the project.</p>
 <blockquote>
-<div><a class="reference download internal" href="_downloads/currents.txt"><tt class="xref download docutils literal"><span class="pre">Verifying</span> <span class="pre">KCL</span> <span class="pre">at</span> <span class="pre">nodes</span></tt></a></div></blockquote>
+<div><a class="reference download internal" href="_downloads/Mid_term_review_2.0.pdf"><tt class="xref download docutils literal"><span class="pre">Mid-Term</span> <span class="pre">review</span></tt></a></div></blockquote>
+<p>The psuedo code followed by the program.</p>
+<blockquote>
+<div><a class="reference download internal" href="_downloads/PseudoCode.pdf"><tt class="xref download docutils literal"><span class="pre">Pseudo-code</span> <span class="pre">followed</span> <span class="pre">by</span> <span class="pre">program</span></tt></a></div></blockquote>
+<p>Results obtained from TPWL-MOR on a non-linear transmission line model.</p>
+<blockquote>
+<div><a class="reference download internal" href="_downloads/PWL-NLMOR.pdf"><tt class="xref download docutils literal"><span class="pre">Transmission</span> <span class="pre">Line</span> <span class="pre">MOR</span></tt></a></div></blockquote>
+</div>
+<div class="section" id="references">
+<h1>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h1>
+<p>The work done in this project is based on the ideas discussed  in the Ph.D thesis of Micheal Jerzy Rewienski, MIT.</p>
+<blockquote>
+<div><a class="reference download internal" href="_downloads/rewienski.pdf"><tt class="xref download docutils literal"><span class="pre">TPWL-MOR</span></tt></a></div></blockquote>
 </div>
 
 
@@ -89,18 +117,25 @@ Contents:</p>
       </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="#">
+              <img class="logo" src="_static/logo.png" alt="Logo"/>
+            </a></p>
   <h3><a href="#">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Welcome to Trajectory based Order Reduction&#8217;s documentation!</a><ul>
 </ul>
 </li>
+<li><a class="reference internal" href="#test-cases">Test Cases</a><ul>
+</ul>
+</li>
 <li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
-<li><a class="reference internal" href="#reports-submitted">Reports submitted</a></li>
+<li><a class="reference internal" href="#downloads">Downloads</a></li>
+<li><a class="reference internal" href="#references">References</a></li>
 </ul>
 
   <h4>Next topic</h4>
   <p class="topless"><a href="introduction.html"
-                        title="next chapter">Introduction to PWLMOR</a></p>
+                        title="next chapter">Motivation for Order Reduction</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/index.txt"
@@ -133,9 +168,9 @@ Contents:</p>
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="introduction.html" title="Introduction to PWLMOR"
+          <a href="introduction.html" title="Motivation for Order Reduction"
              >next</a> |</li>
-        <li><a href="#">Trajectory based Order Reduction 1.0 documentation</a> &raquo;</li> 
+        <li><a href="#">TPWL-MOR 1.0</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
