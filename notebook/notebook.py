@@ -27,6 +27,7 @@ def dervPWL(y,t):
 # Calculates the weighing function depending on the proximity to linearizatoin points
 def normcalc( y ) :
 	norm = numpy.array([ 10**(-1*numpy.linalg.norm( linP[ i ] - y.reshape(order,1) )) for i in range(count) ])
+
 	return norm/norm.sum()
 
 def initialize():
@@ -79,9 +80,18 @@ solnPWL = odeint(dervPWL, y0, time)
 # Plotting the output obtained with integration
 C_ones = [i for i in range( len( stateorder ) ) if str( stateorder[ i ] ) in output_list ]
 for k in range(len(C_ones)):
-	plt.figure(k)
-	plt.plot(time, numpy.array([ float(solnPWL[i][C_ones[k]]) for i in range(len(time) )] ), '--')
-	plt.ylabel(r'$V_{'+str(stateorder[C_ones[k]])+'}$' )
-	plt.xlabel(r'$time$')
-	plt.title(r'$Output\ as\ function\ of\ time$' )
+    plt.figure(k)
+    calc, = plt.plot(time, numpy.array([ float(solnPWL[i][C_ones[k]]) for i in range(len(time) )] ), '--')
+    plt.ylabel(r'$V_{'+str(stateorder[C_ones[k]])+'}$' )
+    plt.xlabel(r'$time$')
+    x , y  = [], []
+    for i in import_text(file_voltage,"\t"):
+        if (float( i[ 'time' ] ) < intg_end+sim_begin) and (float( i[ 'time' ]  )> sim_begin) :
+            y.append( i[ str( stateorder[ C_ones[ k ] ] ) ] ), x.append( float(i[ 'time' ])-sim_begin )
+    plt.ylabel(r'$V_{'+str(stateorder[C_ones[k]])+'}$' )
+    plt.xlabel(r'$time$')
+    plt.title(str(cirname)+' output')
+    spice, = plt.plot(x,y)
+    plt.figsize(10,10)
+    plt.figlegend([calc,spice],('Calculated','Spice'),'lower right')
 plt.show()
