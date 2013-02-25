@@ -113,8 +113,11 @@ def get_nonlinear_matrix(state,regions,Vth):
 def get_input_signals( t ):
 	''' Returns:
 	The values of all the inputs at any given time instant'''
+	if t < 1e-6:
+		return 5e6*t
+	if t > 1e-6:
+		return 5
 
-	return [1.3,0.5]
 		
 
 def get_stateorder(state):

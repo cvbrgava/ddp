@@ -14,7 +14,7 @@ print "Working on",cirname
 #-------------------------------------------------------------------------------------------- 
 order = 13
 sim_begin = 2e-6
-sim_end = 4.796677620601137e-006
+sim_end = 5.000000000000000e-005
 file_voltage = './Data/voltage_diffamp.txt'
 file_current = './Data/currents.txt'
 file_netlist = './Data/diffamp.net'

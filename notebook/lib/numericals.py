@@ -11,6 +11,17 @@ class Point(ProgressBarWidget):
 	def update(self,pbar):
 		return '%2d' % pbar.currval
 		
+class matrices( object ) :
+	def __init__( self , name ):
+		self.name = name
+		self.linPJac = sympy.zeros( (order,order) )
+		self.linPVal = sympy.zeros( (order, 1) )
+	
+	def call( self ):
+		print self.name
+
+
+
 def init_statematrices(count,order,input_list,output_list, stateorder):
 	''' Initialze all the state space matrices needed.
 	Input : 
@@ -35,14 +46,14 @@ def init_statematrices(count,order,input_list,output_list, stateorder):
 	#offset=numpy.ones((count,len(input_list)*3,1))
 	#diff=numpy.ones((order,1))
 	#proj=numpy.zeros((order,order))
-	linPJac = numpy.zeros( ( count, order, order) )
-	linPVal = numpy.zeros( ( count, order, 1) )
+	#linPJac = numpy.zeros( ( count, order, order) )
+	#linPVal = numpy.zeros( ( count, order, 1) )
 	B = numpy.zeros( (count, order, 3*len( input_list ) ) )
 	inputm = numpy.zeros( (count, 3*len(input_list),1 ) )
-	return linPJac, B, C, D, linPVal, inputm
+	return  C , B , D , inputm
 
 
-def get_statematrices( linPJac, B, C, D, linPVal, inputm, count, order, regions, state, regexp, datapoints, stateorder, inputorder, Vth): 
+def get_statematrices(  B, C, D, inputm, count, order, regions, state, regexp, datapoints, stateorder, inputorder, Vth): 
 	''' Initialze all the state space matrices needed.
 	Input : 
 		count = number of linearization points
@@ -57,34 +68,39 @@ def get_statematrices( linPJac, B, C, D, linPVal, inputm, count, order, regions,
 		linPVal = Value of the system at some linearization point '''
 	widgets = ['Building State matrices @ Point',Point(),Bar('.')]
 	pbar = ProgressBar(widgets = widgets,maxval = count,term_width = 60).start()	
+	
+	Matrix = []
 	for linpt in range(count):
 		pbar.update( linpt + 1 )
+		Matrix.append( matrices( linpt ) )
 		eqs = get_nonlinear_matrix(state,regions[linpt],Vth)
 		
 		for i in range(order):
 			B[linpt][i], string = parse_nonlinear( str( eqs[ i ] ), regexp) 
 			eqs[i]=sympy.parsing.sympy_parser.parse_expr(string, state)
 		
-		sub1={state[i]:abs(float(datapoints[linpt][i])) for i in state}
+		#sub1={state[i]:abs(float(datapoints[linpt][i])) for i in state}
 		
 	    
 		# dx/dt = Jacobian * ( state ) + B * ( input ) + ( Val @ state - Jacobian * linPoint )
 	
 	   
 	
-		linPVal[ linpt ] = Sym2NumArray( eqs.evalf(subs = sub1) ) 
-        
-		jack = eqs.jacobian( stateorder )
-		linPJac[ linpt ] = Sym2NumArray( jack.evalf( subs = sub1 )  )        
+		#linPVal[ linpt ] = Sym2NumArray( eqs.evalf(subs = sub1) ) 
+        	Matrix[ linpt ].linPVal = eqs
 
-		inputm[ linpt ] = Sym2NumArray( inputorder.evalf( subs = sub1 ) )
+		jack = eqs.jacobian( stateorder )
+		#linPJac[ linpt ] =  jack.evalf( subs = sub1 )  )        
+		Matrix[ linpt ].linPJac =  jack
+		#inputm[ linpt ] = Sym2NumArray( inputorder.evalf( subs = sub1 ) )
+		#inputm[ linpt ] = inputorder
 		#temp=numpy.matrix(B[linpt])
 		#proj=numpy.linalg.pinv(temp)
 	
 		#diff=(linPVal[linpt]-numpy.dot(linPJac[linpt],linP[linpt]))
 		#offset[linpt]=proj*diff
 	pbar.finish()
-	return linPJac, B, C, D, linPVal, inputm 
+	return Matrix, B, C, D
 
 # The following functions are used for integration of the PWL model
 

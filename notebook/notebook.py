@@ -68,9 +68,9 @@ inputorder = get_inputorder(state, input_list )
 
 linP = get_num_linP(count,order,datapoints,stateorder)
 
-linPJac, B, C, D, linPVal, inputm = init_statematrices(count,order,input_list,output_list,stateorder)
+C , B , D , inputm = init_statematrices(count,order,input_list,output_list,stateorder)
 
-linPJac, B, C, D, linPVal,inputm = get_statematrices( linPJac, B, C, D, linPVal, inputm, count, order, regions, state, regexp, datapoints, stateorder,inputorder, Vth)
+Matrix, B, C, D = get_statematrices( linPJac, B, C, D, linPVal, inputm, count, order, regions, state, regexp, datapoints, stateorder,inputorder, Vth)
 
 y0 , time = get_parameters_integration( initialcond, intg_end, stateorder )
 

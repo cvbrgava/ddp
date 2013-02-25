@@ -4,4 +4,3 @@ The final aim of the project is to implement model order reduction on Sigma Delt
 
 
 
-
