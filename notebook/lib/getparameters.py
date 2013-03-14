@@ -40,22 +40,22 @@ def get_steadystate(filename,initialcond,stateorder,final_time,order):
             return curt
        
      
-def get_states(filename):
+def get_states(filename,sim_begin):
 	''' Given absolute path to the waveform files provides states needed for the system '''
 	print "Getting states...."
-	initialcond=get_initialcond(filename)
+	initialcond=get_initialcond(filename,sim_begin)
 	state={}
 	state['0']=sympy.Symbol('0')
 	for ind in initialcond.keys():
 		state[ind]=sympy.Symbol(ind)
 	return state
 
-def get_initialcond(filename):
+def get_initialcond(filename, sim_begin):
 	''' Returns:
 	The initial condition given the absolute path to wave form files '''
 	print "Getting initial conditions..."
 	for data in import_text(filename,'\t'):
-		if(float(data['time'])==0):
+		if(float(data['time']) == sim_begin):
 			initial = data
 			initial['0']= 0
 			return initial	
@@ -68,7 +68,7 @@ def get_linpdiff(initial,steady,stateorder,order):
 
     return numpy.linalg.norm(numpy.array(init)-steady)/numpy.linalg.norm(init)
 
-def get_linPoints(filename,initialcond,delta,order,stateorder):
+def get_linPoints(filename,initialcond,delta,order,stateorder,sim_begin):
 	'''Choice of the points of linearization is done as follows
 	if |xnew - xi|/|xi| < delta :
 		continue
@@ -77,8 +77,9 @@ def get_linPoints(filename,initialcond,delta,order,stateorder):
 	Returns the number of linearization points and the time's at which they were chosen
 	'''
 	pre = numpy.array( [ float( initialcond[ str(stateorder[k]) ] ) for k in range(order) ] )
-	count = 0
+	count = 1
 	time = []
+	time.append( float( sim_begin ) )
 	table = prettytable.PrettyTable( [ "Point", "|xnew - xi|/|xi|" ,"Time" ] )
 	for i in import_text(filename,'\t'):
 		cur = numpy.array( [ float(i[ str( stateorder[k] ) ] ) for k in range(order) ] )
@@ -89,6 +90,7 @@ def get_linPoints(filename,initialcond,delta,order,stateorder):
 			table.add_row( [count, diff, i['time'] ] )
 			time.append( float(i['time']) )
 	print "The Linearization points chosen if |xnew - xi|/|xi| > ", delta	
+	print "DC operating point is chosen as the first linearization point"
 	print table
 	return count,time
         

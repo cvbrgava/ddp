@@ -20,8 +20,8 @@ file_current = './Data/cmnsrc_crnt_lev1_3_0.3.txt'
 file_netlist = './Data/cmnsrc_net_lev1.txt'
 input_list = ['inp']
 output_list = ['iC2']
-denominator = 4
-intg_end = 2e-9
+denominator = 3
+intg_end = 2e-6
 
 #--------------------------------------------------------------------------------------------
 
@@ -114,7 +114,7 @@ def get_input_signals( t ):
 	''' Returns:
 	The values of all the inputs at any given time instant'''
 	if t < 1e-6:
-		return 5e6*t
+		return 2 + 3e6*t
 	if t > 1e-6:
 		return 5
 
@@ -126,4 +126,3 @@ def get_stateorder(state):
 	stateorder=sympy.Matrix([(state['drain']),(state['iC2'])])
 	#stateorder=sympy.Matrix([(state['n001']),(state['n002']),(state['n005']),(state['cfmb2']),(state['vom']),(state['vop']),(state['n009']),(state['n007']),(state['cmfb1']),(state['out1neg']),(state['out1pos']),(state['ig9']),(state['ig7'])])
 	return stateorder
-

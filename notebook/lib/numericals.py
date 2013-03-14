@@ -22,7 +22,7 @@ class matrices( object ) :
 
 
 
-def init_statematrices(count,order,input_list,output_list, stateorder):
+def init_statematrices(count,order,input_list,output_list, stateorder,state):
 	''' Initialze all the state space matrices needed.
 	Input : 
 	
@@ -43,13 +43,18 @@ def init_statematrices(count,order,input_list,output_list, stateorder):
 	for i , j in zip( range( len( output_list ) ) , C_ones) :
 		C[ i , j ] = 1
 	D = [ 0 ]
+
+	inputm = sympy.Matrix( numpy.zeros( (3*len(input_list),1 ) ))
+	for k in range( len(input_list) ) :
+		for i in range(  3 ) :
+        		inputm[ i + ( 3 * k ) ] = state[ str( input_list[ k ] ) ] ** (i+1)
 	#offset=numpy.ones((count,len(input_list)*3,1))
 	#diff=numpy.ones((order,1))
 	#proj=numpy.zeros((order,order))
 	#linPJac = numpy.zeros( ( count, order, order) )
 	#linPVal = numpy.zeros( ( count, order, 1) )
 	B = numpy.zeros( (count, order, 3*len( input_list ) ) )
-	inputm = numpy.zeros( (count, 3*len(input_list),1 ) )
+	
 	return  C , B , D , inputm
 
 
@@ -74,7 +79,7 @@ def get_statematrices(  B, C, D, inputm, count, order, regions, state, regexp, d
 		pbar.update( linpt + 1 )
 		Matrix.append( matrices( linpt ) )
 		eqs = get_nonlinear_matrix(state,regions[linpt],Vth)
-		
+		#Matrix[ linpt ].linPVal = eqs
 		for i in range(order):
 			B[linpt][i], string = parse_nonlinear( str( eqs[ i ] ), regexp) 
 			eqs[i]=sympy.parsing.sympy_parser.parse_expr(string, state)
@@ -107,6 +112,6 @@ def get_statematrices(  B, C, D, inputm, count, order, regions, state, regexp, d
 def get_parameters_integration( initialcond, intg_end, stateorder ):
 	print "PWL Integration initialized...."
 	y0 = numpy.array( [ (float( initialcond[ str( i ) ]) )for i in stateorder ])
-	time  = numpy.linspace(0, intg_end, 10)
+	time  = numpy.linspace(0, intg_end, 100000)
 	return y0, time
 

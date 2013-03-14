@@ -1,43 +1,29 @@
 Circuit: * Z:\home\bhargava\ddp\SPICE\diffamp_Prasad.asc
 
-Model "cmosp": Oxide thickness thinner than recommended for a level 1 MOSFET.
-Instance "m15": Length shorter than recommended for a level 1 MOSFET.
-Instance "m15": Width narrower than recommended for a level 1 MOSFET.
-Instance "m14": Length shorter than recommended for a level 1 MOSFET.
-Instance "m14": Width narrower than recommended for a level 1 MOSFET.
-Instance "m10": Length shorter than recommended for a level 1 MOSFET.
-Instance "m8": Length shorter than recommended for a level 1 MOSFET.
-Instance "mc5": Length shorter than recommended for a level 1 MOSFET.
-Instance "mc2": Length shorter than recommended for a level 1 MOSFET.
-Instance "mc2": Width narrower than recommended for a level 1 MOSFET.
-Instance "m6": Length shorter than recommended for a level 1 MOSFET.
-Instance "m6": Width narrower than recommended for a level 1 MOSFET.
-Instance "mc1": Length shorter than recommended for a level 1 MOSFET.
-Instance "mc1": Width narrower than recommended for a level 1 MOSFET.
-Instance "m5": Length shorter than recommended for a level 1 MOSFET.
-Instance "m5": Width narrower than recommended for a level 1 MOSFET.
-Instance "m2": Length shorter than recommended for a level 1 MOSFET.
-Instance "m0": Length shorter than recommended for a level 1 MOSFET.
-Instance "m1": Length shorter than recommended for a level 1 MOSFET.
-Model "cmosn": Oxide thickness thinner than recommended for a level 1 MOSFET.
-Instance "m13": Length shorter than recommended for a level 1 MOSFET.
-Instance "m13": Width narrower than recommended for a level 1 MOSFET.
-Instance "m12": Length shorter than recommended for a level 1 MOSFET.
-Instance "m12": Width narrower than recommended for a level 1 MOSFET.
-Instance "m11": Length shorter than recommended for a level 1 MOSFET.
-Instance "m11": Width narrower than recommended for a level 1 MOSFET.
-Instance "m9": Length shorter than recommended for a level 1 MOSFET.
-Instance "m9": Width narrower than recommended for a level 1 MOSFET.
-Instance "m7": Length shorter than recommended for a level 1 MOSFET.
-Instance "m7": Width narrower than recommended for a level 1 MOSFET.
-Instance "mc4": Length shorter than recommended for a level 1 MOSFET.
-Instance "mc4": Width narrower than recommended for a level 1 MOSFET.
-Instance "mc3": Length shorter than recommended for a level 1 MOSFET.
-Instance "mc3": Width narrower than recommended for a level 1 MOSFET.
-Instance "m4": Length shorter than recommended for a level 1 MOSFET.
-Instance "m4": Width narrower than recommended for a level 1 MOSFET.
-Instance "m3": Length shorter than recommended for a level 1 MOSFET.
-Instance "m3": Width narrower than recommended for a level 1 MOSFET.
+Ignoring BSIM parameter XL
+Ignoring BSIM parameter XW
+Ignoring BSIM parameter XL
+Ignoring BSIM parameter XW
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
 Direct Newton iteration failed to find .op point.  (Use ".option noopiter" to skip.)
 Starting Gmin stepping
 Gmin = 10
@@ -59,21 +45,21 @@ Gmin = 0
 Gmin stepping succeeded in finding the operating point.
 
 
-Date: Mon Feb 18 18:41:47 2013
-Total elapsed time: 1.074 seconds.
+Date: Wed Feb 27 14:50:04 2013
+Total elapsed time: 1.234 seconds.
 
 tnom = 27
 temp = 27
 method = modified trap
-totiter = 2884
-traniter = 2449
-tranpoints = 1145
-accept = 1108
-rejected = 37
+totiter = 3074
+traniter = 2640
+tranpoints = 1180
+accept = 1133
+rejected = 47
 matrix size = 27
 fillins = 30
 solver = Normal
-Matrix Compiler1: 4.27 KB object code size  4.9/3.1/[2.1]
-Matrix Compiler2: 3.21 KB object code size  2.4/3.2/[2.3]
+Matrix Compiler1: 4.27 KB object code size  4.4/3.2/[2.3]
+Matrix Compiler2: 3.21 KB object code size  2.6/3.3/[2.5]
 
 
