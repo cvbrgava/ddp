@@ -20,6 +20,7 @@ file_current = './Data/inverter_sat_current.txt'
 file_netlist = './Data/inverter_sat.net'
 input_list = ['inp']
 output_list = ['outp']
+constant_dict = { 'vdd':5 , '0':0 }
 denominator = 3
 intg_end = 2e-6
 
@@ -76,9 +77,9 @@ def get_input_signals( t ):
 	''' Returns:
 	The values of all the inputs at any given time instant'''
 	if t <= 1e-6:
-		return 1+4e6*t
+		return [ 1+4e6*t ]
 	else :
-		return 5
+		return [ 5 ]
 
 		
 
@@ -88,4 +89,3 @@ def get_stateorder(state):
 	stateorder=sympy.Matrix([(state['outp'])])
 	#stateorder=sympy.Matrix([(state['n001']),(state['n002']),(state['n005']),(state['cfmb2']),(state['vom']),(state['vop']),(state['n009']),(state['n007']),(state['cmfb1']),(state['out1neg']),(state['out1pos']),(state['ig9']),(state['ig7'])])
 	return stateorder
-
