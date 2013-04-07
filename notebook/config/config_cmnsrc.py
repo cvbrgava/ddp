@@ -24,6 +24,12 @@ denominator = 3
 intg_end = 2e-6
 
 #--------------------------------------------------------------------------------------------
+# Check-list before running the program : 
+#	1. All the details pertaining to the SPICE file
+#	2. All the constant voltages in the SPICE simulation
+#	3. State equations for the current circuit
+#	4. State order for the current state space
+#	5. Inputs specific to the current scenario ( in sync with the input list mentioned above )	
 
 
 def get_nonlinear_matrix(state,regions,Vth):

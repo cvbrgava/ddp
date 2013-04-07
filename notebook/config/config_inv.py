@@ -13,17 +13,24 @@ print "Working on",cirname
 # These parameters are the bridge between the project and SPICE.
 #-------------------------------------------------------------------------------------------- 
 order = 1
-sim_begin = 1e-6
-sim_end = 9.999999999999999e-006
+sim_begin = 0.000000000000000e+000
+sim_end = 1.000000000000000e-006
 file_voltage = './Data/inverter_voltage.txt'
 file_current = './Data/inverter_current.txt'
 file_netlist = './Data/inverter.net'
 input_list = ['inp']
 output_list = ['outp']
-denominator = 2
-intg_end = 1e-6
+denominator = 5
+constant_dict = {'vdd':5.000000e+000, '0': 0}
+intg_end = 1.000000000000000e-006
 
 #--------------------------------------------------------------------------------------------
+# Check-list before running the program : 
+#	1. All the details pertaining to the SPICE file
+#	2. All the constant voltages in the SPICE simulation
+#	3. State equations for the current circuit
+#	4. State order for the current state space
+#	5. Inputs specific to the current scenario ( in sync with the input list mentioned above )	
 
 
 def get_nonlinear_matrix(state,regions,Vth):
@@ -75,8 +82,10 @@ def get_nonlinear_matrix(state,regions,Vth):
 def get_input_signals( t ):
 	''' Returns:
 	The values of all the inputs at any given time instant'''
-
-	return [1.3,0.5]
+	if t <= 1e-6:
+		return [0.5 + 4e6*t]
+	else :
+		return [4.5]
 		
 
 def get_stateorder(state):

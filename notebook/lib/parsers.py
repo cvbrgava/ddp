@@ -1,5 +1,7 @@
 import re
+import sympy
 from currenteqs import region
+from config import input_list, constant_dict 
 # There are two parsers used in the project. These parsers use regular expressions for sequence matching followed by manipulation.
 # 1. Net-list parser :
 # 	Used to find where transistors are connected in the circuit. This information can be used to find the regions of operations. Which wil be used while substituting 
@@ -65,4 +67,22 @@ def parse_nonlinear(string, regexp):
 			B_row[ i ] = float((temp.group(1)).replace(" ",""))
 			string = string.replace((temp.group()),"")
 	return B_row, string
+
+
+def parse_within( linpt, eqs, order, state, datapoints ) :
+	''' This function extracts the input terms from the Matrices. This makes sure there are no redundant calculations during the Integration '''
+	for Order in range( order ):
+		polyDict = sympy.collect( eqs[ Order ], [ state[ z ] for z in input_list] ,evaluate = False)
+		
+		sub1 = {state[ k ]: (float(datapoints[ linpt ][ k ])) if str( state[ k ] ) not in constant_dict.keys() else constant_dict[ str( k ) ] for k in state}
+	       	
+		polyDict = {k:polyDict[ k ].evalf( subs = sub1 ) for k in polyDict.keys()} 
+
+    		temp = 0
+    		for k in polyDict.keys():
+        		temp +=  k*polyDict[ k ] 
+		eqs[ Order ] = temp
+    	
+	return eqs
+
 

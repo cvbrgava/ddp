@@ -13,17 +13,23 @@ print "Working on",cirname
 # These parameters are the bridge between the project and SPICE.
 #-------------------------------------------------------------------------------------------- 
 order = 13
-sim_begin = 2e-6
-sim_end = 5.000000000000000e-005
+sim_begin = 1.00e-6
+sim_end = 3.000000000000000e-006
 file_voltage = './Data/voltage_diffamp.txt'
-file_current = './Data/currents.txt'
+file_current = './Data/current_diffamp.txt'
 file_netlist = './Data/diffamp.net'
 input_list = ['innegative','inpositive'] 
-output_list = ['out1pos','out1neg']
-denominator = 4
+output_list = ['vom','vop']
+constant_dict = {'umirror':1.231913581796868e+000,'vdd':1.8,'0':0,'vbias':9.000000000000000e-001,'n008':6.300000000000000e-001}
+denominator = 10
 intg_end = 2e-7
 #--------------------------------------------------------------------------------------------
-
+# Check-list before running the program : 
+#	1. All the details pertaining to the SPICE file
+#	2. All the constant voltages in the SPICE simulation
+#	3. State equations for the current circuit
+#	4. State order for the current state space
+#	5. Inputs specific to the current scenario ( in sync with the input list mentioned above )	
 
 def get_nonlinear_matrix(state,regions,Vth):
 	''' 
@@ -45,8 +51,8 @@ def get_nonlinear_matrix(state,regions,Vth):
 	Cpara_vd12=1e-15
 	Cpara_vd11=1e-15
 	Cpara_vcmfb2=1e-15
-	Cpara_vom=1e-15
-	Cpara_vop=1e-15
+	Cpara_vom=1e-15 + 5e-12
+	Cpara_vop=1e-15 + 5e-12
 	Cpara_vdc3=1e-15
 	Cpara_vdc5=1e-15
 	Cpara_vcmfb1=1e-15
@@ -67,24 +73,24 @@ def get_nonlinear_matrix(state,regions,Vth):
 	# To access any current through a transistor use I[ 'name of transistor' ], we assume this current is the DRAIN current
 	#-----------------------------------------------------------------------------------------------------
 	
-#    IIII = ( ( I[ 'm15' ] - I[ 'm13' ] ) / Cpara_vcmfb2 ) - ( ( I[ 'm10' ] - I[ 'm9' ] ) / Cpara_vom )
-#    II = ( ( I [ 'm15' ] - I[ 'm13' ] ) / Cpara_vcmfb2 ) - ( ( I[ 'm8' ] - I[ 'm7' ] ) / Cpara_vop ) 
-#    cur=sympy.Matrix( ( ( IIII ) , ( II ) ) )
-#    cap=sympy.Matrix( ( ( ( 1/1e-12 + 1/Cpara_vcmfb2 + 1/Cpara_vom ) , ( 1/Cpara_vcmfb2 ) ) , ( 1/Cpara_vcmfb2 , 1/1e-12 + 1/Cpara_vcmfb2 + 1/Cpara_vop ) ) )
-	[IC10,IC9]=[0,0]#cap.inv()*cur
+	IIII = ( ( I[ 'm15' ] - I[ 'm13' ] ) / Cpara_vcmfb2 ) - ( ( I[ 'm10' ] - I[ 'm9' ] - state[ 'ig9' ] - (state[ 'vom' ] / 5000 )) / (Cpara_vom)  ) # < ig9 > ic10 V Im10 V Im9
+	II = ( ( I [ 'm15' ] - I[ 'm13' ] ) / Cpara_vcmfb2 ) - ( ( I[ 'm8' ] - I[ 'm7' ] - state[ 'ig7' ] - ( state[ 'vop' ] / 5000 )) / ( Cpara_vop ) ) # > ig7  < ic9  V Im9 V Im7
+	cur=sympy.Matrix( ( ( IIII ) , ( II ) ) )
+	cap=sympy.Matrix( ( ( ( 1/1e-12 + 1/Cpara_vcmfb2 + 1/Cpara_vom ) , ( 1/Cpara_vcmfb2 ) ) , ( 1/Cpara_vcmfb2 , 1/1e-12 + 1/Cpara_vcmfb2 + 1/Cpara_vop ) ) )
+	[IC10,IC9]=cap.inv()*cur
 	
-#    III = ( ( I['mc2'] - I[ 'mc4' ] ) / Cpara_vcmfb1 ) - ( ( state['ig9'] + I[ 'm4' ] - I[ 'm2' ] ) / Cpara_vd2 ) 
-#    IV = ( ( I[ 'mc2' ] - I[ 'mc4' ] ) / Cpara_vcmfb1 ) - ( ( state[ 'ig7' ] + I[ 'm3' ] - I[ 'm1' ] ) / Cpara_vd1 )
-#    cap=sympy.Matrix( ( ( 1/7e-12 + 1/Cpara_vd2 + 1/Cpara_vcmfb1 , 1/Cpara_vcmfb1 ) , (Cpara_vcmfb1 ,1/7e-12 + 1/Cpara_vd1 + 1/Cpara_vcmfb1 ) ) )
-#    cur=sympy.Matrix( ( ( III ) , ( IV ) ) )
-	[IC4,IC2]=[0,0]#cap.inv()*cur
+	III = ( ( I['mc2'] - I[ 'mc4' ] ) / Cpara_vcmfb1 ) - ( ( state['ig9'] - I[ 'm4' ] + I[ 'm2' ] ) / Cpara_vd2 ) 
+	IV = ( ( I[ 'mc2' ] - I[ 'mc4' ] ) / Cpara_vcmfb1 ) - ( ( state[ 'ig7' ] - I[ 'm3' ] + I[ 'm1' ] ) / Cpara_vd1 )
+	cap=sympy.Matrix( ( ( 1/1e-12 + 1/Cpara_vd2 + 1/Cpara_vcmfb1 , 1/Cpara_vcmfb1 ) , (1/Cpara_vcmfb1 ,1/1e-12 + 1/Cpara_vd1 + 1/Cpara_vcmfb1 ) ) )
+	cur=sympy.Matrix( ( ( III ) , ( IV ) ) )
+	[IC4,IC2]=cap.inv()*cur
 	
 	vd0dot=( - I[ 'm1' ] - I[ 'm2' ] + I[ 'm0' ] ) / Cpara_vdo   #V Im0 V Im1 VIm2 chkd
 	vd12dot=( -I[ 'm12' ] + I[ 'm14' ] ) / Cpara_vd12  #V Im14 V im12 chkd
 	vd11dot=( I[ 'm12' ] + I[ 'm13' ] - I[ 'm11' ] ) / Cpara_vd11    #V Im12 V Im13 V Im11 chkd
 	vcmfb2dot=( I[ 'm15' ] - I[ 'm13' ] - IC10 - IC9 ) / Cpara_vcmfb2  # V Im15 <IC9 >IC10 V Im13
-	vomdot=( I[ 'm10' ] + IC10 - I[ 'm9' ] - state[ 'ig9' ] ) / Cpara_vom   # > IC10 V Im10 V Im9  < ig9 chkd
-	vopdot=( I[ 'm8' ] + IC9 - I[ 'm7' ] - state[ 'ig7' ] ) / Cpara_vop          # < IC9 V Im8 V Im7  > ig7 chkd
+	vomdot=( I[ 'm10' ] + IC10 - I[ 'm9' ] - state[ 'ig9' ] - ( state[ 'vom' ] / 5000 ) ) / ( Cpara_vom  )   # > IC10 V Im10 V Im9  < ig9 chkd
+	vopdot=( I[ 'm8' ] + IC9 - I[ 'm7' ] - state[ 'ig7' ] - ( state[ 'vop' ] / 5000 )  ) / ( Cpara_vop )         # < IC9 V Im8 V Im7  > ig7 chkd
 	vdc3dot=( I[ 'mc1' ] + I[ 'm6' ] - I[ 'mc3' ] ) / Cpara_vdc3                 # V Imc1  V Im6 V Imc3 
 	vdc5dot = ( - I[ 'mc1' ] - I[ 'm6' ] - I[ 'mc2' ] + I[ 'mc5' ] ) / Cpara_vdc5   # V Imc5 V Imc1 V Im6 V Imc2
 	vcmfb1dot = ( I[ 'mc2' ] - I[ 'mc4' ] - IC2 - IC4 ) / Cpara_vcmfb1 #V Imc2 < IC2 >IC4 V Imc4
@@ -107,8 +113,10 @@ def get_nonlinear_matrix(state,regions,Vth):
 def get_input_signals( t ):
 	''' Returns:
 	The values of all the inputs at any given time instant'''
-
-	return [1.3,0.5]
+	if t <= 1e-6:
+		return [ 8.910891089108911e-001 - 0.4e6*t , 8.910891089108911e-001 + 0.4e6*t ]
+	else :
+		return [ 4.910891089109736e-001 , 1.291089108910879e+000 ] 
 		
 
 def get_stateorder(state):
@@ -117,4 +125,5 @@ def get_stateorder(state):
 	
 	stateorder=sympy.Matrix([(state['n001']),(state['n002']),(state['n005']),(state['cfmb2']),(state['vom']),(state['vop']),(state['n009']),(state['n007']),(state['cmfb1']),(state['out1neg']),(state['out1pos']),(state['ig9']),(state['ig7'])])
 	return stateorder
+
 

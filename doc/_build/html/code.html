@@ -27,7 +27,8 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="shortcut icon" href="_static/logo.ico"/>
     <link rel="top" title="Trajectory based Order Reduction 1.0 documentation" href="index.html" />
-    <link rel="prev" title="Introduction to PWLMOR" href="introduction.html" /> 
+    <link rel="next" title="Common Source Amplifier" href="Commonsource.html" />
+    <link rel="prev" title="Motivation for Order Reduction" href="introduction.html" /> 
   </head>
   <body>
     <div class="related">
@@ -40,7 +41,10 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="introduction.html" title="Introduction to PWLMOR"
+          <a href="Commonsource.html" title="Common Source Amplifier"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="introduction.html" title="Motivation for Order Reduction"
              accesskey="P">previous</a> |</li>
         <li><a href="index.html">TPWL-MOR 1.0</a> &raquo;</li> 
       </ul>
@@ -58,7 +62,7 @@
 <p>This module contains all the functions dealing with integration generation of the state space matrices</p>
 <span class="target" id="module-numericals"></span><dl class="function">
 <dt id="numericals.get_statematrices">
-<tt class="descclassname">numericals.</tt><tt class="descname">get_statematrices</tt><big>(</big><em>linPJac</em>, <em>B</em>, <em>C</em>, <em>D</em>, <em>linPVal</em>, <em>inputm</em>, <em>count</em>, <em>order</em>, <em>regions</em>, <em>state</em>, <em>regexp</em>, <em>datapoints</em>, <em>stateorder</em>, <em>inputorder</em>, <em>Vth</em><big>)</big><a class="reference internal" href="_modules/numericals.html#get_statematrices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#numericals.get_statematrices" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">numericals.</tt><tt class="descname">get_statematrices</tt><big>(</big><em>B</em>, <em>C</em>, <em>D</em>, <em>inputm</em>, <em>count</em>, <em>order</em>, <em>regions</em>, <em>state</em>, <em>regexp</em>, <em>datapoints</em>, <em>stateorder</em>, <em>inputorder</em>, <em>Vth</em><big>)</big><a class="reference internal" href="_modules/numericals.html#get_statematrices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#numericals.get_statematrices" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialze all the state space matrices needed.
 Input :</p>
 <blockquote>
@@ -78,7 +82,7 @@ linPVal = Value of the system at some linearization point</dd>
 
 <dl class="function">
 <dt id="numericals.init_statematrices">
-<tt class="descclassname">numericals.</tt><tt class="descname">init_statematrices</tt><big>(</big><em>count</em>, <em>order</em>, <em>input_list</em>, <em>output_list</em>, <em>stateorder</em><big>)</big><a class="reference internal" href="_modules/numericals.html#init_statematrices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#numericals.init_statematrices" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">numericals.</tt><tt class="descname">init_statematrices</tt><big>(</big><em>count</em>, <em>order</em>, <em>input_list</em>, <em>output_list</em>, <em>stateorder</em>, <em>state</em><big>)</big><a class="reference internal" href="_modules/numericals.html#init_statematrices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#numericals.init_statematrices" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialze all the state space matrices needed.
 Input :</p>
 <p>count = number of linearization points
@@ -189,7 +193,7 @@ Dictionary with state variable as key and value at the time instant as value</p>
 
 <dl class="function">
 <dt id="getparameters.get_initialcond">
-<tt class="descclassname">getparameters.</tt><tt class="descname">get_initialcond</tt><big>(</big><em>filename</em><big>)</big><a class="reference internal" href="_modules/getparameters.html#get_initialcond"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#getparameters.get_initialcond" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">getparameters.</tt><tt class="descname">get_initialcond</tt><big>(</big><em>filename</em>, <em>sim_begin</em><big>)</big><a class="reference internal" href="_modules/getparameters.html#get_initialcond"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#getparameters.get_initialcond" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns:
 The initial condition given the absolute path to wave form files</p>
 </dd></dl>
@@ -211,7 +215,7 @@ inp[1]**2
 
 <dl class="function">
 <dt id="getparameters.get_linPoints">
-<tt class="descclassname">getparameters.</tt><tt class="descname">get_linPoints</tt><big>(</big><em>filename</em>, <em>initialcond</em>, <em>delta</em>, <em>order</em>, <em>stateorder</em><big>)</big><a class="reference internal" href="_modules/getparameters.html#get_linPoints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#getparameters.get_linPoints" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">getparameters.</tt><tt class="descname">get_linPoints</tt><big>(</big><em>filename</em>, <em>initialcond</em>, <em>delta</em>, <em>order</em>, <em>stateorder</em>, <em>sim_begin</em><big>)</big><a class="reference internal" href="_modules/getparameters.html#get_linPoints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#getparameters.get_linPoints" title="Permalink to this definition">¶</a></dt>
 <dd><p>Choice of the points of linearization is done as follows
 if <a href="#id1"><span class="problematic" id="id2">|xnew - xi|</span></a>/<a href="#id3"><span class="problematic" id="id4">|xi|</span></a> &lt; delta :</p>
 <blockquote>
@@ -239,7 +243,7 @@ numpy compatible array for the relavent state space values at linearization poin
 
 <dl class="function">
 <dt id="getparameters.get_states">
-<tt class="descclassname">getparameters.</tt><tt class="descname">get_states</tt><big>(</big><em>filename</em><big>)</big><a class="reference internal" href="_modules/getparameters.html#get_states"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#getparameters.get_states" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">getparameters.</tt><tt class="descname">get_states</tt><big>(</big><em>filename</em>, <em>sim_begin</em><big>)</big><a class="reference internal" href="_modules/getparameters.html#get_states"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#getparameters.get_states" title="Permalink to this definition">¶</a></dt>
 <dd><p>Given absolute path to the waveform files provides states needed for the system</p>
 </dd></dl>
 
@@ -335,7 +339,10 @@ returns:</p>
 
   <h4>Previous topic</h4>
   <p class="topless"><a href="introduction.html"
-                        title="previous chapter">Introduction to PWLMOR</a></p>
+                        title="previous chapter">Motivation for Order Reduction</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Commonsource.html"
+                        title="next chapter">Common Source Amplifier</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/code.txt"
@@ -368,7 +375,10 @@ returns:</p>
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="introduction.html" title="Introduction to PWLMOR"
+          <a href="Commonsource.html" title="Common Source Amplifier"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="introduction.html" title="Motivation for Order Reduction"
              >previous</a> |</li>
         <li><a href="index.html">TPWL-MOR 1.0</a> &raquo;</li> 
       </ul>

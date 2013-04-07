@@ -81,7 +81,8 @@ def get_statematrices(  B, C, D, inputm, count, order, regions, state, regexp, d
 		eqs = get_nonlinear_matrix(state,regions[linpt],Vth)
 		#Matrix[ linpt ].linPVal = eqs
 		for i in range(order):
-			B[linpt][i], string = parse_nonlinear( str( eqs[ i ] ), regexp) 
+			B[linpt][i], string = parse_nonlinear( str( eqs[ i ] ), regexp)
+			
 			eqs[i]=sympy.parsing.sympy_parser.parse_expr(string, state)
 		
 		#sub1={state[i]:abs(float(datapoints[linpt][i])) for i in state}
@@ -93,7 +94,7 @@ def get_statematrices(  B, C, D, inputm, count, order, regions, state, regexp, d
 	
 		#linPVal[ linpt ] = Sym2NumArray( eqs.evalf(subs = sub1) ) 
         	Matrix[ linpt ].linPVal = eqs
-
+		
 		jack = eqs.jacobian( stateorder )
 		#linPJac[ linpt ] =  jack.evalf( subs = sub1 )  )        
 		Matrix[ linpt ].linPJac =  jack
@@ -104,13 +105,17 @@ def get_statematrices(  B, C, D, inputm, count, order, regions, state, regexp, d
 	
 		#diff=(linPVal[linpt]-numpy.dot(linPJac[linpt],linP[linpt]))
 		#offset[linpt]=proj*diff
+		Matrix[ linpt ].linPVal = parse_within ( linpt  , Matrix[ linpt ].linPVal , order, state , datapoints )
+
+	    	for i in range( order ):
+        		(Matrix[ linpt ].linPJac)[ i,:] = parse_within ( linpt  ,( Matrix[ linpt ].linPJac)[ i,: ] , order, state , datapoints )
 	pbar.finish()
 	return Matrix, B, C, D
 
 # The following functions are used for integration of the PWL model
 
 def get_parameters_integration( initialcond, intg_end, stateorder ):
-	print "PWL Integration initialized...."
+	#print "PWL Integration initialized...."
 	y0 = numpy.array( [ (float( initialcond[ str( i ) ]) )for i in stateorder ])
 	time  = numpy.linspace(0, intg_end, 100000)
 	return y0, time

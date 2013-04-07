@@ -3,7 +3,25 @@ import sympy
 import numpy
 import prettytable
 import re
+import fileinput
 from currenteqs import region
+
+def get_newdata_heading( filename ) :
+	for line in fileinput.input(filename,inplace =1 ):
+		if fileinput.isfirstline():
+			print ( get_newhead(line))[:-1]
+		else :
+			print ( line )[:-1]
+	fileinput.close()
+
+def get_newhead( line ):
+	check = re.compile(r'(V\().*(\))')
+	
+	if re.search( check , line ):
+	        temp = re.search( check, line )
+		line = line.replace(temp.group(1),"")
+        	line = line.replace(temp.group(2),"")
+	return line
 
 def import_text(filename, separator):
     ''' Import data from wave-form files exported from LTSPICE.
