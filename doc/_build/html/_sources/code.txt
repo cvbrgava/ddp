@@ -35,3 +35,20 @@ This module can be used to parse netlist and equations.
 .. automodule:: parsers
    :members:
 
+MOR by Kalman Decomposition and TBR module 
+--------------------------------------------
+
+This module was developed mainly to provide a platform for Kalman Decomposition and Truncated Balanced Reduction. In the process of which the functions developed here span a wide range of control system analysis procedures.
+
+.. automodule:: kalman_tbr
+   :members:
+
+
+MOR by Moment Matching module
+-----------------------------
+
+This module contains all the functions to be used for MOR by Moment matching
+
+.. automodule:: arnoldi
+   :members:
+

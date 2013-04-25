@@ -313,6 +313,153 @@ returns:</p>
 </dl>
 </dd></dl>
 
+<dl class="function">
+<dt id="parsers.parse_within">
+<tt class="descclassname">parsers.</tt><tt class="descname">parse_within</tt><big>(</big><em>linpt</em>, <em>eqs</em>, <em>order</em>, <em>state</em>, <em>datapoints</em><big>)</big><a class="headerlink" href="#parsers.parse_within" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function extracts the input terms from the Matrices. This makes sure there are no redundant calculations during the Integration</p>
+</dd></dl>
+
+</div>
+<div class="section" id="mor-by-kalman-decomposition-and-tbr-module">
+<h2>MOR by Kalman Decomposition and TBR module<a class="headerlink" href="#mor-by-kalman-decomposition-and-tbr-module" title="Permalink to this headline">¶</a></h2>
+<p>This module was developed mainly to provide a platform for Kalman Decomposition and Truncated Balanced Reduction. In the process of which the functions developed here span a wide range of control system analysis procedures.</p>
+<span class="target" id="module-kalman_tbr"></span><dl class="function">
+<dt id="kalman_tbr.BasisTrans">
+<tt class="descclassname">kalman_tbr.</tt><tt class="descname">BasisTrans</tt><big>(</big><em>A</em>, <em>B</em>, <em>C</em>, <em>Basis</em><big>)</big><a class="reference internal" href="_modules/kalman_tbr.html#BasisTrans"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kalman_tbr.BasisTrans" title="Permalink to this definition">¶</a></dt>
+<dd><p>Produces the state space after a similarity transformation</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="kalman_tbr.ContSpace">
+<tt class="descclassname">kalman_tbr.</tt><tt class="descname">ContSpace</tt><big>(</big><em>A</em>, <em>B</em>, <em>C</em>, <em>conv=True</em><big>)</big><a class="reference internal" href="_modules/kalman_tbr.html#ContSpace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kalman_tbr.ContSpace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Does a basis transformation into the space where Controllable and Uncontrollable states are orthogonal</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="kalman_tbr.KBasisContObs">
+<tt class="descclassname">kalman_tbr.</tt><tt class="descname">KBasisContObs</tt><big>(</big><em>check_A</em>, <em>check_B</em>, <em>check_C</em><big>)</big><a class="reference internal" href="_modules/kalman_tbr.html#KBasisContObs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kalman_tbr.KBasisContObs" title="Permalink to this definition">¶</a></dt>
+<dd><p>This produces the Kalman Basis needed for a kalman decomposition of the system, which is used for a minimal realization of the state space Using a different algorithm than the one previously mentioned. This algorithm checks for controllability and then moves over to observability</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="kalman_tbr.KalmanBasis">
+<tt class="descclassname">kalman_tbr.</tt><tt class="descname">KalmanBasis</tt><big>(</big><em>check_A</em>, <em>check_B</em>, <em>check_C</em><big>)</big><a class="reference internal" href="_modules/kalman_tbr.html#KalmanBasis"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kalman_tbr.KalmanBasis" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function also produces Kalman basis but the generation of basis is slightly abmiguous, use KalmanBasisNew for the latest methods for basis generation</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="kalman_tbr.KalmanBasisNew">
+<tt class="descclassname">kalman_tbr.</tt><tt class="descname">KalmanBasisNew</tt><big>(</big><em>check_A</em>, <em>check_B</em>, <em>check_C</em><big>)</big><a class="reference internal" href="_modules/kalman_tbr.html#KalmanBasisNew"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kalman_tbr.KalmanBasisNew" title="Permalink to this definition">¶</a></dt>
+<dd><p>This produces the Kalman Basis needed for a kalman decomposition of the system, which is used for a minimal realization of the state space
++&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;+&#8212;&#8212;&#8212;&#8212;&#8212;+&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;-+&#8212;&#8212;&#8212;&#8211;+&#8212;&#8212;&#8212;&#8212;&#8211;+
+|      Conditions     |       T1      |         T2        |     T3    |      T4      |
++&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;+&#8212;&#8212;&#8212;&#8212;&#8212;+&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;-+&#8212;&#8212;&#8212;&#8211;+&#8212;&#8212;&#8212;&#8212;&#8211;+
+|        R, !N        |     R( C )    |         *         |  ~R( C )  |      *       |
+|  ( R N ) full rank  |     R( C )    |         *         |     *     |    N( O )    |
+|   ( R N ) low rank  |     R( C )    |         *         |  ~( R N ) |    N( O )    |
+|       Kalman        |  R( C ) - T2  | R( C ) int N( O ) |  ~( R N ) | N( O ) - T2  |
++&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;+&#8212;&#8212;&#8212;&#8212;&#8212;+&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;-+&#8212;&#8212;&#8212;&#8211;+&#8212;&#8212;&#8212;&#8212;&#8211;+</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="kalman_tbr.ObsSpace">
+<tt class="descclassname">kalman_tbr.</tt><tt class="descname">ObsSpace</tt><big>(</big><em>A</em>, <em>B</em>, <em>C</em>, <em>conv=True</em><big>)</big><a class="reference internal" href="_modules/kalman_tbr.html#ObsSpace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kalman_tbr.ObsSpace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Does a basis transformation into the space where Observable and Unobservable states are orthogonal</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="kalman_tbr.columnProj">
+<tt class="descclassname">kalman_tbr.</tt><tt class="descname">columnProj</tt><big>(</big><em>column</em>, <em>vect</em>, <em>ret</em><big>)</big><a class="reference internal" href="_modules/kalman_tbr.html#columnProj"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kalman_tbr.columnProj" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates the column-space projection of the vector onto the space spanned by columns of column.
+ret = 1 : returns the coefficients of the projection
+ret = 0 : returns the projection in standard basis</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="kalman_tbr.columspace">
+<tt class="descclassname">kalman_tbr.</tt><tt class="descname">columspace</tt><big>(</big><em>mat</em><big>)</big><a class="reference internal" href="_modules/kalman_tbr.html#columspace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kalman_tbr.columspace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates the Unitary basis vectors which span the column space of the given matrix</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="kalman_tbr.controlability">
+<tt class="descclassname">kalman_tbr.</tt><tt class="descname">controlability</tt><big>(</big><em>B</em>, <em>A</em><big>)</big><a class="reference internal" href="_modules/kalman_tbr.html#controlability"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kalman_tbr.controlability" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the controllability matrix and also checks its rank
+returns 
+False : if rank deficient
+True : if full rank</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="kalman_tbr.intersection">
+<tt class="descclassname">kalman_tbr.</tt><tt class="descname">intersection</tt><big>(</big><em>space1</em>, <em>space2</em><big>)</big><a class="reference internal" href="_modules/kalman_tbr.html#intersection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kalman_tbr.intersection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds the basis for the intersection of two spaces</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="kalman_tbr.minReal">
+<tt class="descclassname">kalman_tbr.</tt><tt class="descname">minReal</tt><big>(</big><em>check_A</em>, <em>check_B</em>, <em>check_C</em>, <em>method='k'</em><big>)</big><a class="reference internal" href="_modules/kalman_tbr.html#minReal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kalman_tbr.minReal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Produces the minimal realization of the state space using Kalman decomposition procedure
+Returns only the space which is both controllable and observable</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="kalman_tbr.nullspace">
+<tt class="descclassname">kalman_tbr.</tt><tt class="descname">nullspace</tt><big>(</big><em>mat</em><big>)</big><a class="reference internal" href="_modules/kalman_tbr.html#nullspace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kalman_tbr.nullspace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates the Unitary basis for the null-space of the given matrix</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="kalman_tbr.observability">
+<tt class="descclassname">kalman_tbr.</tt><tt class="descname">observability</tt><big>(</big><em>C</em>, <em>A</em><big>)</big><a class="reference internal" href="_modules/kalman_tbr.html#observability"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kalman_tbr.observability" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks for the observability of the system. 
+Returns:
+Observability matrix 
+True : if full rank
+False : if rank deficient</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="kalman_tbr.removeBasis">
+<tt class="descclassname">kalman_tbr.</tt><tt class="descname">removeBasis</tt><big>(</big><em>space</em>, <em>basis</em><big>)</big><a class="reference internal" href="_modules/kalman_tbr.html#removeBasis"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kalman_tbr.removeBasis" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes the mentioned basis and provides the remaining basis from the subspace.
+returns basis which is unitary in the remaining space</p>
+</dd></dl>
+
+</div>
+<div class="section" id="mor-by-moment-matching-module">
+<h2>MOR by Moment Matching module<a class="headerlink" href="#mor-by-moment-matching-module" title="Permalink to this headline">¶</a></h2>
+<p>This module contains all the functions to be used for MOR by Moment matching</p>
+<span class="target" id="module-arnoldi"></span><dl class="function">
+<dt id="arnoldi.LD2HD">
+<tt class="descclassname">arnoldi.</tt><tt class="descname">LD2HD</tt><big>(</big><em>t</em>, <em>y</em><big>)</big><a class="reference internal" href="_modules/arnoldi.html#LD2HD"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arnoldi.LD2HD" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used to convert from Lower dimension to Higher dimension</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="arnoldi.check_stability_MOR">
+<tt class="descclassname">arnoldi.</tt><tt class="descname">check_stability_MOR</tt><big>(</big><em>moments</em>, <em>count</em>, <em>state</em><big>)</big><a class="reference internal" href="_modules/arnoldi.html#check_stability_MOR"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arnoldi.check_stability_MOR" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks the stability of the Jacobians created after reduction with a certain number of moments matched</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="arnoldi.dervPWLMOR">
+<tt class="descclassname">arnoldi.</tt><tt class="descname">dervPWLMOR</tt><big>(</big><em>yNew</em>, <em>t</em><big>)</big><a class="reference internal" href="_modules/arnoldi.html#dervPWLMOR"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arnoldi.dervPWLMOR" title="Permalink to this definition">¶</a></dt>
+<dd><p>Produces reduced order derivative at any point in time</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="arnoldi.get_redBasis">
+<tt class="descclassname">arnoldi.</tt><tt class="descname">get_redBasis</tt><big>(</big><em>t</em>, <em>moment</em>, <em>order</em>, <em>redOrder</em><big>)</big><a class="reference internal" href="_modules/arnoldi.html#get_redBasis"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arnoldi.get_redBasis" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns basis after Moment Matching</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="arnoldi.y0MOR">
+<tt class="descclassname">arnoldi.</tt><tt class="descname">y0MOR</tt><big>(</big><em>y</em>, <em>t</em><big>)</big><a class="reference internal" href="_modules/arnoldi.html#y0MOR"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arnoldi.y0MOR" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates the lower dimension initial conditions</p>
+</dd></dl>
+
 </div>
 </div>
 
@@ -333,6 +480,8 @@ returns:</p>
 <li><a class="reference internal" href="#config-module">config module</a></li>
 <li><a class="reference internal" href="#getparameters-module">getparameters module</a></li>
 <li><a class="reference internal" href="#parsers-module">Parsers module</a></li>
+<li><a class="reference internal" href="#mor-by-kalman-decomposition-and-tbr-module">MOR by Kalman Decomposition and TBR module</a></li>
+<li><a class="reference internal" href="#mor-by-moment-matching-module">MOR by Moment Matching module</a></li>
 </ul>
 </li>
 </ul>

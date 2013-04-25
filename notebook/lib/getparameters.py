@@ -24,21 +24,21 @@ def get_newhead( line ):
 	return line
 
 def import_text(filename, separator):
-    ''' Import data from wave-form files exported from LTSPICE.
+	''' Import data from wave-form files exported from LTSPICE.
 	Generates a python dictionary for each row it reads with the column-name as the key.
 	Usage:
 		import_text(<absolute_path>,'\t') use this for tab separated columns '''
 	
-    reader= csv.DictReader(open(filename), delimiter=separator, skipinitialspace=True)
-    for line in reader:
-        if line:
-            yield line
+	reader= csv.DictReader(open(filename), delimiter=separator, skipinitialspace=True)
+	for line in reader:
+		if line:
+			yield line
 
 def get_steadystate(filename,initialcond,stateorder,final_time,order):
-    ''' Provides the steady-state value for the given waveforms.
-	
+	''' Provides the steady-state value for the given waveforms.
+
 	current version however just takes the final-time ( obtained by visual inspection ) and provides the values at that time instant. 
-	
+
 	Intended use of the function is this
 
 	if |x0 - xnew |/|x0| < error :
@@ -46,17 +46,17 @@ def get_steadystate(filename,initialcond,stateorder,final_time,order):
 	if count >= some number :
 		return x0 
 	'''
-	
-    print "Getting steady state ...."
-    pre=[float(initialcond[str(stateorder[k])]) for k in range(order)]
-    count=0
-    for data in import_text(filename,'\t'):
-        curt=[float(data[str(stateorder[k])]) for k in range(order)]
-        diff=numpy.linalg.norm(numpy.array(pre)-numpy.array(curt))
-        pre=curt
-        if(float(data['time'])== final_time):
-            return curt
-       
+
+	print "Getting steady state ...."
+	pre=[float(initialcond[str(stateorder[k])]) for k in range(order)]
+	count=0
+	for data in import_text(filename,'\t'):
+		curt=[float(data[str(stateorder[k])]) for k in range(order)]
+		diff=numpy.linalg.norm(numpy.array(pre)-numpy.array(curt))
+		pre=curt
+		if(float(data['time'])== final_time):
+			return curt
+
      
 def get_states(filename,sim_begin):
 	''' Given absolute path to the waveform files provides states needed for the system '''
@@ -79,12 +79,12 @@ def get_initialcond(filename, sim_begin):
 			return initial	
 
 def get_linpdiff(initial,steady,stateorder,order):
-    ''' Provides the norm of the difference between the steady state and initial condition in state space 
+	''' Provides the norm of the difference between the steady state and initial condition in state space 
 	
 		Returns |x(initial) - x(steadystate)| = delta '''
-    init=[float(initial[str(stateorder[k])]) for k in range(order) ]
+	init=[float(initial[str(stateorder[k])]) for k in range(order) ]
 
-    return numpy.linalg.norm(numpy.array(init)-steady)/numpy.linalg.norm(init)
+	return numpy.linalg.norm(numpy.array(init)-steady)/numpy.linalg.norm(init)
 
 def get_linPoints(filename,initialcond,delta,order,stateorder,sim_begin):
 	'''Choice of the points of linearization is done as follows
@@ -122,17 +122,17 @@ def Sym2NumArray(F):
 	return B
 
 def get_datapoints( file_voltage, count, time):
-    ''' Get snapshot of the system at required time instants 
-    Returns :
-        Dictionary with state variable as key and value at the time instant as value'''
-    datapoints=[{} for i in range(count)]
-    for data in import_text(file_voltage,'\t'):
-        for i in range(count):
-            if(float(data['time'])==time[i]):
-                datapoints[i]=data
-	for i in range(count):
-		datapoints[ i ]['0'] = 0
-    return datapoints
+	''' Get snapshot of the system at required time instants 
+	Returns :
+	Dictionary with state variable as key and value at the time instant as value'''
+	datapoints=[{} for i in range(count)]
+	for data in import_text(file_voltage,'\t'):
+		for i in range(count):
+			if(float(data['time'])==time[i]):
+				datapoints[i]=data
+		for i in range(count):
+			datapoints[ i ]['0'] = 0
+	return datapoints
 
 def get_currents( file_current, count ,time):
 	''' Get snapshots of the currents through vairous transistors in the system.

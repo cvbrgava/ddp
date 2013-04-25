@@ -21,7 +21,7 @@ file_netlist = './Data/diffamp.net'
 input_list = ['innegative','inpositive'] 
 output_list = ['vom','vop']
 constant_dict = {'umirror':1.231913581796868e+000,'vdd':1.8,'0':0,'vbias':9.000000000000000e-001,'n008':6.300000000000000e-001}
-denominator = 10
+denominator = 100
 intg_end = 2e-7
 #--------------------------------------------------------------------------------------------
 # Check-list before running the program : 
@@ -127,3 +127,12 @@ def get_stateorder(state):
 	return stateorder
 
 
+
+	
+
+
+		
+
+
+
+  

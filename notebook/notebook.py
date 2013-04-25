@@ -195,7 +195,7 @@ def check_stability_MOR(count, state):
 		if stab == 'Stable' and red_order < order:
 			break
 		
-	print moments," moments matched:"
+
 	if stab == 'Stable' and red_order < order:
 		print x
 		print "Reducing order to", redOrder ,"with ",moments," moments matched"
@@ -298,6 +298,8 @@ plt.show()
 
 
 #----------------------------------------------------------------------------------
+
+
 
 
 
