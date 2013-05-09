@@ -102,9 +102,15 @@ def get_linPoints(filename,initialcond,delta,order,stateorder,sim_begin):
 	for i in import_text(filename,'\t'):
 		cur = numpy.array( [ float(i[ str( stateorder[k] ) ] ) for k in range(order) ] )
 		diff = abs( numpy.linalg.norm(pre-cur) / numpy.linalg.norm(pre) )
-		if(diff >= delta):
+#		if(diff >= delta):
+#			pre = cur
+#			count = count+1
+#			table.add_row( [count, diff, i['time'] ] )
+#			time.append( float(i['time']) )
+		if float( i[ 'time' ] ) >= sim_begin:		
 			pre = cur
 			count = count+1
+			#if not count % 2 :
 			table.add_row( [count, diff, i['time'] ] )
 			time.append( float(i['time']) )
 	print "The Linearization points chosen if |xnew - xi|/|xi| > ", delta	

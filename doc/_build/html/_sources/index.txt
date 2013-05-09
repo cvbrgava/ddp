@@ -3,7 +3,7 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to Trajectory based Order Reduction's documentation!
+Trajectory based Order Reduction's documentation
 ============================================================
 Trajectory based Piecewise Linearization followed by Model Order Reduction, is a Dual Degree Project in the `Electrical Engineering Department <http://www.ee.iitm.ac.in>`_, `IIT Madras <http://www.iitm.ac.in>`_. This site intends to document the progress of the project and provide frame-work necessary to continue the work.
 

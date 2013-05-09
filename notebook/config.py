@@ -20,7 +20,7 @@ file_current = './Data/4inpNAND_current.txt'
 file_netlist = './Data/4inpNAND.net'
 input_list = ['ainp']
 output_list = ['n001']
-denominator = 5
+denominator = 4
 constant_dict = {'vdd':5 , '0' :0}
 intg_end = 2e-6
 
@@ -88,9 +88,9 @@ def get_input_signals( t ):
 	''' Returns:
 	The values of all the inputs at any given time instant'''
 	if t <= 1e-6:
-		return [ 1 + 4e6*t ]
+		return [ 5 - 4e6*t ]
 	if t > 1e-6:
-		return [ 5 ]
+		return [ 1 ]
 
 		
 

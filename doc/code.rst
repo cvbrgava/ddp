@@ -1,4 +1,4 @@
-Auto generated documentation
+Module-wise documentation
 =============================
 numericals module
 -----------------
@@ -50,5 +50,14 @@ MOR by Moment Matching module
 This module contains all the functions to be used for MOR by Moment matching
 
 .. automodule:: arnoldi
+   :members:
+
+
+MOR by using Lyapunov stability based Left projection Matrix
+-----------------------------------------
+
+This module contains all the functions to be used for MOR by using Moment matching for Right projection matrix and Lyapunov stability criterion for left projection matrix.
+
+.. automodule:: stpwlmor
    :members:
 

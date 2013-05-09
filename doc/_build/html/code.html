@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Auto generated documentation &mdash; Trajectory based Order Reduction 1.0 documentation</title>
+    <title>Module-wise documentation &mdash; Trajectory based Order Reduction 1.0 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -55,8 +55,8 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="auto-generated-documentation">
-<h1>Auto generated documentation<a class="headerlink" href="#auto-generated-documentation" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="module-wise-documentation">
+<h1>Module-wise documentation<a class="headerlink" href="#module-wise-documentation" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="numericals-module">
 <h2>numericals module<a class="headerlink" href="#numericals-module" title="Permalink to this headline">¶</a></h2>
 <p>This module contains all the functions dealing with integration generation of the state space matrices</p>
@@ -461,6 +461,95 @@ returns basis which is unitary in the remaining space</p>
 </dd></dl>
 
 </div>
+<div class="section" id="mor-by-using-lyapunov-stability-based-left-projection-matrix">
+<h2>MOR by using Lyapunov stability based Left projection Matrix<a class="headerlink" href="#mor-by-using-lyapunov-stability-based-left-projection-matrix" title="Permalink to this headline">¶</a></h2>
+<p>This module contains all the functions to be used for MOR by using Moment matching for Right projection matrix and Lyapunov stability criterion for left projection matrix.</p>
+<span class="target" id="module-stpwlmor"></span><dl class="class">
+<dt id="stpwlmor.STPWLMOR">
+<em class="property">class </em><tt class="descclassname">stpwlmor.</tt><tt class="descname">STPWLMOR</tt><a class="reference internal" href="_modules/stpwlmor.html#STPWLMOR"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stpwlmor.STPWLMOR" title="Permalink to this definition">¶</a></dt>
+<dd><p>Contains all the information needed to carry out integration using STPWL-MOR algorithm on all Hurwitz system.</p>
+<dl class="method">
+<dt id="stpwlmor.STPWLMOR.check_stab">
+<tt class="descname">check_stab</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/stpwlmor.html#STPWLMOR.check_stab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stpwlmor.STPWLMOR.check_stab" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if the MOR of the system provides us with stable Jacobians</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="stpwlmor.STPWLMOR.derv">
+<tt class="descname">derv</tt><big>(</big><em>y</em>, <em>t</em><big>)</big><a class="reference internal" href="_modules/stpwlmor.html#STPWLMOR.derv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stpwlmor.STPWLMOR.derv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns derivative of the state space at a given time-instant</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="stpwlmor.STPWLMOR.get_Beta">
+<tt class="descname">get_Beta</tt><big>(</big><em>y</em>, <em>mu</em><big>)</big><a class="reference internal" href="_modules/stpwlmor.html#STPWLMOR.get_Beta"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stpwlmor.STPWLMOR.get_Beta" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the Beta function required to construct the weighting function</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="stpwlmor.STPWLMOR.get_STPWL_weights_Bound">
+<tt class="descname">get_STPWL_weights_Bound</tt><big>(</big><em>mu</em><big>)</big><a class="reference internal" href="_modules/stpwlmor.html#STPWLMOR.get_STPWL_weights_Bound"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stpwlmor.STPWLMOR.get_STPWL_weights_Bound" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the numerical bound on the Weighing functions</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="stpwlmor.STPWLMOR.weights">
+<tt class="descname">weights</tt><big>(</big><em>y</em>, <em>mu</em><big>)</big><a class="reference internal" href="_modules/stpwlmor.html#STPWLMOR.weights"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stpwlmor.STPWLMOR.weights" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns stabilizing weights for the STPWL</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="stpwlmor.check_stab">
+<tt class="descclassname">stpwlmor.</tt><tt class="descname">check_stab</tt><big>(</big><em>Matrix</em><big>)</big><a class="reference internal" href="_modules/stpwlmor.html#check_stab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stpwlmor.check_stab" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks the stability of the Piecewise jacobians</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="stpwlmor.get_MOR_Jac">
+<tt class="descclassname">stpwlmor.</tt><tt class="descname">get_MOR_Jac</tt><big>(</big><em>Matrix</em>, <em>B</em>, <em>linP</em>, <em>count</em><big>)</big><a class="reference internal" href="_modules/stpwlmor.html#get_MOR_Jac"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stpwlmor.get_MOR_Jac" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the order reduced Jacobian and new B</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="stpwlmor.get_U">
+<tt class="descclassname">stpwlmor.</tt><tt class="descname">get_U</tt><big>(</big><em>mu</em>, <em>U</em><big>)</big><a class="reference internal" href="_modules/stpwlmor.html#get_U"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stpwlmor.get_U" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns cummulative U from Piecewise U&#8217;s obtained</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="stpwlmor.get_U_linp">
+<tt class="descclassname">stpwlmor.</tt><tt class="descname">get_U_linp</tt><big>(</big><em>Matrix</em><big>)</big><a class="reference internal" href="_modules/stpwlmor.html#get_U_linp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stpwlmor.get_U_linp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Assumes stable system and returns a stable rowspace for MOR using lyapunov stability criterion. Builds lyapunov function using -I</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="stpwlmor.get_mu">
+<tt class="descclassname">stpwlmor.</tt><tt class="descname">get_mu</tt><big>(</big><em>y</em>, <em>U</em>, <em>V</em>, <em>linP</em>, <em>redOrder</em>, <em>count</em><big>)</big><a class="reference internal" href="_modules/stpwlmor.html#get_mu"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stpwlmor.get_mu" title="Permalink to this definition">¶</a></dt>
+<dd><p>Obliquely projects all the linearization points on the same subspace and calculated mu</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="stpwlmor.get_redBasis">
+<tt class="descclassname">stpwlmor.</tt><tt class="descname">get_redBasis</tt><big>(</big><em>moment</em>, <em>order</em>, <em>redOrder</em><big>)</big><a class="reference internal" href="_modules/stpwlmor.html#get_redBasis"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stpwlmor.get_redBasis" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns basis after Moment Matching</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="stpwlmor.get_y0_MOR">
+<tt class="descclassname">stpwlmor.</tt><tt class="descname">get_y0_MOR</tt><big>(</big><em>y</em><big>)</big><a class="reference internal" href="_modules/stpwlmor.html#get_y0_MOR"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stpwlmor.get_y0_MOR" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to get the initial condition in the required basis</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="stpwlmor.obliqueprojection">
+<tt class="descclassname">stpwlmor.</tt><tt class="descname">obliqueprojection</tt><big>(</big><em>rowspace</em>, <em>columnspace</em>, <em>points</em>, <em>fullD=False</em><big>)</big><a class="reference internal" href="_modules/stpwlmor.html#obliqueprojection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stpwlmor.obliqueprojection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the result of the oblique projection with a given rowspace and columnpsace of the projection. The input can be a single vector or a list of vectors. 
+The result is returned in lower dimension unless full dimension is asked for</p>
+</dd></dl>
+
+</div>
 </div>
 
 
@@ -474,7 +563,7 @@ returns basis which is unitary in the remaining space</p>
             </a></p>
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Auto generated documentation</a><ul>
+<li><a class="reference internal" href="#">Module-wise documentation</a><ul>
 <li><a class="reference internal" href="#numericals-module">numericals module</a></li>
 <li><a class="reference internal" href="#currenteqs-module">currenteqs module</a></li>
 <li><a class="reference internal" href="#config-module">config module</a></li>
@@ -482,6 +571,7 @@ returns basis which is unitary in the remaining space</p>
 <li><a class="reference internal" href="#parsers-module">Parsers module</a></li>
 <li><a class="reference internal" href="#mor-by-kalman-decomposition-and-tbr-module">MOR by Kalman Decomposition and TBR module</a></li>
 <li><a class="reference internal" href="#mor-by-moment-matching-module">MOR by Moment Matching module</a></li>
+<li><a class="reference internal" href="#mor-by-using-lyapunov-stability-based-left-projection-matrix">MOR by using Lyapunov stability based Left projection Matrix</a></li>
 </ul>
 </li>
 </ul>

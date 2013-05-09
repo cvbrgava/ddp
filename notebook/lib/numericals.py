@@ -16,6 +16,7 @@ class matrices( object ) :
 		self.name = name
 		self.linPJac = sympy.zeros( (order,order) )
 		self.linPVal = sympy.zeros( (order, 1) )
+		self.B = sympy.zeros ( (order , 3 * len( input_list ) ) )
 	
 	def call( self ):
 		print self.name
