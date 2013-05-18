@@ -1,0 +1,29 @@
+* Z:\home\bhargava\ddp\SPICE\XOR.asc
+M1 inter1 Ainp N001 N001 CMOSN l=0.36u w=0.72u
+M2 N001 Binp 0 0 CMOSN l=0.36u w=0.72u
+M3 inter1 Ainp Vdd Vdd CMOSP l=0.36u w=0.36u
+M4 inter1 Binp Vdd Vdd CMOSP l=0.36u w=0.36u
+M5 Ainter1 inter1 N002 N002 CMOSN l=0.36u w=0.72u
+M6 N002 Ainp 0 0 CMOSN l=0.36u w=0.72u
+M7 Ainter1 inter1 Vdd Vdd CMOSP l=0.36u w=0.36u
+M8 Ainter1 Ainp Vdd Vdd CMOSP l=0.36u w=0.36u
+M9 Binter1 inter1 N003 N003 CMOSN l=0.36u w=0.72u
+M10 N003 Binp 0 0 CMOSN l=0.36u w=0.72u
+M11 Binter1 inter1 Vdd Vdd CMOSP l=0.36u w=0.36u
+M12 Binter1 Binp Vdd Vdd CMOSP l=0.36u w=0.36u
+M13 xorout Ainter1 N004 N004 CMOSN l=0.36u w=0.72u
+M14 N004 Binter1 0 0 CMOSN l=0.36u w=0.72u
+M15 xorout Ainter1 Vdd Vdd CMOSP l=0.36u w=0.36u
+M16 xorout Binter1 Vdd Vdd CMOSP l=0.36u w=0.36u
+V1 Vdd 0 5
+V2 Ainp 0 PULSE(0 5 0 1us)
+V3 Binp 0 5
+.model NMOS NMOS
+.model PMOS PMOS
+.lib C:\Program Files\LTC\LTspiceIV\lib\cmp\standard.mos
+.tran 0 2us 0
+.include level1MOS.lib
+.option numdgt=10
+.backanno
+.end
+

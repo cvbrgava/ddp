@@ -1,0 +1,143 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso8859_1" />
+    
+    <title>Common Source Amplifier</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="top" title="Trajectory based Order Reduction 1.0 documentation" href="index.html" />
+    <link rel="prev" title="Auto generated documentation" href="code.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="code.html" title="Auto generated documentation"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">TPWL-MOR 1.0</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+          <div class="body">
+            
+  <div class="section" id="common-source-amplifier">
+<h1>Common Source Amplifier</h1>
+<p>A common source is a very simple system with 2 state variables and hence, a 2D phase space. The results obtained from this system will be easy to visualize in such a state space.</p>
+<div class="figure align-center">
+<img alt="_images/commonsource.png" src="_images/commonsource.png" style="width: 300px; height: 300px;" />
+<p class="caption"><strong>Common Source Amplifier</strong></p>
+</div>
+<p>The state space equations for this system are as follows.</p>
+<blockquote>
+<div><p><math xmlns="http://www.w3.org/1998/Math/MathML">
+<mrow><mover>
+<mrow><mi>v</mi></mrow><mo>&#729;</mo></mover></mrow>
+<mtd><mo>=</mo><mfenced open="(" close=")">
+<mrow><mfenced open="(" close=")">
+<mrow><mfrac>
+<mrow><msub><mi>V</mi>
+<mrow><mi>d</mi><mi>d</mi></mrow></msub><mo>-</mo><mi>v</mi></mrow>
+<mrow><msub><mi>R</mi>
+<mrow><mn>3</mn></mrow></msub></mrow></mfrac></mrow></mfenced><mo>-</mo><msub><mi>I</mi>
+<mrow><mi>d</mi></mrow></msub><mfenced open="(" close=")">
+<mrow><mi>M</mi><mn>1</mn></mrow></mfenced><mo>-</mo><msub><mi>I</mi>
+<mrow><mi>C</mi></mrow></msub></mrow></mfenced><mo>*</mo><mfrac>
+<mrow><mn>1</mn></mrow>
+<mrow><msub><mi>C</mi>
+<mrow><mi>p</mi><mi>a</mi><mi>r</mi><mi>a</mi></mrow></msub></mrow></mfrac></mtd></math></p>
+<p><math xmlns="http://www.w3.org/1998/Math/MathML">
+<mrow><mover>
+<mrow><msub><mi>I</mi>
+<mrow><mi>C</mi></mrow></msub></mrow><mo>&#729;</mo></mover></mrow>
+<mtd><mo>=</mo><mfenced open="(" close=")">
+<mrow><mfrac>
+<mrow><mfenced open="(" close=")">
+<mrow><mfenced open="(" close=")">
+<mrow><mfrac>
+<mrow><msub><mi>V</mi>
+<mrow><mi>d</mi><mi>d</mi></mrow></msub><mo>-</mo><mi>v</mi></mrow>
+<mrow><msub><mi>R</mi>
+<mrow><mn>3</mn></mrow></msub></mrow></mfrac></mrow></mfenced><mo>-</mo><msub><mi>I</mi>
+<mrow><mi>d</mi></mrow></msub><mfenced open="(" close=")">
+<mrow><mi>M</mi><mn>1</mn></mrow></mfenced><mo>-</mo><msub><mi>I</mi>
+<mrow><mi>C</mi></mrow></msub></mrow></mfenced><mo>*</mo><mfrac>
+<mrow><mn>1</mn></mrow>
+<mrow><msub><mi>C</mi>
+<mrow><mi>p</mi><mi>a</mi><mi>r</mi><mi>a</mi></mrow></msub></mrow></mfrac><mo>-</mo><msub><mi>I</mi>
+<mrow><mi>c</mi></mrow></msub></mrow>
+<mrow><msub><mi>R</mi>
+<mrow><mn>4</mn></mrow></msub></mrow></mfrac></mrow></mfenced></mtd></math></p>
+</div></blockquote>
+<p>For implementing current equations, we used <strong>level1 MOS</strong> equations which can be found in <a class="reference internal" href="#resources">Resources</a></p>
+<div class="section" id="non-linear-integration-with-time-based-boundaries">
+<h2>Non-Linear Integration with time-based boundaries</h2>
+<p>Before running the TPWL, non-linear integration was checked for correctness. Time based boundaries were used to make transistions between models. The following graph was obtained, it is compared here with the corresponding LTSPICE model.</p>
+<div class="figure align-center">
+<img alt="_images/cmnsrc_nonl_intg.png" src="_images/cmnsrc_nonl_intg.png" style="width: 300px; height: 300px;" />
+</div>
+</div>
+<div class="section" id="non-linear-integration-with-state-based-boundaries">
+<h2>Non-Linear Integration with state-based boundaries</h2>
+<p>Non-linear models with transistions made using proximity to points where the models are built. The following are the results obtained.</p>
+<div class="figure align-center">
+<img alt="_images/cmnsrc_nonl_intg_state_bound.png" src="_images/cmnsrc_nonl_intg_state_bound.png" style="width: 300px; height: 300px;" />
+</div>
+</div>
+<div class="section" id="tpwl-integration">
+<h2>TPWL Integration</h2>
+<p>Piece-wise linearization and integration gives the following results.</p>
+<div class="figure align-center">
+<img alt="_images/cmnsrccurrent.png" src="_images/cmnsrccurrent.png" style="width: 300px; height: 300px;" />
+</div>
+</div>
+<div class="section" id="resources">
+<h2>Resources</h2>
+<blockquote>
+<div><p><tt class="xref download docutils literal"><span class="pre">common</span> <span class="pre">source</span> <span class="pre">config</span> <span class="pre">file</span></tt></p>
+<p><a class="reference download internal" href="_downloads/level1MOS.lib"><tt class="xref download docutils literal"><span class="pre">level1</span> <span class="pre">MOS</span> <span class="pre">library</span></tt></a></p>
+</div></blockquote>
+</div>
+</div>
+
+
+          </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="code.html" title="Auto generated documentation"
+             >previous</a> |</li>
+        <li><a href="index.html">TPWL-MOR 1.0</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Bhargava Chintalapati.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

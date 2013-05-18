@@ -1,0 +1,129 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso8859_1" />
+    
+    <title>parsers</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="top" title="Trajectory based Order Reduction 1.0 documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">TPWL-MOR 1.0</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+          <div class="body">
+            
+  <h1>Source code for parsers</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">currenteqs</span> <span class="kn">import</span> <span class="n">region</span>
+<span class="c"># There are two parsers used in the project. These parsers use regular expressions for sequence matching followed by manipulation.</span>
+<span class="c"># 1. Net-list parser :</span>
+<span class="c"># 	Used to find where transistors are connected in the circuit. This information can be used to find the regions of operations. Which wil be used while substituting </span>
+<span class="c">#	appropriate current equations in the state space matrix</span>
+<span class="c"># 2. Equation parser :</span>
+<span class="c"># 	Used to parse through the state space equations and separate the non-linear input terms in it. These terms are then stored in a different matrix ( input matrix B )</span>
+
+
+
+
+<div class="viewcode-block" id="get_region_operation"><a class="viewcode-back" href="../code.html#parsers.get_region_operation">[docs]</a><span class="k">def</span> <span class="nf">get_region_operation</span><span class="p">(</span> <span class="n">datapoints</span><span class="p">,</span> <span class="n">file_netlist</span><span class="p">,</span> <span class="n">count</span><span class="p">):</span>
+	<span class="sd">&#39;&#39;&#39; Parses through the netlist and finds transistors in the circuit</span>
+
+<span class="sd">	Calculates the regions of operations of these transistors at linearization points</span>
+
+<span class="sd">	Returns:</span>
+
+<span class="sd">	list of dictionary with each transistor as key and it&#39;s region of operation as value&#39;&#39;&#39;</span>
+	<span class="k">print</span> <span class="s">&quot;Parsing netlist....&quot;</span>
+	<span class="n">regions</span> <span class="o">=</span> <span class="p">[</span> <span class="p">{}</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">count</span><span class="p">)</span> <span class="p">]</span>	
+	<span class="n">nl</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_netlist</span><span class="p">)</span>
+	<span class="n">x</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">&#39;M(?#comment)&#39;</span><span class="p">)</span>
+	<span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">count</span><span class="p">):</span>
+		<span class="n">a</span> <span class="o">=</span> <span class="mi">0</span>
+		<span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+			<span class="n">i</span> <span class="o">=</span> <span class="n">nl</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>    
+			<span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">i</span><span class="p">):</span>
+				<span class="n">a</span> <span class="o">=</span> <span class="n">a</span><span class="o">+</span><span class="mi">1</span>
+				<span class="n">inf</span> <span class="o">=</span> <span class="n">i</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+				<span class="n">sma</span> <span class="o">=</span> <span class="p">[</span><span class="n">low</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">low</span> <span class="ow">in</span> <span class="n">i</span><span class="o">.</span><span class="n">split</span><span class="p">()]</span>
+				<span class="n">r</span> <span class="o">=</span> <span class="n">region</span><span class="p">(</span><span class="n">sma</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span><span class="nb">float</span><span class="p">(</span><span class="n">datapoints</span><span class="p">[</span><span class="n">point</span><span class="p">][</span><span class="n">sma</span><span class="p">[</span><span class="mi">1</span><span class="p">]]),</span><span class="nb">float</span><span class="p">(</span><span class="n">datapoints</span><span class="p">[</span><span class="n">point</span><span class="p">][</span><span class="n">sma</span><span class="p">[</span><span class="mi">2</span><span class="p">]]),</span><span class="nb">float</span><span class="p">(</span><span class="n">datapoints</span><span class="p">[</span><span class="n">point</span><span class="p">][</span><span class="n">sma</span><span class="p">[</span><span class="mi">3</span><span class="p">]]))</span>
+				<span class="n">regions</span><span class="p">[</span><span class="n">point</span><span class="p">][</span><span class="n">sma</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span><span class="p">,</span><span class="n">sma</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">sma</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="n">sma</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span><span class="n">sma</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span><span class="n">sma</span><span class="p">[</span><span class="mi">7</span><span class="p">],</span><span class="n">sma</span><span class="p">[</span><span class="mi">6</span><span class="p">]]</span>
+			<span class="k">if</span> <span class="ow">not</span> <span class="n">i</span><span class="p">:</span>           
+				<span class="n">nl</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+				<span class="k">break</span>
+	<span class="k">print</span> <span class="s">&quot;This circuit has&quot;</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="s">&quot;transistors&quot;</span>
+	<span class="k">return</span> <span class="n">regions</span>
+</div>
+<div class="viewcode-block" id="get_regexp_eqs"><a class="viewcode-back" href="../code.html#parsers.get_regexp_eqs">[docs]</a><span class="k">def</span> <span class="nf">get_regexp_eqs</span><span class="p">(</span> <span class="n">inp_list</span> <span class="p">):</span>
+	<span class="sd">&#39;&#39;&#39; For a given set of inputs of the system, returns a list of regular expression rules which can be used to identify and isolate non linear input terms </span>
+<span class="sd">	returns:	</span>
+<span class="sd">	</span>
+<span class="sd">	[input[0]**1,input[0]**2,input[0]**3,input[1].....,input[2]...] &#39;&#39;&#39;</span>
+	<span class="n">regexp</span> <span class="o">=</span> <span class="p">[]</span>
+	<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">inp_list</span> <span class="p">:</span>
+		<span class="n">regexp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">r&quot;([-+]?[ ]?\d+\.\d+).&quot;</span><span class="o">+</span><span class="n">i</span><span class="o">+</span><span class="s">&quot; &quot;</span><span class="p">))</span>
+		<span class="n">regexp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">r&quot;([-+]?[ ]?\d+\.\d+).&quot;</span><span class="o">+</span><span class="n">i</span><span class="o">+</span><span class="s">&quot;\*\*2 &quot;</span><span class="p">))</span>
+		<span class="n">regexp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">r&quot;([-+]?[ ]?\d+\.\d+).&quot;</span><span class="o">+</span><span class="n">i</span><span class="o">+</span><span class="s">&quot;\*\*3 &quot;</span><span class="p">))</span>
+	<span class="k">return</span> <span class="n">regexp</span>		
+</div>
+<div class="viewcode-block" id="parse_nonlinear"><a class="viewcode-back" href="../code.html#parsers.parse_nonlinear">[docs]</a><span class="k">def</span> <span class="nf">parse_nonlinear</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">regexp</span><span class="p">):</span>
+	<span class="sd">&#39;&#39;&#39; 1. Parses the non-linear equation 	</span>
+<span class="sd">		2. Searches for non-linear input terms</span>
+<span class="sd">		3. Isolates their coefficients</span>
+<span class="sd">	Returns :</span>
+<span class="sd">		The row of B matrix and the remainder of the equation. &#39;&#39;&#39;</span>
+	<span class="n">B_row</span> <span class="o">=</span> <span class="p">[</span> <span class="mi">0</span> <span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">regexp</span><span class="p">)</span>
+	<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="nb">len</span><span class="p">(</span> <span class="n">regexp</span> <span class="p">)</span> <span class="p">):</span>
+		<span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span> <span class="n">regexp</span><span class="p">[</span> <span class="n">i</span> <span class="p">],</span> <span class="n">string</span><span class="p">)</span> <span class="p">:</span>
+			<span class="n">temp</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span> <span class="n">regexp</span><span class="p">[</span> <span class="n">i</span> <span class="p">],</span> <span class="n">string</span><span class="p">)</span>
+<span class="c"># To check while debugging uncomment the next line to see which coefficient is being removed						</span>
+			<span class="c">#print temp.group(1)            </span>
+			<span class="n">B_row</span><span class="p">[</span> <span class="n">i</span> <span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">((</span><span class="n">temp</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot; &quot;</span><span class="p">,</span><span class="s">&quot;&quot;</span><span class="p">))</span>
+			<span class="n">string</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">replace</span><span class="p">((</span><span class="n">temp</span><span class="o">.</span><span class="n">group</span><span class="p">()),</span><span class="s">&quot;&quot;</span><span class="p">)</span>
+	<span class="k">return</span> <span class="n">B_row</span><span class="p">,</span> <span class="n">string</span>
+</pre></div></div>
+
+          </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">TPWL-MOR 1.0</a> &raquo;</li>
+          <li><a href="index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Bhargava Chintalapati.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

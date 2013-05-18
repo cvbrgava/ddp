@@ -1,0 +1,22 @@
+Circuit: * Z:\home\bhargava\ddp\SPICE\Draft5.asc
+
+Direct Newton iteration for .op point succeeded.
+
+Date: Thu Feb 28 14:30:19 2013
+Total elapsed time: 0.597 seconds.
+
+tnom = 27
+temp = 27
+method = modified trap
+totiter = 4855
+traniter = 4852
+tranpoints = 2170
+accept = 2124
+rejected = 46
+matrix size = 5
+fillins = 0
+solver = Normal
+Matrix Compiler1:       8 opcodes  1.4/[1.4]/3.9
+Matrix Compiler2: off  [1.4]/1.6/1.6
+
+

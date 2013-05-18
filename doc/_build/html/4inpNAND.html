@@ -1,0 +1,162 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>4 input NAND Gate &mdash; Trajectory based Order Reduction 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="shortcut icon" href="_static/logo.ico"/>
+    <link rel="top" title="Trajectory based Order Reduction 1.0 documentation" href="index.html" />
+    <link rel="prev" title="Differential Amplifier" href="DifferentialAmplifier.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="DifferentialAmplifier.html" title="Differential Amplifier"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">TPWL-MOR 1.0</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="input-nand-gate">
+<h1>4 input NAND Gate<a class="headerlink" href="#input-nand-gate" title="Permalink to this headline">¶</a></h1>
+<p>The 4 input NAND Gate is a 4 dimensional system, with a relatively redundate state space equations.</p>
+<p>The state space equations for this system are in the config file <a class="reference internal" href="#resources">Resources</a></p>
+<p>For implementing current equations, we used <strong>level1 MOS</strong> equations. The net list of the circuit is provide in <a class="reference internal" href="#resources">Resources</a> section</p>
+<p>The observed ouput of the sytem is provided here.</p>
+<div class="figure">
+<img alt="_images/4inpNAND.png" src="_images/4inpNAND.png" />
+</div>
+<div class="section" id="tpwl-integration">
+<h2>TPWL Integration<a class="headerlink" href="#tpwl-integration" title="Permalink to this headline">¶</a></h2>
+<p>Piece-wise linearization and integration gives the following results.</p>
+<div class="figure">
+<img alt="_images/4inpNANDModel3.png" src="_images/4inpNANDModel3.png" />
+</div>
+<p>The validity of the model is checked by giving input different from the test input used for generation of the linearization points. In the following plots, the solid line represents the SPICE output and the broken line represents the ouput from TPWL model.</p>
+<div class="figure">
+<img alt="_images/0_5urisen001.png" src="_images/0_5urisen001.png" />
+</div>
+<div class="figure">
+<img alt="_images/2urisen001.png" src="_images/2urisen001.png" />
+</div>
+</div>
+<div class="section" id="tpwl-mor-integration">
+<h2>TPWL-MOR Integration<a class="headerlink" href="#tpwl-mor-integration" title="Permalink to this headline">¶</a></h2>
+<p>Once the model TPWL model is verified, we go ahead with the MOR using the Moment matching method with orthogonal projection. The following is the response obtained with MOR of the system.</p>
+<p>The linearization for all the plots has been done using the step function with a 1us rise time. The response for the MOR model has been calculated with inputs of different rise time. The following compares 0.25 us rise time step response and 2 us rise time step response for MOR model.</p>
+<div class="figure">
+<img alt="_images/0_25urisen001_2_2.png" src="_images/0_25urisen001_2_2.png" />
+</div>
+<p>The validity of the MOR system is verified using an input considerably different from the reference input used to build the linearization points and hence the complete MOR system. Here the response of the MOR system built using a 1us rise time step input, with a sinusoidal input has shown.</p>
+<div class="figure">
+<img alt="_images/sin1000k_2_0n001_2_2.png" src="_images/sin1000k_2_0n001_2_2.png" />
+</div>
+</div>
+<div class="section" id="resources">
+<h2>Resources<a class="headerlink" href="#resources" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p><a class="reference download internal" href="_downloads/config_4inpNAND.py"><tt class="xref download docutils literal"><span class="pre">4</span> <span class="pre">input</span> <span class="pre">NAND</span> <span class="pre">gate</span> <span class="pre">config</span> <span class="pre">file</span></tt></a></p>
+<p><a class="reference download internal" href="_downloads/4inpNAND.net"><tt class="xref download docutils literal"><span class="pre">Net</span> <span class="pre">list</span></tt></a></p>
+</div></blockquote>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/logo.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">4 input NAND Gate</a><ul>
+<li><a class="reference internal" href="#tpwl-integration">TPWL Integration</a></li>
+<li><a class="reference internal" href="#tpwl-mor-integration">TPWL-MOR Integration</a></li>
+<li><a class="reference internal" href="#resources">Resources</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="DifferentialAmplifier.html"
+                        title="previous chapter">Differential Amplifier</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/4inpNAND.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="DifferentialAmplifier.html" title="Differential Amplifier"
+             >previous</a> |</li>
+        <li><a href="index.html">TPWL-MOR 1.0</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Bhargava Chintalapati.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

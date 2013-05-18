@@ -34,21 +34,25 @@ def LD2HD ( t, y ):
 
 	return numpy.dot( redBasis, y )
 
-def get_redBasis(  t , moment, order,redOrder):
+def get_redBasis(  MatrixNew , moment, order,redOrder, linP):
 	'''Returns basis after Moment Matching '''
 
 	spanAgg = numpy.concatenate( linP , 1 )
 
-	input_signals = get_input_signals( t ) 
+#	input_signals = get_input_signals( t ) 
 
-	sub1 = { state[ str( input_list[ k ] ) ] : input_signals[ k ] for k in range( len( input_list ) ) }
+#	sub1 = { state[ str( input_list[ k ] ) ] : input_signals[ k ] for k in range( len( input_list ) ) }
 
-	linPVal=[ Sym2NumArray( ( Matrix[ i ].linPVal ).evalf( subs = sub1 ) )  for i in range( count )]
+	linPVal=[ ( MatrixNew[ i ].linPVal )  for i in range( count )]
 
-	linPJac=[ Sym2NumArray( ( Matrix[ i ].linPJac ).evalf( subs = sub1 ) ) for i in range( count ) ]
+	linPJac=[ ( MatrixNew[ i ].linPJac ) for i in range( count ) ]
+	
+	linPB = [ ( MatrixNew[ i ].B ) for i in range( count ) ]
+
+	linPinpVal = [ ( MatrixNew[ i ].inpVal ) for i in range( count ) ] 
 
 	for linpt in range( count ):
-		spanV1 = [ numpy.dot( numpy.linalg.inv( linPJac[ linpt ] ),B[ linpt ]) ]
+		spanV1 = [ numpy.dot( numpy.linalg.inv( linPJac[ linpt ] ),linPB[ linpt ]) ]
         
 		for k in range( moment ):
 			spanV1.append( numpy.dot( numpy.linalg.inv( linPJac[ linpt ] ),spanV1[ -1 ]) )
@@ -56,7 +60,7 @@ def get_redBasis(  t , moment, order,redOrder):
 		spanV1 = numpy.concatenate( spanV1, 1 )
         
 
-		spanV2 = [ numpy.dot( numpy.linalg.inv( linPJac[ linpt ] ),linPVal[ linpt ] - (numpy.dot( linPJac[ linpt ], linP[ linpt ] )).reshape( order ,1 ) )]
+		spanV2 = [ numpy.dot( numpy.linalg.inv( linPJac[ linpt ] ),linPVal[ linpt ] - (numpy.dot( linPJac[ linpt ], linP[ linpt ] )).reshape( order ,1 ) - numpy.dot( linPB[ linpt ] , linPinpVal[ linpt ] ).reshape( order ,1 ) ) ]
 		for k in range( moment ):
 			spanV2.append( numpy.dot( numpy.linalg.inv( linPJac[ linpt ] ),spanV2[ -1 ]) )
 		spanV2 = numpy.concatenate( spanV2, 1 )	

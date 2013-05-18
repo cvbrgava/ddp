@@ -1,0 +1,221 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Common Source Amplifier &mdash; Trajectory based Order Reduction 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="shortcut icon" href="_static/logo.ico"/>
+    <link rel="top" title="Trajectory based Order Reduction 1.0 documentation" href="index.html" />
+    <link rel="next" title="Differential Amplifier" href="DifferentialAmplifier.html" />
+    <link rel="prev" title="Module-wise documentation" href="code.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="DifferentialAmplifier.html" title="Differential Amplifier"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="code.html" title="Module-wise documentation"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">TPWL-MOR 1.0</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="common-source-amplifier">
+<h1>Common Source Amplifier<a class="headerlink" href="#common-source-amplifier" title="Permalink to this headline">¶</a></h1>
+<p>A common source is a very simple system with 2 state variables and hence, a 2D phase space. The results obtained from this system will be easy to visualize in such a state space.</p>
+<div class="figure align-center">
+<img alt="_images/commonsource.png" src="_images/commonsource.png" style="width: 300px; height: 300px;" />
+<p class="caption"><strong>Common Source Amplifier</strong></p>
+</div>
+<p>The state space equations for this system are as follows.</p>
+<blockquote>
+<div><p><math xmlns="http://www.w3.org/1998/Math/MathML">
+<mrow><mover>
+<mrow><mi>v</mi></mrow><mo>˙</mo></mover></mrow>
+<mtd><mo>=</mo><mfenced open="(" close=")">
+<mrow><mfenced open="(" close=")">
+<mrow><mfrac>
+<mrow><msub><mi>V</mi>
+<mrow><mi>d</mi><mi>d</mi></mrow></msub><mo>-</mo><mi>v</mi></mrow>
+<mrow><msub><mi>R</mi>
+<mrow><mn>3</mn></mrow></msub></mrow></mfrac></mrow></mfenced><mo>-</mo><msub><mi>I</mi>
+<mrow><mi>d</mi></mrow></msub><mfenced open="(" close=")">
+<mrow><mi>M</mi><mn>1</mn></mrow></mfenced><mo>-</mo><msub><mi>I</mi>
+<mrow><mi>C</mi></mrow></msub></mrow></mfenced><mo>*</mo><mfrac>
+<mrow><mn>1</mn></mrow>
+<mrow><msub><mi>C</mi>
+<mrow><mi>p</mi><mi>a</mi><mi>r</mi><mi>a</mi></mrow></msub></mrow></mfrac></mtd></math></p>
+<p><math xmlns="http://www.w3.org/1998/Math/MathML">
+<mrow><mover>
+<mrow><msub><mi>I</mi>
+<mrow><mi>C</mi></mrow></msub></mrow><mo>˙</mo></mover></mrow>
+<mtd><mo>=</mo><mfenced open="(" close=")">
+<mrow><mfrac>
+<mrow><mfenced open="(" close=")">
+<mrow><mfenced open="(" close=")">
+<mrow><mfrac>
+<mrow><msub><mi>V</mi>
+<mrow><mi>d</mi><mi>d</mi></mrow></msub><mo>-</mo><mi>v</mi></mrow>
+<mrow><msub><mi>R</mi>
+<mrow><mn>3</mn></mrow></msub></mrow></mfrac></mrow></mfenced><mo>-</mo><msub><mi>I</mi>
+<mrow><mi>d</mi></mrow></msub><mfenced open="(" close=")">
+<mrow><mi>M</mi><mn>1</mn></mrow></mfenced><mo>-</mo><msub><mi>I</mi>
+<mrow><mi>C</mi></mrow></msub></mrow></mfenced><mo>*</mo><mfrac>
+<mrow><mn>1</mn></mrow>
+<mrow><msub><mi>C</mi>
+<mrow><mi>p</mi><mi>a</mi><mi>r</mi><mi>a</mi></mrow></msub></mrow></mfrac><mo>-</mo><msub><mi>I</mi>
+<mrow><mi>c</mi></mrow></msub></mrow>
+<mrow><msub><mi>R</mi>
+<mrow><mn>4</mn></mrow></msub></mrow></mfrac></mrow></mfenced></mtd></math></p>
+</div></blockquote>
+<p>For implementing current equations, we used <strong>level1 MOS</strong> equations which can be found in <a class="reference internal" href="#resources">Resources</a></p>
+<div class="section" id="non-linear-integration-with-state-based-boundaries">
+<h2>Non-Linear Integration with state-based boundaries<a class="headerlink" href="#non-linear-integration-with-state-based-boundaries" title="Permalink to this headline">¶</a></h2>
+<p>Non-linear models with transistions made using proximity to points where the models are built. The following are the results obtained.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This is the result from an older version of the program.</p>
+</div>
+<div class="figure">
+<img alt="_images/cmnsrc_nonl_intg_state_bound.png" src="_images/cmnsrc_nonl_intg_state_bound.png" />
+</div>
+</div>
+<div class="section" id="tpwl-integration">
+<h2>TPWL Integration<a class="headerlink" href="#tpwl-integration" title="Permalink to this headline">¶</a></h2>
+<p>Piece-wise linearization and integration gives the following results.</p>
+<div class="figure">
+<img alt="_images/cmnsrcModel3.png" src="_images/cmnsrcModel3.png" />
+</div>
+<p>The validity of the TPWL models is verified by the response to inputs other than the test input. For all the figures here, red dots represent the linearization points and the solid green line is the SPICE response, while the one in broken lines is the response from TPWL model. The linearization points are for the test input with 1 us rise time.</p>
+<p>The following is the response to a 2 us rise time input.</p>
+<div class="figure">
+<img alt="_images/2urisedrain.png" src="_images/2urisedrain.png" />
+</div>
+<p>The response to a 3 us rise time input.</p>
+<div class="figure">
+<img alt="_images/3urisedrain.png" src="_images/3urisedrain.png" />
+</div>
+<p>The response to a 0.25 us rise time input.</p>
+<div class="figure">
+<img alt="_images/0_25urisedrain.png" src="_images/0_25urisedrain.png" />
+</div>
+<p>The response to a sinusoidal input.</p>
+<div class="figure">
+<img alt="_images/sin1000kdrain.png" src="_images/sin1000kdrain.png" />
+</div>
+</div>
+<div class="section" id="resources">
+<h2>Resources<a class="headerlink" href="#resources" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p><a class="reference download internal" href="_downloads/config_cmnsrc.py"><tt class="xref download docutils literal"><span class="pre">common</span> <span class="pre">source</span> <span class="pre">config</span> <span class="pre">file</span></tt></a></p>
+<p><a class="reference download internal" href="_downloads/level1MOS.lib"><tt class="xref download docutils literal"><span class="pre">level1</span> <span class="pre">MOS</span> <span class="pre">library</span></tt></a></p>
+</div></blockquote>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/logo.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Common Source Amplifier</a><ul>
+<li><a class="reference internal" href="#non-linear-integration-with-state-based-boundaries">Non-Linear Integration with state-based boundaries</a></li>
+<li><a class="reference internal" href="#tpwl-integration">TPWL Integration</a></li>
+<li><a class="reference internal" href="#resources">Resources</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="code.html"
+                        title="previous chapter">Module-wise documentation</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="DifferentialAmplifier.html"
+                        title="next chapter">Differential Amplifier</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/Commonsource.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="DifferentialAmplifier.html" title="Differential Amplifier"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="code.html" title="Module-wise documentation"
+             >previous</a> |</li>
+        <li><a href="index.html">TPWL-MOR 1.0</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Bhargava Chintalapati.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,149 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso8859_1" />
+    
+    <title>numericals</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="top" title="Trajectory based Order Reduction 1.0 documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">TPWL-MOR 1.0</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+          <div class="body">
+            
+  <h1>Source code for numericals</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">import</span> <span class="nn">sympy</span>
+
+<span class="kn">from</span> <span class="nn">sympy.parsing.sympy_parser</span> <span class="kn">import</span> <span class="n">parse_expr</span>
+<span class="kn">from</span> <span class="nn">parsers</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">config</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">getparameters</span> <span class="kn">import</span> <span class="n">Sym2NumArray</span>
+
+<div class="viewcode-block" id="init_statematrices"><a class="viewcode-back" href="../code.html#numericals.init_statematrices">[docs]</a><span class="k">def</span> <span class="nf">init_statematrices</span><span class="p">(</span><span class="n">count</span><span class="p">,</span><span class="n">order</span><span class="p">,</span><span class="n">input_list</span><span class="p">,</span><span class="n">output_list</span><span class="p">,</span> <span class="n">stateorder</span><span class="p">):</span>
+	<span class="sd">&#39;&#39;&#39; Initialze all the state space matrices needed.</span>
+<span class="sd">	Input : </span>
+<span class="sd">	</span>
+<span class="sd">	count = number of linearization points</span>
+<span class="sd">	order = order of the system</span>
+<span class="sd">	input_list = list of the inputs to the system</span>
+<span class="sd">	ouput_list = list of the outputs of the system</span>
+<span class="sd">	stateorder = symbolic matrix with the state space ordering</span>
+<span class="sd">	Returns : </span>
+<span class="sd">	</span>
+<span class="sd">	linPJac = Jacobian of the system at some linearization point</span>
+<span class="sd">	B = input matrix</span>
+<span class="sd">	C = Output matrix</span>
+<span class="sd">	linPVal = Value of the system at some linearization point </span>
+<span class="sd">	inputm = value of the systems&#39;s input at some linearizaton point&#39;&#39;&#39;</span>
+	<span class="n">C</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span> <span class="p">(</span> <span class="nb">len</span><span class="p">(</span> <span class="n">output_list</span> <span class="p">),</span> <span class="n">order</span> <span class="p">)</span> <span class="p">)</span>
+	<span class="n">C_ones</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="nb">len</span><span class="p">(</span> <span class="n">stateorder</span> <span class="p">)</span> <span class="p">)</span> <span class="k">if</span> <span class="nb">str</span><span class="p">(</span> <span class="n">stateorder</span><span class="p">[</span> <span class="n">i</span> <span class="p">]</span> <span class="p">)</span> <span class="ow">in</span> <span class="n">output_list</span> <span class="p">]</span>
+	<span class="k">for</span> <span class="n">i</span> <span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span> <span class="nb">range</span><span class="p">(</span> <span class="nb">len</span><span class="p">(</span> <span class="n">output_list</span> <span class="p">)</span> <span class="p">)</span> <span class="p">,</span> <span class="n">C_ones</span><span class="p">)</span> <span class="p">:</span>
+		<span class="n">C</span><span class="p">[</span> <span class="n">i</span> <span class="p">,</span> <span class="n">j</span> <span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+	<span class="n">D</span> <span class="o">=</span> <span class="p">[</span> <span class="mi">0</span> <span class="p">]</span>
+	<span class="c">#offset=numpy.ones((count,len(input_list)*3,1))</span>
+	<span class="c">#diff=numpy.ones((order,1))</span>
+	<span class="c">#proj=numpy.zeros((order,order))</span>
+	<span class="n">linPJac</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span> <span class="p">(</span> <span class="n">count</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">order</span><span class="p">)</span> <span class="p">)</span>
+	<span class="n">linPVal</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span> <span class="p">(</span> <span class="n">count</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="p">)</span>
+	<span class="n">B</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span> <span class="p">(</span><span class="n">count</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="mi">3</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span> <span class="n">input_list</span> <span class="p">)</span> <span class="p">)</span> <span class="p">)</span>
+	<span class="n">inputm</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span> <span class="p">(</span><span class="n">count</span><span class="p">,</span> <span class="mi">3</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">input_list</span><span class="p">),</span><span class="mi">1</span> <span class="p">)</span> <span class="p">)</span>
+	<span class="k">return</span> <span class="n">linPJac</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">linPVal</span><span class="p">,</span> <span class="n">inputm</span>
+
+</div>
+<div class="viewcode-block" id="get_statematrices"><a class="viewcode-back" href="../code.html#numericals.get_statematrices">[docs]</a><span class="k">def</span> <span class="nf">get_statematrices</span><span class="p">(</span> <span class="n">linPJac</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">linPVal</span><span class="p">,</span> <span class="n">inputm</span><span class="p">,</span> <span class="n">count</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">regions</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">regexp</span><span class="p">,</span> <span class="n">datapoints</span><span class="p">,</span> <span class="n">stateorder</span><span class="p">,</span> <span class="n">inputorder</span><span class="p">,</span> <span class="n">Vth</span><span class="p">):</span> 
+	<span class="sd">&#39;&#39;&#39; Initialze all the state space matrices needed.</span>
+<span class="sd">	Input : </span>
+<span class="sd">		count = number of linearization points</span>
+<span class="sd">		order = order of the system</span>
+<span class="sd">		regions = list of all the regions of operation of the transistor</span>
+<span class="sd">		datapoints = snapshots of the sytem at various linearization points</span>
+<span class="sd">		stateorder = symbolic matrix with the state space order to be followed</span>
+<span class="sd">	Returns : </span>
+<span class="sd">		linPJac = Jacobian of the system at some linearization point</span>
+<span class="sd">		B = input matrix</span>
+<span class="sd">		C = Output matrix</span>
+<span class="sd">		linPVal = Value of the system at some linearization point &#39;&#39;&#39;</span>
+	<span class="k">for</span> <span class="n">linpt</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">count</span><span class="p">):</span>
+		<span class="k">print</span> <span class="s">&quot;Building matrices for point&quot;</span><span class="p">,</span><span class="n">linpt</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="s">&quot;....&quot;</span>
+		<span class="n">eqs</span> <span class="o">=</span> <span class="n">get_nonlinear_matrix</span><span class="p">(</span><span class="n">state</span><span class="p">,</span><span class="n">regions</span><span class="p">[</span><span class="n">linpt</span><span class="p">],</span><span class="n">Vth</span><span class="p">)</span>
+		
+		<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">order</span><span class="p">):</span>
+			<span class="n">B</span><span class="p">[</span><span class="n">linpt</span><span class="p">][</span><span class="n">i</span><span class="p">],</span> <span class="n">string</span> <span class="o">=</span> <span class="n">parse_nonlinear</span><span class="p">(</span> <span class="nb">str</span><span class="p">(</span> <span class="n">eqs</span><span class="p">[</span> <span class="n">i</span> <span class="p">]</span> <span class="p">),</span> <span class="n">regexp</span><span class="p">)</span> 
+			<span class="n">eqs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="n">sympy</span><span class="o">.</span><span class="n">parsing</span><span class="o">.</span><span class="n">sympy_parser</span><span class="o">.</span><span class="n">parse_expr</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">state</span><span class="p">)</span>
+		
+		<span class="n">sub1</span><span class="o">=</span><span class="p">{</span><span class="n">state</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span><span class="nb">abs</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">datapoints</span><span class="p">[</span><span class="n">linpt</span><span class="p">][</span><span class="n">i</span><span class="p">]))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">state</span><span class="p">}</span>
+		
+	    
+		<span class="c"># dx/dt = Jacobian * ( state ) + B * ( input ) + ( Val @ state - Jacobian * linPoint )</span>
+	
+	   
+	
+		<span class="n">linPVal</span><span class="p">[</span> <span class="n">linpt</span> <span class="p">]</span> <span class="o">=</span> <span class="n">Sym2NumArray</span><span class="p">(</span> <span class="n">eqs</span><span class="o">.</span><span class="n">evalf</span><span class="p">(</span><span class="n">subs</span> <span class="o">=</span> <span class="n">sub1</span><span class="p">)</span> <span class="p">)</span> 
+        
+		<span class="n">jack</span> <span class="o">=</span> <span class="n">eqs</span><span class="o">.</span><span class="n">jacobian</span><span class="p">(</span> <span class="n">stateorder</span> <span class="p">)</span>
+		<span class="n">linPJac</span><span class="p">[</span> <span class="n">linpt</span> <span class="p">]</span> <span class="o">=</span> <span class="n">Sym2NumArray</span><span class="p">(</span> <span class="n">jack</span><span class="o">.</span><span class="n">evalf</span><span class="p">(</span> <span class="n">subs</span> <span class="o">=</span> <span class="n">sub1</span> <span class="p">)</span>  <span class="p">)</span>        
+
+		<span class="n">inputm</span><span class="p">[</span> <span class="n">linpt</span> <span class="p">]</span> <span class="o">=</span> <span class="n">Sym2NumArray</span><span class="p">(</span> <span class="n">inputorder</span><span class="o">.</span><span class="n">evalf</span><span class="p">(</span> <span class="n">subs</span> <span class="o">=</span> <span class="n">sub1</span> <span class="p">)</span> <span class="p">)</span>
+		<span class="c">#temp=numpy.matrix(B[linpt])</span>
+		<span class="c">#proj=numpy.linalg.pinv(temp)</span>
+	
+		<span class="c">#diff=(linPVal[linpt]-numpy.dot(linPJac[linpt],linP[linpt]))</span>
+		<span class="c">#offset[linpt]=proj*diff</span>
+	<span class="k">return</span> <span class="n">linPJac</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">linPVal</span><span class="p">,</span> <span class="n">inputm</span> 
+
+<span class="c"># The following functions are used for integration of the PWL model</span>
+</div>
+<span class="k">def</span> <span class="nf">get_parameters_integration</span><span class="p">(</span> <span class="n">initialcond</span><span class="p">,</span> <span class="n">intg_end</span><span class="p">,</span> <span class="n">stateorder</span> <span class="p">):</span>
+	<span class="k">print</span> <span class="s">&quot;PWL Integration initialized....&quot;</span>
+	<span class="n">y0</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span> <span class="p">(</span><span class="nb">float</span><span class="p">(</span> <span class="n">initialcond</span><span class="p">[</span> <span class="nb">str</span><span class="p">(</span> <span class="n">i</span> <span class="p">)</span> <span class="p">])</span> <span class="p">)</span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">stateorder</span> <span class="p">])</span>
+	<span class="n">time</span>  <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">intg_end</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+	<span class="k">return</span> <span class="n">y0</span><span class="p">,</span> <span class="n">time</span>
+</pre></div>
+
+          </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">TPWL-MOR 1.0</a> &raquo;</li>
+          <li><a href="index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Bhargava Chintalapati.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

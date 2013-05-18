@@ -1,0 +1,218 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso8859_1" />
+    
+    <title>arnoldi</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="top" title="Trajectory based Order Reduction 1.0 documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">TPWL-MOR 1.0</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+          <div class="body">
+            
+  <h1>Source code for arnoldi</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">prettytable</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">from</span> <span class="nn">getparameters</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">config</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="k">global</span> <span class="n">ratio</span> <span class="p">,</span><span class="n">moments</span><span class="p">,</span><span class="n">linP</span><span class="p">,</span><span class="n">state</span>
+ 
+<span class="n">ratio</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="n">moments</span> <span class="o">=</span> <span class="mi">2</span> 
+<span class="n">redOrder</span> <span class="o">=</span> <span class="mi">2</span>
+
+
+
+
+<div class="viewcode-block" id="y0MOR"><a class="viewcode-back" href="../code.html#arnoldi.y0MOR">[docs]</a><span class="k">def</span> <span class="nf">y0MOR</span><span class="p">(</span><span class="n">y</span><span class="p">,</span><span class="n">t</span><span class="p">):</span>
+	<span class="sd">&#39;&#39;&#39;Generates the lower dimension initial conditions&#39;&#39;&#39;</span>
+	<span class="k">global</span> <span class="n">state</span>
+
+	<span class="n">input_signals</span> <span class="o">=</span> <span class="n">get_input_signals</span><span class="p">(</span> <span class="n">t</span> <span class="p">)</span> 
+
+	<span class="n">sub1</span> <span class="o">=</span> <span class="p">{</span> <span class="n">state</span><span class="p">[</span> <span class="nb">str</span><span class="p">(</span> <span class="n">input_list</span><span class="p">[</span> <span class="n">k</span> <span class="p">]</span> <span class="p">)</span> <span class="p">]</span> <span class="p">:</span> <span class="n">input_signals</span><span class="p">[</span> <span class="n">k</span> <span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="nb">len</span><span class="p">(</span> <span class="n">input_list</span> <span class="p">)</span> <span class="p">)</span> <span class="p">}</span>
+
+	<span class="n">redBasis</span> <span class="p">,</span> <span class="n">linPValRed</span><span class="p">,</span> <span class="n">linPJacRed</span> <span class="o">=</span> <span class="n">get_redBasis</span><span class="p">(</span>  <span class="n">t</span> <span class="p">,</span> <span class="n">moments</span> <span class="p">,</span> <span class="n">order</span><span class="p">,</span><span class="n">redOrder</span> <span class="p">)</span>
+        
+	
+	<span class="n">redBasisPro</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span> <span class="n">numpy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span> <span class="n">redBasis</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">redBasis</span> <span class="p">)</span> <span class="p">)</span> <span class="p">,</span> <span class="n">redBasis</span><span class="o">.</span><span class="n">T</span> <span class="p">)</span> 
+
+	<span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span> <span class="n">redBasisPro</span> <span class="p">,</span> <span class="n">y</span> <span class="p">)</span>
+</div>
+<div class="viewcode-block" id="LD2HD"><a class="viewcode-back" href="../code.html#arnoldi.LD2HD">[docs]</a><span class="k">def</span> <span class="nf">LD2HD</span> <span class="p">(</span> <span class="n">t</span><span class="p">,</span> <span class="n">y</span> <span class="p">):</span>
+	<span class="sd">&#39;&#39;&#39;Used to convert from Lower dimension to Higher dimension&#39;&#39;&#39;</span>
+
+	<span class="n">redBasis</span><span class="p">,</span> <span class="n">linPValRed</span><span class="p">,</span> <span class="n">linPJacRed</span> <span class="o">=</span> <span class="n">get_redBasis</span><span class="p">(</span>  <span class="n">t</span> <span class="p">,</span> <span class="n">moments</span> <span class="p">,</span> <span class="n">order</span><span class="p">,</span><span class="n">redOrder</span><span class="p">)</span>
+
+	<span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span> <span class="n">redBasis</span><span class="p">,</span> <span class="n">y</span> <span class="p">)</span>
+</div>
+<div class="viewcode-block" id="get_redBasis"><a class="viewcode-back" href="../code.html#arnoldi.get_redBasis">[docs]</a><span class="k">def</span> <span class="nf">get_redBasis</span><span class="p">(</span>  <span class="n">t</span> <span class="p">,</span> <span class="n">moment</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span><span class="n">redOrder</span><span class="p">):</span>
+	<span class="sd">&#39;&#39;&#39;Returns basis after Moment Matching &#39;&#39;&#39;</span>
+
+	<span class="n">spanAgg</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span> <span class="n">linP</span> <span class="p">,</span> <span class="mi">1</span> <span class="p">)</span>
+
+	<span class="n">input_signals</span> <span class="o">=</span> <span class="n">get_input_signals</span><span class="p">(</span> <span class="n">t</span> <span class="p">)</span> 
+
+	<span class="n">sub1</span> <span class="o">=</span> <span class="p">{</span> <span class="n">state</span><span class="p">[</span> <span class="nb">str</span><span class="p">(</span> <span class="n">input_list</span><span class="p">[</span> <span class="n">k</span> <span class="p">]</span> <span class="p">)</span> <span class="p">]</span> <span class="p">:</span> <span class="n">input_signals</span><span class="p">[</span> <span class="n">k</span> <span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="nb">len</span><span class="p">(</span> <span class="n">input_list</span> <span class="p">)</span> <span class="p">)</span> <span class="p">}</span>
+
+	<span class="n">linPVal</span><span class="o">=</span><span class="p">[</span> <span class="n">Sym2NumArray</span><span class="p">(</span> <span class="p">(</span> <span class="n">Matrix</span><span class="p">[</span> <span class="n">i</span> <span class="p">]</span><span class="o">.</span><span class="n">linPVal</span> <span class="p">)</span><span class="o">.</span><span class="n">evalf</span><span class="p">(</span> <span class="n">subs</span> <span class="o">=</span> <span class="n">sub1</span> <span class="p">)</span> <span class="p">)</span>  <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="n">count</span> <span class="p">)]</span>
+
+	<span class="n">linPJac</span><span class="o">=</span><span class="p">[</span> <span class="n">Sym2NumArray</span><span class="p">(</span> <span class="p">(</span> <span class="n">Matrix</span><span class="p">[</span> <span class="n">i</span> <span class="p">]</span><span class="o">.</span><span class="n">linPJac</span> <span class="p">)</span><span class="o">.</span><span class="n">evalf</span><span class="p">(</span> <span class="n">subs</span> <span class="o">=</span> <span class="n">sub1</span> <span class="p">)</span> <span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="n">count</span> <span class="p">)</span> <span class="p">]</span>
+
+	<span class="k">for</span> <span class="n">linpt</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="n">count</span> <span class="p">):</span>
+		<span class="n">spanV1</span> <span class="o">=</span> <span class="p">[</span> <span class="n">numpy</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span> <span class="n">numpy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span> <span class="n">linPJac</span><span class="p">[</span> <span class="n">linpt</span> <span class="p">]</span> <span class="p">),</span><span class="n">B</span><span class="p">[</span> <span class="n">linpt</span> <span class="p">])</span> <span class="p">]</span>
+        
+		<span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="n">moment</span> <span class="p">):</span>
+			<span class="n">spanV1</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">numpy</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span> <span class="n">numpy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span> <span class="n">linPJac</span><span class="p">[</span> <span class="n">linpt</span> <span class="p">]</span> <span class="p">),</span><span class="n">spanV1</span><span class="p">[</span> <span class="o">-</span><span class="mi">1</span> <span class="p">])</span> <span class="p">)</span>
+
+		<span class="n">spanV1</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span> <span class="n">spanV1</span><span class="p">,</span> <span class="mi">1</span> <span class="p">)</span>
+        
+
+		<span class="n">spanV2</span> <span class="o">=</span> <span class="p">[</span> <span class="n">numpy</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span> <span class="n">numpy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span> <span class="n">linPJac</span><span class="p">[</span> <span class="n">linpt</span> <span class="p">]</span> <span class="p">),</span><span class="n">linPVal</span><span class="p">[</span> <span class="n">linpt</span> <span class="p">]</span> <span class="o">-</span> <span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span> <span class="n">linPJac</span><span class="p">[</span> <span class="n">linpt</span> <span class="p">],</span> <span class="n">linP</span><span class="p">[</span> <span class="n">linpt</span> <span class="p">]</span> <span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span> <span class="n">order</span> <span class="p">,</span><span class="mi">1</span> <span class="p">)</span> <span class="p">)]</span>
+		<span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="n">moment</span> <span class="p">):</span>
+			<span class="n">spanV2</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">numpy</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span> <span class="n">numpy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span> <span class="n">linPJac</span><span class="p">[</span> <span class="n">linpt</span> <span class="p">]</span> <span class="p">),</span><span class="n">spanV2</span><span class="p">[</span> <span class="o">-</span><span class="mi">1</span> <span class="p">])</span> <span class="p">)</span>
+		<span class="n">spanV2</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span> <span class="n">spanV2</span><span class="p">,</span> <span class="mi">1</span> <span class="p">)</span>	
+		
+		<span class="n">unitSpanV1</span> <span class="p">,</span> <span class="n">R</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">qr</span><span class="p">(</span> <span class="n">spanV1</span> <span class="p">)</span>
+
+		<span class="n">unitSpanV2</span> <span class="p">,</span> <span class="n">R</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">qr</span><span class="p">(</span> <span class="n">spanV2</span> <span class="p">)</span>
+
+	<span class="n">spanAgg</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span> <span class="p">(</span> <span class="n">spanAgg</span><span class="p">,</span> <span class="n">unitSpanV1</span> <span class="p">,</span> <span class="n">unitSpanV2</span><span class="p">)</span> <span class="p">,</span> <span class="mi">1</span> <span class="p">)</span>
+
+	<span class="n">eigenC</span> <span class="p">,</span> <span class="n">eigenV</span> <span class="p">,</span> <span class="n">eigenR</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">svd</span><span class="p">(</span><span class="n">spanAgg</span><span class="p">)</span>
+        
+	<span class="n">redBasis</span> <span class="o">=</span> <span class="n">eigenC</span><span class="p">[</span> <span class="p">:</span> <span class="p">,</span> <span class="p">:</span><span class="n">redOrder</span> <span class="p">]</span>
+	
+	<span class="n">linPValRed</span> <span class="o">=</span> <span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span> <span class="n">redBasis</span><span class="o">.</span><span class="n">T</span><span class="p">,</span><span class="n">linPVal</span><span class="p">[</span> <span class="n">k</span> <span class="p">])</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="n">count</span> <span class="p">)</span> <span class="p">]</span> 
+	
+	<span class="n">linPJacRed</span> <span class="o">=</span> <span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span> <span class="n">redBasis</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span> <span class="n">linPJac</span><span class="p">[</span> <span class="n">k</span> <span class="p">]</span> <span class="p">,</span> <span class="n">redBasis</span> <span class="p">)</span> <span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="n">count</span> <span class="p">)]</span>
+	
+	<span class="k">return</span> <span class="n">redBasis</span><span class="p">,</span> <span class="n">linPValRed</span><span class="p">,</span> <span class="n">linPJacRed</span>
+</div>
+<div class="viewcode-block" id="dervPWLMOR"><a class="viewcode-back" href="../code.html#arnoldi.dervPWLMOR">[docs]</a><span class="k">def</span> <span class="nf">dervPWLMOR</span><span class="p">(</span><span class="n">yNew</span><span class="p">,</span><span class="n">t</span><span class="p">):</span>
+	<span class="sd">&#39;&#39;&#39; Produces reduced order derivative at any point in time&#39;&#39;&#39;</span>
+
+	<span class="n">temp</span> <span class="o">=</span> <span class="mi">0</span>
+
+	<span class="n">spanAgg</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span> <span class="n">linP</span> <span class="p">,</span> <span class="mi">1</span> <span class="p">)</span>
+
+	<span class="n">input_signals</span> <span class="o">=</span> <span class="n">get_input_signals</span><span class="p">(</span> <span class="n">t</span> <span class="p">)</span> 
+
+	<span class="n">sub1</span> <span class="o">=</span> <span class="p">{</span> <span class="n">state</span><span class="p">[</span> <span class="nb">str</span><span class="p">(</span> <span class="n">input_list</span><span class="p">[</span> <span class="n">k</span> <span class="p">]</span> <span class="p">)</span> <span class="p">]</span> <span class="p">:</span> <span class="n">input_signals</span><span class="p">[</span> <span class="n">k</span> <span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="nb">len</span><span class="p">(</span> <span class="n">input_list</span> <span class="p">)</span> <span class="p">)</span> <span class="p">}</span>
+
+	<span class="n">redBasis</span><span class="p">,</span> <span class="n">redOrder</span> <span class="p">,</span> <span class="n">linPValRed</span><span class="p">,</span> <span class="n">linPJacRed</span> <span class="o">=</span> <span class="n">get_redBasis</span><span class="p">(</span>  <span class="n">t</span> <span class="p">,</span> <span class="n">moments</span> <span class="p">,</span> <span class="n">order</span> <span class="p">)</span>
+	
+	<span class="n">redBasisPro</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span> <span class="n">numpy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span> <span class="n">redBasis</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">redBasis</span> <span class="p">)</span> <span class="p">)</span> <span class="p">,</span> <span class="n">redBasis</span><span class="o">.</span><span class="n">T</span> <span class="p">)</span> 
+	
+	<span class="c">#yNew = numpy.dot( redBasisPro, y )</span>
+        <span class="n">linPRed</span> <span class="o">=</span> <span class="p">[</span> <span class="n">numpy</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span> <span class="n">redBasisPro</span><span class="p">,</span> <span class="n">linP</span><span class="p">[</span> <span class="n">i</span> <span class="p">]</span> <span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="n">count</span> <span class="p">)</span> <span class="p">]</span>
+
+        <span class="n">BRed</span> <span class="o">=</span> <span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span> <span class="n">redBasis</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">B</span><span class="p">[</span> <span class="n">k</span> <span class="p">]</span> <span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="n">count</span> <span class="p">)]</span>
+
+	<span class="n">inputM</span> <span class="o">=</span> <span class="n">Sym2NumArray</span><span class="p">(</span><span class="n">inputm</span><span class="o">.</span><span class="n">evalf</span><span class="p">(</span> <span class="n">subs</span> <span class="o">=</span> <span class="n">sub1</span> <span class="p">))</span>
+        
+	<span class="n">norm</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span> <span class="mf">10.0</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="mi">20</span><span class="o">*</span><span class="n">numpy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span> <span class="n">linPRed</span><span class="p">[</span> <span class="n">i</span> <span class="p">]</span> <span class="o">-</span> <span class="n">yNew</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">redOrder</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span> <span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">count</span><span class="p">)</span> <span class="p">])</span>
+
+        <span class="n">weights</span> <span class="o">=</span> <span class="n">norm</span><span class="o">/</span><span class="n">norm</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="c">#print weights</span>
+        
+           
+    	<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">count</span><span class="p">):</span>
+		<span class="n">temp</span> <span class="o">=</span> <span class="n">temp</span> <span class="o">+</span>  <span class="n">weights</span><span class="p">[</span> <span class="n">i</span> <span class="p">]</span> <span class="o">*</span> <span class="p">(</span> <span class="n">linPValRed</span><span class="p">[</span> <span class="n">i</span> <span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span> <span class="n">linPJacRed</span><span class="p">[</span> <span class="n">i</span> <span class="p">],</span> <span class="n">yNew</span> <span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span> <span class="n">redOrder</span> <span class="p">,</span><span class="mi">1</span> <span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span> <span class="n">linPJacRed</span><span class="p">[</span> <span class="n">i</span> <span class="p">],</span> <span class="n">linPRed</span><span class="p">[</span> <span class="n">i</span> <span class="p">]</span> <span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span> <span class="n">redOrder</span> <span class="p">,</span><span class="mi">1</span> <span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span> <span class="n">BRed</span><span class="p">[</span> <span class="n">i</span> <span class="p">],</span> <span class="n">inputM</span> <span class="p">))</span> <span class="p">)</span>
+    
+	<span class="k">return</span>  <span class="p">(</span><span class="n">temp</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">redOrder</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span> 
+
+
+
+</div>
+<div class="viewcode-block" id="check_stability_MOR"><a class="viewcode-back" href="../code.html#arnoldi.check_stability_MOR">[docs]</a><span class="k">def</span> <span class="nf">check_stability_MOR</span><span class="p">(</span><span class="n">moments</span><span class="p">,</span> <span class="n">count</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+	<span class="sd">&#39;&#39;&#39; Checks the stability of the Jacobians created after reduction with a certain number of moments matched &#39;&#39;&#39;</span>
+	<span class="k">global</span> <span class="n">linP</span>
+
+	<span class="n">x</span> <span class="o">=</span> <span class="n">prettytable</span><span class="o">.</span><span class="n">PrettyTable</span><span class="p">(</span> <span class="p">)</span>
+
+	<span class="n">x</span><span class="o">.</span><span class="n">add_column</span><span class="p">(</span><span class="s">&quot;Linearization Point&quot;</span><span class="p">,[</span> <span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="n">count</span> <span class="p">)</span> <span class="p">]</span> <span class="p">)</span>
+	<span class="c">#redOrder = 10</span>
+	<span class="c">#moments = 2</span>
+
+	<span class="k">for</span> <span class="n">red_order</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="mi">1</span> <span class="p">,</span> <span class="n">order</span> <span class="o">+</span><span class="mi">1</span> <span class="p">):</span>
+
+		<span class="n">Jaccheck</span> <span class="o">=</span> <span class="p">[]</span>
+
+		<span class="k">for</span> <span class="n">linpt</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="n">count</span>  <span class="p">):</span>
+
+			<span class="n">redOrder</span> <span class="o">=</span> <span class="n">red_order</span>
+
+			<span class="n">redBasis</span><span class="p">,</span> <span class="n">linPValRed</span><span class="p">,</span> <span class="n">linPJacRed</span> <span class="o">=</span> <span class="n">get_redBasis</span><span class="p">(</span> <span class="n">time</span><span class="p">[</span> <span class="n">linpt</span> <span class="p">]</span> <span class="o">-</span> <span class="n">sim_begin</span> <span class="p">,</span> <span class="n">moments</span> <span class="p">,</span><span class="n">order</span> <span class="p">,</span><span class="n">redOrder</span><span class="p">)</span>
+	
+			<span class="n">redBasisPro</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span> <span class="n">numpy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span> <span class="n">redBasis</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">redBasis</span> <span class="p">)</span> <span class="p">)</span> <span class="p">,</span> <span class="n">redBasis</span><span class="o">.</span><span class="n">T</span> <span class="p">)</span> 
+	
+			<span class="n">linPRed</span> <span class="o">=</span> <span class="p">[</span> <span class="n">numpy</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span> <span class="n">redBasisPro</span><span class="p">,</span> <span class="n">linP</span><span class="p">[</span> <span class="n">i</span> <span class="p">]</span> <span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="n">count</span> <span class="p">)</span> <span class="p">]</span>
+	    
+			<span class="n">norm</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span> <span class="mf">10.0</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="mi">20</span><span class="o">*</span><span class="n">numpy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span> <span class="n">linPRed</span><span class="p">[</span> <span class="n">i</span> <span class="p">]</span> <span class="o">-</span> <span class="n">linPRed</span><span class="p">[</span> <span class="n">linpt</span><span class="p">]</span> <span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">count</span><span class="p">)</span> <span class="p">])</span>
+
+			<span class="n">weights</span> <span class="o">=</span> <span class="n">norm</span><span class="o">/</span><span class="n">norm</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+			<span class="n">temp</span> <span class="o">=</span> <span class="mi">0</span> 
+	   
+			<span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">count</span><span class="p">):</span>
+
+				<span class="n">temp</span> <span class="o">=</span> <span class="n">temp</span> <span class="o">+</span>  <span class="n">weights</span><span class="p">[</span> <span class="n">j</span> <span class="p">]</span> <span class="o">*</span> <span class="p">(</span>  <span class="n">linPJacRed</span><span class="p">[</span> <span class="n">j</span> <span class="p">]</span> <span class="p">)</span>
+
+			<span class="n">Jaccheck</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">temp</span> <span class="p">)</span>
+
+		<span class="n">x</span><span class="o">.</span><span class="n">add_column</span><span class="p">(</span><span class="s">&quot;Order:&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">redOrder</span><span class="p">),[</span> <span class="n">numpy</span><span class="o">.</span><span class="n">real</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigvals</span><span class="p">(</span><span class="n">Jaccheck</span><span class="p">[</span> <span class="n">k</span> <span class="p">]</span> <span class="p">))</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="n">count</span> <span class="p">)</span> <span class="p">])</span>
+
+	<span class="k">print</span> <span class="n">moments</span><span class="p">,</span><span class="s">&quot; moments matched:&quot;</span>
+
+	<span class="k">print</span> <span class="n">x</span>
+</pre></div></div>
+
+          </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">TPWL-MOR 1.0</a> &raquo;</li>
+          <li><a href="index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Bhargava Chintalapati.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

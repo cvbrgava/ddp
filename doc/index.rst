@@ -18,13 +18,42 @@ Contents:
 
 The source code for the project is available on `git-hub <https://github.com/cvbrgava>`_.
 
-Test Cases
-==========
+Circuit Models
+=============
+
+Digital Systems:
+
+.. toctree::
+   :maxdepth: 2
+
+   4inpNAND
+
+   AOI
+
+   NOR
+
+
+Analog Systems:
 
 .. toctree::
    :maxdepth: 2
 
    Commonsource 
+
+   DifferentialAmplifier
+
+Cascaded Systems:
+
+.. toctree::
+   :maxdepth: 2
+	
+   4inpNAND_inv
+
+   inv_4inpNAND
+
+   5casc4inpNAND
+
+   NANDXOR
 
 Indices and tables
 ==================

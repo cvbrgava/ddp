@@ -1,0 +1,50 @@
+[OPTIONS]
+Binary TOC=No
+Binary Index=No
+Compiled file=TrajectorybasedOrderReductiondoc.chm
+Contents file=TrajectorybasedOrderReductiondoc.hhc
+Default Window=TrajectorybasedOrderReductiondoc
+Default topic=index.html
+Display compile progress=No
+Full text search stop list file=TrajectorybasedOrderReductiondoc.stp
+Full-text search=Yes
+Index file=TrajectorybasedOrderReductiondoc.hhk
+Language=0x409
+Title=Trajectory based Order Reduction 1.0 documentation
+
+[WINDOWS]
+TrajectorybasedOrderReductiondoc="Trajectory based Order Reduction 1.0 documentation","TrajectorybasedOrderReductiondoc.hhc","TrajectorybasedOrderReductiondoc.hhk","index.html","index.html",,,,,0x63520,220,0x10384e,[0,0,1024,768],,,,,,,0
+
+[FILES]
+Commonsource.html
+genindex.html
+py-modindex.html
+index.html
+introduction.html
+example.html
+code.html
+_static\file.png
+_static\ajax-loader.gif
+_static\up.png
+_static\default.css
+_static\up-pressed.png
+_static\logo.png
+_static\comment.png
+_static\comment-close.png
+_static\logo.ico
+_static\basic.css
+_static\down-pressed.png
+_static\minus.png
+_static\down.png
+_static\pygments.css
+_static\delta4.png
+_static\comment-bright.png
+_static\plus.png
+_modules\config.html
+_modules\arnoldi.html
+_modules\controls.html
+_modules\index.html
+_modules\parsers.html
+_modules\getparameters.html
+_modules\currenteqs.html
+_modules\numericals.html

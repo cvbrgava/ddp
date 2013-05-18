@@ -1,0 +1,26 @@
+Circuit: * Z:\home\bhargava\ddp\SPICE\singleOMP_cmfb_non_ideal.asc
+
+WARNING: Node NC_01 is floating.
+
+WARNING: Less than two connections to node N007.  This node is used by V4.
+Model "cmosp": Oxide thickness thinner than recommended for a level 1 MOSFET.
+Instance "m3": Length shorter than recommended for a level 1 MOSFET.
+Instance "m3": Width narrower than recommended for a level 1 MOSFET.
+Instance "m5": Length shorter than recommended for a level 1 MOSFET.
+Instance "m5": Width narrower than recommended for a level 1 MOSFET.
+Instance "m4": Length shorter than recommended for a level 1 MOSFET.
+Instance "m4": Width narrower than recommended for a level 1 MOSFET.
+Model "cmosn": Oxide thickness thinner than recommended for a level 1 MOSFET.
+Instance "m6": Length shorter than recommended for a level 1 MOSFET.
+Instance "m6": Width narrower than recommended for a level 1 MOSFET.
+Instance "m2": Length shorter than recommended for a level 1 MOSFET.
+Instance "m2": Width narrower than recommended for a level 1 MOSFET.
+Instance "m1": Length shorter than recommended for a level 1 MOSFET.
+Instance "m1": Width narrower than recommended for a level 1 MOSFET.
+Direct Newton iteration for .op point succeeded.
+Singular matrix:  Check node nc_01
+   Iteration No. 1
+Fatal Error: Singular matrix:  check node nc_01
+   Iteration No. 1
+
+This circuit has floating nodes.

@@ -57,7 +57,7 @@ def get_steadystate(filename,initialcond,stateorder,final_time,order):
 		if(float(data['time'])== final_time):
 			return curt
 
-     
+  
 def get_states(filename,sim_begin):
 	''' Given absolute path to the waveform files provides states needed for the system '''
 	print "Getting states...."

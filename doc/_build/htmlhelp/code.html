@@ -1,0 +1,479 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso8859_1" />
+    
+    <title>Auto generated documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="top" title="Trajectory based Order Reduction 1.0 documentation" href="index.html" />
+    <link rel="next" title="Common Source Amplifier" href="Commonsource.html" />
+    <link rel="prev" title="Motivation for Order Reduction" href="introduction.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Commonsource.html" title="Common Source Amplifier"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="introduction.html" title="Motivation for Order Reduction"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">TPWL-MOR 1.0</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+          <div class="body">
+            
+  <div class="section" id="auto-generated-documentation">
+<h1>Auto generated documentation</h1>
+<div class="section" id="numericals-module">
+<h2>numericals module</h2>
+<p>This module contains all the functions dealing with integration generation of the state space matrices</p>
+<span class="target" id="module-numericals"></span><dl class="function">
+<dt id="numericals.get_statematrices">
+<tt class="descclassname">numericals.</tt><tt class="descname">get_statematrices</tt><big>(</big><em>B</em>, <em>C</em>, <em>D</em>, <em>inputm</em>, <em>count</em>, <em>order</em>, <em>regions</em>, <em>state</em>, <em>regexp</em>, <em>datapoints</em>, <em>stateorder</em>, <em>inputorder</em>, <em>Vth</em><big>)</big><a class="reference internal" href="_modules/numericals.html#get_statematrices"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Initialze all the state space matrices needed.
+Input :</p>
+<blockquote>
+<div>count = number of linearization points
+order = order of the system
+regions = list of all the regions of operation of the transistor
+datapoints = snapshots of the sytem at various linearization points
+stateorder = symbolic matrix with the state space order to be followed</div></blockquote>
+<dl class="docutils">
+<dt>Returns <span class="classifier-delimiter">:</span> <span class="classifier"></span></dt>
+<dd>linPJac = Jacobian of the system at some linearization point
+B = input matrix
+C = Output matrix
+linPVal = Value of the system at some linearization point</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="numericals.init_statematrices">
+<tt class="descclassname">numericals.</tt><tt class="descname">init_statematrices</tt><big>(</big><em>count</em>, <em>order</em>, <em>input_list</em>, <em>output_list</em>, <em>stateorder</em>, <em>state</em><big>)</big><a class="reference internal" href="_modules/numericals.html#init_statematrices"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Initialze all the state space matrices needed.
+Input :</p>
+<p>count = number of linearization points
+order = order of the system
+input_list = list of the inputs to the system
+ouput_list = list of the outputs of the system
+stateorder = symbolic matrix with the state space ordering
+Returns :</p>
+<p>linPJac = Jacobian of the system at some linearization point
+B = input matrix
+C = Output matrix
+linPVal = Value of the system at some linearization point 
+inputm = value of the systems&#8217;s input at some linearizaton point</p>
+</dd></dl>
+
+</div>
+<div class="section" id="currenteqs-module">
+<h2>currenteqs module</h2>
+<p>This module contains current equations for both PMOS and NMOS transistors. They are based on LEVEL1 MOS current equation models. These have been verified before adding to this file.</p>
+<span class="target" id="module-currenteqs"></span><dl class="function">
+<dt id="currenteqs.current">
+<tt class="descclassname">currenteqs.</tt><tt class="descname">current</tt><big>(</big><em>information</em>, <em>state</em>, <em>vth</em><big>)</big><a class="reference internal" href="_modules/currenteqs.html#current"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Current equations verified for level 1 PMOS and NMOS
+The equations in this library have been incorporated after comparing results with LTSPICE models
+Any change in these equations has to be verified thoroughly with appropriate LTSPICE simulations.</p>
+<p>Returns:
+Symbolic equations with polynomial expansion</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="currenteqs.get_vth">
+<tt class="descclassname">currenteqs.</tt><tt class="descname">get_vth</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/currenteqs.html#get_vth"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns the V threshold value for each of the transistors. In the case of LEVEL 1 MOS models we have all the transistors having same Vth values. This will have to be
+changed when we use different models for the current equations.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="currenteqs.region">
+<tt class="descclassname">currenteqs.</tt><tt class="descname">region</tt><big>(</big><em>MOS</em>, <em>drain</em>, <em>gate</em>, <em>source</em><big>)</big><a class="reference internal" href="_modules/currenteqs.html#region"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Information about a transistor in the following format
+Vth for the level1MOS is fixed &#64; 0.477 for both PMOS and NMOS
+MOS = CMOSP or CMOSN
+drain = voltage &#64; drain
+source = voltage &#64; source
+gate = voltage &#64; gate</p>
+<p>returns the region of operation</p>
+<p>&#8216;c&#8217; = cutoff
+&#8216;l&#8217; = linear
+&#8216;s&#8217; = saturation</p>
+</dd></dl>
+
+</div>
+<div class="section" id="config-module">
+<h2>config module</h2>
+<p>This is the customizable module. The file contains state space equations and details regarding the SPICE files used in simulation.</p>
+<span class="target" id="module-config"></span><dl class="function">
+<dt id="config.get_input_signals">
+<tt class="descclassname">config.</tt><tt class="descname">get_input_signals</tt><big>(</big><em>t</em><big>)</big><a class="reference internal" href="_modules/config.html#get_input_signals"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns:
+The values of all the inputs at any given time instant</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="config.get_nonlinear_matrix">
+<tt class="descclassname">config.</tt><tt class="descname">get_nonlinear_matrix</tt><big>(</big><em>state</em>, <em>regions</em>, <em>Vth</em><big>)</big><a class="reference internal" href="_modules/config.html#get_nonlinear_matrix"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>1.This function is instance specific. 
+2.All the state equations are defined in here
+Input:</p>
+<p>state = symbolic vector with states defined it
+regions = contains information regarding each transistor with the region of operation specified
+Vth = dictionary with threshold voltages of each transistor</p>
+<p>Returns :
+The symbolic expression with non-linear state space equations in it.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="config.get_stateorder">
+<tt class="descclassname">config.</tt><tt class="descname">get_stateorder</tt><big>(</big><em>state</em><big>)</big><a class="reference internal" href="_modules/config.html#get_stateorder"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns stateorder, which is necessary for the construction of the state 
+Check with the state space equations and ensure that the same ordering is being followed</p>
+</dd></dl>
+
+</div>
+<div class="section" id="getparameters-module">
+<h2>getparameters module</h2>
+<p>This is the interface between project and the SPICE files. From the spice waveform files and netlist this module extracts all the parameters needed for the project to function.</p>
+<span class="target" id="module-getparameters"></span><dl class="function">
+<dt id="getparameters.Sym2NumArray">
+<tt class="descclassname">getparameters.</tt><tt class="descname">Sym2NumArray</tt><big>(</big><em>F</em><big>)</big><a class="reference internal" href="_modules/getparameters.html#Sym2NumArray"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>After evaluation of an expression in sympy, convert that array into a numpy readable array</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="getparameters.get_currents">
+<tt class="descclassname">getparameters.</tt><tt class="descname">get_currents</tt><big>(</big><em>file_current</em>, <em>count</em>, <em>time</em><big>)</big><a class="reference internal" href="_modules/getparameters.html#get_currents"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Get snapshots of the currents through vairous transistors in the system.
+Returns:
+Dictionary containing transistor label as key and current at the time instant as the value</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="getparameters.get_datapoints">
+<tt class="descclassname">getparameters.</tt><tt class="descname">get_datapoints</tt><big>(</big><em>file_voltage</em>, <em>count</em>, <em>time</em><big>)</big><a class="reference internal" href="_modules/getparameters.html#get_datapoints"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Get snapshot of the system at required time instants 
+Returns :
+Dictionary with state variable as key and value at the time instant as value</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="getparameters.get_initialcond">
+<tt class="descclassname">getparameters.</tt><tt class="descname">get_initialcond</tt><big>(</big><em>filename</em>, <em>sim_begin</em><big>)</big><a class="reference internal" href="_modules/getparameters.html#get_initialcond"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns:
+The initial condition given the absolute path to wave form files</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="getparameters.get_inputorder">
+<tt class="descclassname">getparameters.</tt><tt class="descname">get_inputorder</tt><big>(</big><em>state</em>, <em>inp_list</em><big>)</big><a class="reference internal" href="_modules/getparameters.html#get_inputorder"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns:
+symbolic non-linear input vector 
+inp[0]
+inp[0]**2
+inp[0]**3
+inp[1]
+inp[1]**2
+.
+.       
+.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="getparameters.get_linPoints">
+<tt class="descclassname">getparameters.</tt><tt class="descname">get_linPoints</tt><big>(</big><em>filename</em>, <em>initialcond</em>, <em>delta</em>, <em>order</em>, <em>stateorder</em>, <em>sim_begin</em><big>)</big><a class="reference internal" href="_modules/getparameters.html#get_linPoints"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Choice of the points of linearization is done as follows
+if <a href="#id1"><span class="problematic" id="id2">|xnew - xi|</span></a>/<a href="#id3"><span class="problematic" id="id4">|xi|</span></a> &lt; delta :</p>
+<blockquote>
+<div>continue</div></blockquote>
+<dl class="docutils">
+<dt>else :</dt>
+<dd>x(i+1) = xnew</dd>
+</dl>
+<p>Returns the number of linearization points and the time&#8217;s at which they were chosen</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="getparameters.get_linpdiff">
+<tt class="descclassname">getparameters.</tt><tt class="descname">get_linpdiff</tt><big>(</big><em>initial</em>, <em>steady</em>, <em>stateorder</em>, <em>order</em><big>)</big><a class="reference internal" href="_modules/getparameters.html#get_linpdiff"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Provides the norm of the difference between the steady state and initial condition in state space</p>
+<p>Returns <a href="#id5"><span class="problematic" id="id6">|x(initial) - x(steadystate)|</span></a> = delta</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="getparameters.get_num_linP">
+<tt class="descclassname">getparameters.</tt><tt class="descname">get_num_linP</tt><big>(</big><em>count</em>, <em>order</em>, <em>datapoints</em>, <em>stateorder</em><big>)</big><a class="reference internal" href="_modules/getparameters.html#get_num_linP"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns:
+numpy compatible array for the relavent state space values at linearization points</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="getparameters.get_states">
+<tt class="descclassname">getparameters.</tt><tt class="descname">get_states</tt><big>(</big><em>filename</em>, <em>sim_begin</em><big>)</big><a class="reference internal" href="_modules/getparameters.html#get_states"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Given absolute path to the waveform files provides states needed for the system</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="getparameters.get_steadystate">
+<tt class="descclassname">getparameters.</tt><tt class="descname">get_steadystate</tt><big>(</big><em>filename</em>, <em>initialcond</em>, <em>stateorder</em>, <em>final_time</em>, <em>order</em><big>)</big><a class="reference internal" href="_modules/getparameters.html#get_steadystate"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Provides the steady-state value for the given waveforms.</p>
+<p>current version however just takes the final-time ( obtained by visual inspection ) and provides the values at that time instant.</p>
+<p>Intended use of the function is this</p>
+<dl class="docutils">
+<dt>if <a href="#id7"><span class="problematic" id="id8">|x0 - xnew |/|x0|</span></a> &lt; error :</dt>
+<dd>count += 1</dd>
+<dt>if count &gt;= some number :</dt>
+<dd>return x0</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="getparameters.import_text">
+<tt class="descclassname">getparameters.</tt><tt class="descname">import_text</tt><big>(</big><em>filename</em>, <em>separator</em><big>)</big><a class="reference internal" href="_modules/getparameters.html#import_text"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Import data from wave-form files exported from LTSPICE.
+Generates a python dictionary for each row it reads with the column-name as the key.
+Usage:</p>
+<blockquote>
+<div>import_text(&lt;absolute_path&gt;,&#8217;   &#8216;) use this for tab separated columns</div></blockquote>
+</dd></dl>
+
+</div>
+<div class="section" id="parsers-module">
+<h2>Parsers module</h2>
+<p>This module can be used to parse netlist and equations.</p>
+<span class="target" id="module-parsers"></span><dl class="function">
+<dt id="parsers.get_regexp_eqs">
+<tt class="descclassname">parsers.</tt><tt class="descname">get_regexp_eqs</tt><big>(</big><em>inp_list</em><big>)</big><a class="reference internal" href="_modules/parsers.html#get_regexp_eqs"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>For a given set of inputs of the system, returns a list of regular expression rules which can be used to identify and isolate non linear input terms 
+returns:</p>
+<p>[input[0]**1,input[0]**2,input[0]**3,input[1].....,input[2]...]</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="parsers.get_region_operation">
+<tt class="descclassname">parsers.</tt><tt class="descname">get_region_operation</tt><big>(</big><em>datapoints</em>, <em>file_netlist</em>, <em>count</em><big>)</big><a class="reference internal" href="_modules/parsers.html#get_region_operation"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Parses through the netlist and finds transistors in the circuit</p>
+<p>Calculates the regions of operations of these transistors at linearization points</p>
+<p>Returns:</p>
+<p>list of dictionary with each transistor as key and it&#8217;s region of operation as value</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="parsers.parse_nonlinear">
+<tt class="descclassname">parsers.</tt><tt class="descname">parse_nonlinear</tt><big>(</big><em>string</em>, <em>regexp</em><big>)</big><a class="reference internal" href="_modules/parsers.html#parse_nonlinear"><span class="viewcode-link">[source]</span></a></dt>
+<dd><ol class="arabic">
+<li><p class="first">Parses the non-linear equation</p>
+</li>
+<li><dl class="first docutils">
+<dt>Searches for non-linear input terms</dt>
+<dd><ol class="first last arabic simple" start="3">
+<li>Isolates their coefficients</li>
+</ol>
+</dd>
+</dl>
+</li>
+</ol>
+<dl class="docutils">
+<dt>Returns :</dt>
+<dd>The row of B matrix and the remainder of the equation.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="parsers.parse_within">
+<tt class="descclassname">parsers.</tt><tt class="descname">parse_within</tt><big>(</big><em>linpt</em>, <em>eqs</em>, <em>order</em>, <em>state</em>, <em>datapoints</em><big>)</big></dt>
+<dd><p>This function extracts the input terms from the Matrices. This makes sure there are no redundant calculations during the Integration</p>
+</dd></dl>
+
+</div>
+<div class="section" id="mor-by-kalman-decomposition-and-tbr-module">
+<h2>MOR by Kalman Decomposition and TBR module</h2>
+<p>This module was developed mainly to provide a platform for Kalman Decomposition and Truncated Balanced Reduction. In the process of which the functions developed here span a wide range of control system analysis procedures.</p>
+<span class="target" id="module-controls"></span><dl class="function">
+<dt id="controls.BasisTrans">
+<tt class="descclassname">controls.</tt><tt class="descname">BasisTrans</tt><big>(</big><em>A</em>, <em>B</em>, <em>C</em>, <em>Basis</em><big>)</big><a class="reference internal" href="_modules/controls.html#BasisTrans"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Produces the state space after a similarity transformation</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="controls.ContSpace">
+<tt class="descclassname">controls.</tt><tt class="descname">ContSpace</tt><big>(</big><em>A</em>, <em>B</em>, <em>C</em>, <em>conv=True</em><big>)</big><a class="reference internal" href="_modules/controls.html#ContSpace"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Does a basis transformation into the space where Controllable and Uncontrollable states are orthogonal</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="controls.KBasisContObs">
+<tt class="descclassname">controls.</tt><tt class="descname">KBasisContObs</tt><big>(</big><em>check_A</em>, <em>check_B</em>, <em>check_C</em><big>)</big></dt>
+<dd><p>This produces the Kalman Basis needed for a kalman decomposition of the system, which is used for a minimal realization of the state space Using a different algorithm than the one previously mentioned. This algorithm checks for controllability and then moves over to observability</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="controls.KalmanBasis">
+<tt class="descclassname">controls.</tt><tt class="descname">KalmanBasis</tt><big>(</big><em>check_A</em>, <em>check_B</em>, <em>check_C</em><big>)</big><a class="reference internal" href="_modules/controls.html#KalmanBasis"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>This function also produces Kalman basis but the generation of basis is slightly abmiguous, use KalmanBasisNew for the latest methods for basis generation</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="controls.KalmanBasisNew">
+<tt class="descclassname">controls.</tt><tt class="descname">KalmanBasisNew</tt><big>(</big><em>check_A</em>, <em>check_B</em>, <em>check_C</em><big>)</big><a class="reference internal" href="_modules/controls.html#KalmanBasisNew"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>This produces the Kalman Basis needed for a kalman decomposition of the system, which is used for a minimal realization of the state space
++&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;+&#8212;&#8212;&#8212;&#8212;&#8212;+&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;-+&#8212;&#8212;&#8212;&#8211;+&#8212;&#8212;&#8212;&#8212;&#8211;+
+|      Conditions     |       T1      |         T2        |     T3    |      T4      |
++&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;+&#8212;&#8212;&#8212;&#8212;&#8212;+&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;-+&#8212;&#8212;&#8212;&#8211;+&#8212;&#8212;&#8212;&#8212;&#8211;+
+|        R, !N        |     R( C )    |         *         |  ~R( C )  |      *       |
+|  ( R N ) full rank  |     R( C )    |         *         |     *     |    N( O )    |
+|   ( R N ) low rank  |     R( C )    |         *         |  ~( R N ) |    N( O )    |
+|       Kalman        |  R( C ) - T2  | R( C ) int N( O ) |  ~( R N ) | N( O ) - T2  |
++&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;+&#8212;&#8212;&#8212;&#8212;&#8212;+&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;-+&#8212;&#8212;&#8212;&#8211;+&#8212;&#8212;&#8212;&#8212;&#8211;+</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="controls.ObsSpace">
+<tt class="descclassname">controls.</tt><tt class="descname">ObsSpace</tt><big>(</big><em>A</em>, <em>B</em>, <em>C</em>, <em>conv=True</em><big>)</big><a class="reference internal" href="_modules/controls.html#ObsSpace"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Does a basis transformation into the space where Observable and Unobservable states are orthogonal</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="controls.columnProj">
+<tt class="descclassname">controls.</tt><tt class="descname">columnProj</tt><big>(</big><em>column</em>, <em>vect</em>, <em>ret</em><big>)</big><a class="reference internal" href="_modules/controls.html#columnProj"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Generates the column-space projection of the vector onto the space spanned by columns of column.
+ret = 1 : returns the coefficients of the projection
+ret = 0 : returns the projection in standard basis</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="controls.columspace">
+<tt class="descclassname">controls.</tt><tt class="descname">columspace</tt><big>(</big><em>mat</em><big>)</big><a class="reference internal" href="_modules/controls.html#columspace"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Generates the Unitary basis vectors which span the column space of the given matrix</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="controls.controlability">
+<tt class="descclassname">controls.</tt><tt class="descname">controlability</tt><big>(</big><em>B</em>, <em>A</em><big>)</big><a class="reference internal" href="_modules/controls.html#controlability"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns the controllability matrix and also checks its rank
+returns 
+False : if rank deficient
+True : if full rank</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="controls.intersection">
+<tt class="descclassname">controls.</tt><tt class="descname">intersection</tt><big>(</big><em>space1</em>, <em>space2</em><big>)</big><a class="reference internal" href="_modules/controls.html#intersection"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Finds the basis for the intersection of two spaces</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="controls.minReal">
+<tt class="descclassname">controls.</tt><tt class="descname">minReal</tt><big>(</big><em>check_A</em>, <em>check_B</em>, <em>check_C</em>, <em>method='k'</em><big>)</big><a class="reference internal" href="_modules/controls.html#minReal"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Produces the minimal realization of the state space using Kalman decomposition procedure
+Returns only the space which is both controllable and observable</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="controls.nullspace">
+<tt class="descclassname">controls.</tt><tt class="descname">nullspace</tt><big>(</big><em>mat</em><big>)</big><a class="reference internal" href="_modules/controls.html#nullspace"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Generates the Unitary basis for the null-space of the given matrix</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="controls.observability">
+<tt class="descclassname">controls.</tt><tt class="descname">observability</tt><big>(</big><em>C</em>, <em>A</em><big>)</big><a class="reference internal" href="_modules/controls.html#observability"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Checks for the observability of the system. 
+Returns:
+Observability matrix 
+True : if full rank
+False : if rank deficient</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="controls.removeBasis">
+<tt class="descclassname">controls.</tt><tt class="descname">removeBasis</tt><big>(</big><em>space</em>, <em>basis</em><big>)</big><a class="reference internal" href="_modules/controls.html#removeBasis"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Removes the mentioned basis and provides the remaining basis from the subspace.
+returns basis which is unitary in the remaining space</p>
+</dd></dl>
+
+</div>
+<div class="section" id="mor-by-moment-matching-module">
+<h2>MOR by Moment Matching module</h2>
+<p>This module contains all the functions to be used for MOR by Moment matching</p>
+<span class="target" id="module-arnoldi"></span><dl class="function">
+<dt id="arnoldi.LD2HD">
+<tt class="descclassname">arnoldi.</tt><tt class="descname">LD2HD</tt><big>(</big><em>t</em>, <em>y</em><big>)</big><a class="reference internal" href="_modules/arnoldi.html#LD2HD"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Used to convert from Lower dimension to Higher dimension</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="arnoldi.check_stability_MOR">
+<tt class="descclassname">arnoldi.</tt><tt class="descname">check_stability_MOR</tt><big>(</big><em>moments</em>, <em>count</em>, <em>state</em><big>)</big><a class="reference internal" href="_modules/arnoldi.html#check_stability_MOR"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Checks the stability of the Jacobians created after reduction with a certain number of moments matched</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="arnoldi.dervPWLMOR">
+<tt class="descclassname">arnoldi.</tt><tt class="descname">dervPWLMOR</tt><big>(</big><em>yNew</em>, <em>t</em><big>)</big><a class="reference internal" href="_modules/arnoldi.html#dervPWLMOR"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Produces reduced order derivative at any point in time</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="arnoldi.get_redBasis">
+<tt class="descclassname">arnoldi.</tt><tt class="descname">get_redBasis</tt><big>(</big><em>t</em>, <em>moment</em>, <em>order</em>, <em>redOrder</em><big>)</big><a class="reference internal" href="_modules/arnoldi.html#get_redBasis"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns basis after Moment Matching</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="arnoldi.y0MOR">
+<tt class="descclassname">arnoldi.</tt><tt class="descname">y0MOR</tt><big>(</big><em>y</em>, <em>t</em><big>)</big><a class="reference internal" href="_modules/arnoldi.html#y0MOR"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Generates the lower dimension initial conditions</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Commonsource.html" title="Common Source Amplifier"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="introduction.html" title="Motivation for Order Reduction"
+             >previous</a> |</li>
+        <li><a href="index.html">TPWL-MOR 1.0</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Bhargava Chintalapati.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

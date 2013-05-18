@@ -19,18 +19,18 @@ def split_cords( given ):
 	return x,y,z
 
 
-file_read = open('./solnPWL.txt','r')
-solnPWL , redBasis , yact , linP , linPRed = pickle.load( file_read )
+file_read = open( './solnPWL_AOI.txt','r')
+solnPWL, redBasis, linP, linPRed = pickle.load( file_read )
 file_read.close()
 x, y,z = split_cords( solnPWL )
 
-file_read = open('./dump.txt','r')
-solncheck = pickle.load( file_read )
-file_read.close()
+#file_read = open('./dump.txt','r')
+#solncheck = pickle.load( file_read )
+#file_read.close()
 
-x_check ,y_check , z_check  = split_cords ( solncheck )
+#x_check ,y_check , z_check  = split_cords ( solncheck )
 
-x_MOR ,y_MOR , z_MOR  = split_cords ( yact )
+#x_MOR ,y_MOR , z_MOR  = split_cords ( yact )
 
 x_linP ,y_linP, z_linP = split_cords( linP )
 
@@ -46,21 +46,24 @@ percError = [ error[ i ] * 100 / normLinp[ i ]  for i in range( len ( error ) ) 
 
 
 
-table = prettytable.PrettyTable( ["Point", "Percentage Error"] )
-for linpt in range( len( x_linP) -1) :
-    table.add_row( [linpt+1 , percError[ linpt ] ] )
-print table
+#table = prettytable.PrettyTable( ["Point", "Percentage Error"] )
+#for linpt in range( len( x_linP) -1) :
+#    table.add_row( [linpt+1 , percError[ linpt ] ] )
+#print table
 
 x_plane, y_plane = numpy.mgrid[ 1:5,3:6 ]
-planeMOR = surf( x_plane, y_plane, plane_z , colormap = 'cool')
-axes()    
+planeMOR = surf( x_plane, y_plane, plane_z , color = ( 0.3 ,0.3 , 1 ) ,opacity = 0.3)
+axes()
+#ax.label_text_property.font_family = 'times'
+#ax.label_text_property.font_size = 3
+#text('Ideal Differential Amplifier 3D state space' )
 outline( planeMOR )
 
-TPWL = plot3d(x, y, z, tube_radius = 0.015 )
-plot3d(x_check ,y_check , z_check, tube_radius = 0.0015 )
+TPWL = plot3d(x, y, z, tube_radius = 0.005,color = (1,0,0) )
+#plot3d(x_check ,y_check , z_check, tube_radius = 0.00015 )
 
-points3d( linPRed_x, linPRed_y, linPRed_z,colormap = "copper", scale_factor = 0.025 )
-points3d( x_linP ,y_linP, z_linP , colormap = 'gist_earth', scale_factor = 0.012)
+points3d( linPRed_x[ : 50], linPRed_y[ : 50], linPRed_z[ : 50],color = ( 0,1,0), scale_factor = 0.025 , opacity = 0.5)
+points3d( x_linP[ : 50] ,y_linP[ : 50], z_linP[ : 50] , color = (1, 1 , 0 ), scale_factor = 0.025)
 
 
 show()

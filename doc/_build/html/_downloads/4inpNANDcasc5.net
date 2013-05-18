@@ -1,0 +1,55 @@
+* Z:\home\bhargava\ddp\SPICE\4inpNANDcasc5.asc
+M1 nand1 Ainp N001 N001 CMOSN l=0.36u w=0.72u
+M2 N001 Binp N006 N006 CMOSN l=0.36u w=0.72u
+M3 N006 Cinp N011 N011 CMOSN l=0.36u w=0.72u
+M4 N011 Dinp 0 0 CMOSN l=0.36u w=0.72u
+M5 nand1 Binp Vdd Vdd CMOSP l=0.36u w=2.88u
+M6 nand1 Ainp Vdd Vdd CMOSP l=0.36u w=2.88u
+M7 nand1 Cinp Vdd Vdd CMOSP l=0.36u w=2.88u
+M8 nand1 Dinp Vdd Vdd CMOSP l=0.36u w=2.88u
+V1 Vdd 0 5
+V2 Ainp 0 PULSE(5 0 0.5us 10us 0 5us)
+V3 Binp 0 5
+V4 Cinp 0 5
+V5 Dinp 0 5
+M9 nand2 nand1 N002 N002 CMOSN l=0.36u w=0.72u
+M10 N002 Binp N007 N007 CMOSN l=0.36u w=0.72u
+M11 N007 Cinp N012 N012 CMOSN l=0.36u w=0.72u
+M12 N012 Dinp 0 0 CMOSN l=0.36u w=0.72u
+M13 nand2 Binp Vdd Vdd CMOSP l=0.36u w=2.88u
+M14 nand2 nand1 Vdd Vdd CMOSP l=0.36u w=2.88u
+M15 nand2 Cinp Vdd Vdd CMOSP l=0.36u w=2.88u
+M16 nand2 Dinp Vdd Vdd CMOSP l=0.36u w=2.88u
+M17 nand3 nand2 N003 N003 CMOSN l=0.36u w=0.72u
+M18 N003 Binp N008 N008 CMOSN l=0.36u w=0.72u
+M19 N008 Cinp N013 N013 CMOSN l=0.36u w=0.72u
+M20 N013 Dinp 0 0 CMOSN l=0.36u w=0.72u
+M21 nand3 Binp Vdd Vdd CMOSP l=0.36u w=2.88u
+M22 nand3 nand2 Vdd Vdd CMOSP l=0.36u w=2.88u
+M23 nand3 Cinp Vdd Vdd CMOSP l=0.36u w=2.88u
+M24 nand3 Dinp Vdd Vdd CMOSP l=0.36u w=2.88u
+M25 nand4 nand3 N004 N004 CMOSN l=0.36u w=0.72u
+M26 N004 Binp N009 N009 CMOSN l=0.36u w=0.72u
+M27 N009 Cinp N014 N014 CMOSN l=0.36u w=0.72u
+M28 N014 Dinp 0 0 CMOSN l=0.36u w=0.72u
+M29 nand4 Binp Vdd Vdd CMOSP l=0.36u w=2.88u
+M30 nand4 nand3 Vdd Vdd CMOSP l=0.36u w=2.88u
+M31 nand4 Cinp Vdd Vdd CMOSP l=0.36u w=2.88u
+M32 nand4 Dinp Vdd Vdd CMOSP l=0.36u w=2.88u
+M33 nand5 nand4 N005 N005 CMOSN l=0.36u w=0.72u
+M34 N005 Binp N010 N010 CMOSN l=0.36u w=0.72u
+M35 N010 Cinp N015 N015 CMOSN l=0.36u w=0.72u
+M36 N015 Dinp 0 0 CMOSN l=0.36u w=0.72u
+M37 nand5 Binp Vdd Vdd CMOSP l=0.36u w=2.88u
+M38 nand5 nand4 Vdd Vdd CMOSP l=0.36u w=2.88u
+M39 nand5 Cinp Vdd Vdd CMOSP l=0.36u w=2.88u
+M40 nand5 Dinp Vdd Vdd CMOSP l=0.36u w=2.88u
+.model NMOS NMOS
+.model PMOS PMOS
+.lib C:\Program Files\LTC\LTspiceIV\lib\cmp\standard.mos
+.tran 0 15us 0
+.include level1MOS.lib
+.option numdgt=10
+.backanno
+.end
+

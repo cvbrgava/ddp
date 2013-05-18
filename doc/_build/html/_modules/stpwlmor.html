@@ -1,0 +1,293 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>stpwlmor &mdash; Trajectory based Order Reduction 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/logo.ico"/>
+    <link rel="top" title="Trajectory based Order Reduction 1.0 documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">TPWL-MOR 1.0</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for stpwlmor</h1><div class="highlight"><pre>
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">dot</span> <span class="k">as</span> <span class="n">nD</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">import</span> <span class="nn">scipy</span>
+
+<span class="k">global</span> <span class="n">redOrder</span> 
+<span class="n">redOrder</span> <span class="o">=</span> <span class="mi">3</span>
+
+<div class="viewcode-block" id="get_redBasis"><a class="viewcode-back" href="../code.html#stpwlmor.get_redBasis">[docs]</a><span class="k">def</span> <span class="nf">get_redBasis</span><span class="p">(</span> <span class="n">moment</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">redOrder</span><span class="p">):</span>
+	<span class="sd">&#39;&#39;&#39;Returns basis after Moment Matching &#39;&#39;&#39;</span>
+
+	<span class="n">spanAgg</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span> <span class="n">linP</span> <span class="p">,</span> <span class="mi">1</span> <span class="p">)</span>
+
+	<span class="c">#input_signals = get_input_signals( t ) </span>
+
+	<span class="c">#sub1 = { state[ str( input_list[ k ] ) ] : input_signals[ k ] for k in range( len( input_list ) ) }</span>
+
+	<span class="n">linPVal</span><span class="o">=</span><span class="p">[</span>  <span class="n">Matrix</span><span class="p">[</span> <span class="n">i</span> <span class="p">]</span><span class="o">.</span><span class="n">linPVal</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="n">count</span> <span class="p">)]</span>
+
+	<span class="n">linPJac</span><span class="o">=</span><span class="p">[</span> <span class="n">Matrix</span><span class="p">[</span> <span class="n">i</span> <span class="p">]</span><span class="o">.</span><span class="n">linPJac</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="n">count</span> <span class="p">)</span> <span class="p">]</span>
+
+	<span class="k">for</span> <span class="n">linpt</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="n">count</span> <span class="p">):</span>
+		<span class="n">spanV1</span> <span class="o">=</span> <span class="p">[</span> <span class="n">numpy</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span> <span class="n">numpy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span> <span class="n">linPJac</span><span class="p">[</span> <span class="n">linpt</span> <span class="p">]</span> <span class="p">),</span><span class="n">B</span><span class="p">[</span> <span class="n">linpt</span> <span class="p">])</span> <span class="p">]</span>
+        
+		<span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="n">moment</span> <span class="p">):</span>
+			<span class="n">spanV1</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">numpy</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span> <span class="n">numpy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span> <span class="n">linPJac</span><span class="p">[</span> <span class="n">linpt</span> <span class="p">]</span> <span class="p">),</span><span class="n">spanV1</span><span class="p">[</span> <span class="o">-</span><span class="mi">1</span> <span class="p">])</span> <span class="p">)</span>
+
+		<span class="n">spanV1</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span> <span class="n">spanV1</span><span class="p">,</span> <span class="mi">1</span> <span class="p">)</span>
+        
+
+		<span class="n">spanV2</span> <span class="o">=</span> <span class="p">[</span> <span class="n">numpy</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span> <span class="n">numpy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span> <span class="n">linPJac</span><span class="p">[</span> <span class="n">linpt</span> <span class="p">]</span> <span class="p">),</span><span class="n">linPVal</span><span class="p">[</span> <span class="n">linpt</span> <span class="p">]</span> <span class="o">-</span> <span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span> <span class="n">linPJac</span><span class="p">[</span> <span class="n">linpt</span> <span class="p">],</span> <span class="n">linP</span><span class="p">[</span> <span class="n">linpt</span> <span class="p">]</span> <span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span> <span class="n">order</span> <span class="p">,</span><span class="mi">1</span> <span class="p">)</span> <span class="p">)]</span>
+		<span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="n">moment</span> <span class="p">):</span>
+			<span class="n">spanV2</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">numpy</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span> <span class="n">numpy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span> <span class="n">linPJac</span><span class="p">[</span> <span class="n">linpt</span> <span class="p">]</span> <span class="p">),</span><span class="n">spanV2</span><span class="p">[</span> <span class="o">-</span><span class="mi">1</span> <span class="p">])</span> <span class="p">)</span>
+		<span class="n">spanV2</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span> <span class="n">spanV2</span><span class="p">,</span> <span class="mi">1</span> <span class="p">)</span>	
+		
+		<span class="n">unitSpanV1</span> <span class="p">,</span> <span class="n">R</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">qr</span><span class="p">(</span> <span class="n">spanV1</span> <span class="p">)</span>
+
+		<span class="n">unitSpanV2</span> <span class="p">,</span> <span class="n">R</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">qr</span><span class="p">(</span> <span class="n">spanV2</span> <span class="p">)</span>
+
+	<span class="n">spanAgg</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span> <span class="p">(</span> <span class="n">spanAgg</span><span class="p">,</span> <span class="n">unitSpanV1</span> <span class="p">,</span> <span class="n">unitSpanV2</span><span class="p">)</span> <span class="p">,</span> <span class="mi">1</span> <span class="p">)</span>
+
+	<span class="n">eigenC</span> <span class="p">,</span> <span class="n">eigenV</span> <span class="p">,</span> <span class="n">eigenR</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">svd</span><span class="p">(</span><span class="n">spanAgg</span><span class="p">)</span>
+        
+	<span class="n">redBasis</span> <span class="o">=</span> <span class="n">eigenC</span><span class="p">[</span> <span class="p">:</span> <span class="p">,</span> <span class="p">:</span><span class="n">redOrder</span> <span class="p">]</span>
+	
+	<span class="n">linPValRed</span> <span class="o">=</span> <span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span> <span class="n">redBasis</span><span class="o">.</span><span class="n">T</span><span class="p">,</span><span class="n">linPVal</span><span class="p">[</span> <span class="n">k</span> <span class="p">])</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="n">count</span> <span class="p">)</span> <span class="p">]</span> 
+	
+	<span class="n">linPJacRed</span> <span class="o">=</span> <span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span> <span class="n">redBasis</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span> <span class="n">linPJac</span><span class="p">[</span> <span class="n">k</span> <span class="p">]</span> <span class="p">,</span> <span class="n">redBasis</span> <span class="p">)</span> <span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="n">count</span> <span class="p">)]</span>
+	
+	<span class="k">return</span> <span class="n">redBasis</span><span class="c">#, linPValRed, linPJacRed</span>
+</div>
+<div class="viewcode-block" id="get_U_linp"><a class="viewcode-back" href="../code.html#stpwlmor.get_U_linp">[docs]</a><span class="k">def</span> <span class="nf">get_U_linp</span><span class="p">(</span> <span class="n">Matrix</span> <span class="p">):</span>
+	<span class="sd">&#39;&#39;&#39; Assumes stable system and returns a stable rowspace for MOR using lyapunov stability criterion. Builds lyapunov function using -I &#39;&#39;&#39;</span>
+	<span class="n">V</span> <span class="o">=</span> <span class="n">get_redBasis</span><span class="p">(</span> <span class="mi">2</span> <span class="p">,</span> <span class="n">order</span> <span class="p">,</span> <span class="n">redOrder</span> <span class="p">)</span>
+	<span class="n">P</span> <span class="o">=</span> <span class="p">[</span> <span class="n">scipy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">solve_sylvester</span><span class="p">(</span> <span class="p">(</span> <span class="n">Matrix</span><span class="p">[</span> <span class="n">linpt</span> <span class="p">]</span><span class="o">.</span><span class="n">linPJac</span> <span class="p">)</span><span class="o">.</span><span class="n">T</span> <span class="p">,</span> <span class="p">(</span> <span class="n">Matrix</span><span class="p">[</span> <span class="n">linpt</span> <span class="p">]</span><span class="o">.</span><span class="n">linPJac</span> <span class="p">)</span> <span class="p">,</span> <span class="o">-</span><span class="n">numpy</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span> <span class="n">order</span> <span class="p">)</span> <span class="p">)</span> <span class="k">if</span> <span class="nb">max</span><span class="p">(</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span> <span class="p">(</span> <span class="n">numpy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigvals</span><span class="p">(</span> <span class="n">Matrix</span><span class="p">[</span> <span class="n">linpt</span> <span class="p">]</span><span class="o">.</span><span class="n">linPJac</span><span class="p">)</span> <span class="p">)</span> <span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">numpy</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span> <span class="n">order</span> <span class="p">,</span><span class="n">order</span> <span class="p">)</span> <span class="k">for</span> <span class="n">linpt</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="n">count</span> <span class="p">)</span> <span class="p">]</span>
+	<span class="n">U</span> <span class="o">=</span> <span class="p">[</span> <span class="p">(</span> <span class="n">nD</span><span class="p">(</span> <span class="n">numpy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">nD</span><span class="p">(</span> <span class="n">nD</span><span class="p">(</span> <span class="n">V</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">P</span><span class="p">[</span> <span class="n">linpt</span> <span class="p">]</span> <span class="p">)</span> <span class="p">,</span> <span class="n">V</span> <span class="p">)</span> <span class="p">)</span> <span class="p">,</span> <span class="n">nD</span><span class="p">(</span> <span class="n">V</span><span class="o">.</span><span class="n">T</span> <span class="p">,</span> <span class="n">P</span><span class="p">[</span> <span class="n">linpt</span> <span class="p">]</span> <span class="p">)</span> <span class="p">)</span> <span class="p">)</span><span class="o">.</span><span class="n">T</span> <span class="k">for</span> <span class="n">linpt</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="n">count</span> <span class="p">)</span> <span class="p">]</span>
+	<span class="k">return</span> <span class="n">U</span>
+</div>
+<div class="viewcode-block" id="obliqueprojection"><a class="viewcode-back" href="../code.html#stpwlmor.obliqueprojection">[docs]</a><span class="k">def</span> <span class="nf">obliqueprojection</span><span class="p">(</span> <span class="n">rowspace</span><span class="p">,</span> <span class="n">columnspace</span><span class="p">,</span> <span class="n">points</span><span class="p">,</span> <span class="n">fullD</span> <span class="o">=</span> <span class="bp">False</span><span class="p">):</span>
+	<span class="sd">&#39;&#39;&#39; Returns the result of the oblique projection with a given rowspace and columnpsace of the projection. The input can be a single vector or a list of vectors. </span>
+<span class="sd">	The result is returned in lower dimension unless full dimension is asked for&#39;&#39;&#39;</span>
+	<span class="n">proj</span> <span class="o">=</span> <span class="n">nD</span><span class="p">(</span> <span class="n">numpy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span> <span class="n">nD</span><span class="p">(</span> <span class="n">rowspace</span><span class="o">.</span><span class="n">T</span> <span class="p">,</span> <span class="n">columnspace</span> <span class="p">)</span> <span class="p">)</span> <span class="p">,</span> <span class="n">rowspace</span><span class="o">.</span><span class="n">T</span> <span class="p">)</span>
+	<span class="k">if</span> <span class="p">(</span> <span class="nb">type</span><span class="p">(</span> <span class="n">points</span> <span class="p">)</span> <span class="o">==</span> <span class="nb">list</span> <span class="p">)</span> <span class="p">:</span>
+		<span class="k">if</span> <span class="ow">not</span> <span class="n">fullD</span><span class="p">:</span>
+			<span class="k">return</span> <span class="p">[</span> <span class="n">nD</span><span class="p">(</span> <span class="n">proj</span> <span class="p">,</span> <span class="n">point</span> <span class="p">)</span> <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="n">points</span> <span class="p">]</span>
+		<span class="k">else</span> <span class="p">:</span>
+			<span class="k">return</span> <span class="p">[</span> <span class="n">nD</span><span class="p">(</span> <span class="n">columnspace</span><span class="p">,</span> <span class="n">nD</span><span class="p">(</span> <span class="n">proj</span> <span class="p">,</span> <span class="n">point</span> <span class="p">)</span> <span class="p">)</span> <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="n">points</span> <span class="p">]</span>
+	<span class="k">else</span><span class="p">:</span>
+		<span class="k">if</span> <span class="ow">not</span> <span class="n">fullD</span><span class="p">:</span>
+			<span class="k">return</span> <span class="n">nD</span><span class="p">(</span> <span class="n">proj</span> <span class="p">,</span> <span class="n">points</span> <span class="p">)</span>
+		<span class="k">else</span> <span class="p">:</span>
+			<span class="k">return</span> <span class="n">nD</span><span class="p">(</span> <span class="n">columnspace</span><span class="p">,</span> <span class="n">nD</span><span class="p">(</span><span class="n">proj</span> <span class="p">,</span> <span class="n">points</span> <span class="p">)</span> <span class="p">)</span>
+        </div>
+<div class="viewcode-block" id="get_mu"><a class="viewcode-back" href="../code.html#stpwlmor.get_mu">[docs]</a><span class="k">def</span> <span class="nf">get_mu</span><span class="p">(</span> <span class="n">y</span> <span class="p">,</span> <span class="n">U</span> <span class="p">,</span> <span class="n">V</span> <span class="p">,</span> <span class="n">linP</span><span class="p">,</span> <span class="n">redOrder</span> <span class="p">,</span> <span class="n">count</span> <span class="p">):</span>
+	<span class="sd">&#39;&#39;&#39; Obliquely projects all the linearization points on the same subspace and calculated mu &#39;&#39;&#39;</span>
+	<span class="n">linPRed</span> <span class="o">=</span> <span class="n">obliqueprojection</span><span class="p">(</span> <span class="n">U</span> <span class="p">,</span> <span class="n">V</span> <span class="p">,</span> <span class="nb">list</span><span class="p">(</span> <span class="n">linP</span> <span class="p">)</span> <span class="p">)</span>
+	<span class="n">norm</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span> <span class="mf">10.0</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="mi">20</span><span class="o">*</span><span class="n">numpy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span> <span class="n">linPRed</span><span class="p">[</span> <span class="n">i</span> <span class="p">]</span> <span class="o">-</span> <span class="n">y</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">redOrder</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span> <span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">count</span><span class="p">)</span> <span class="p">])</span>
+	<span class="n">mu</span> <span class="o">=</span> <span class="n">norm</span><span class="o">/</span><span class="n">norm</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+	<span class="k">return</span> <span class="n">mu</span>
+
+</div>
+<div class="viewcode-block" id="get_U"><a class="viewcode-back" href="../code.html#stpwlmor.get_U">[docs]</a><span class="k">def</span> <span class="nf">get_U</span><span class="p">(</span> <span class="n">mu</span> <span class="p">,</span> <span class="n">U</span> <span class="p">)</span> <span class="p">:</span>
+	<span class="sd">&#39;&#39;&#39; Returns cummulative U from Piecewise U&#39;s obtained &#39;&#39;&#39;</span>
+	<span class="n">temp</span> <span class="o">=</span> <span class="mi">0</span>
+	<span class="k">for</span> <span class="n">linpt</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="n">count</span> <span class="p">):</span>
+		<span class="n">temp</span> <span class="o">=</span> <span class="n">temp</span> <span class="o">+</span> <span class="n">mu</span><span class="p">[</span> <span class="n">linpt</span> <span class="p">]</span> <span class="o">*</span> <span class="n">U</span><span class="p">[</span> <span class="n">linpt</span> <span class="p">]</span>
+	<span class="k">return</span> <span class="n">temp</span>
+</div>
+<div class="viewcode-block" id="check_stab"><a class="viewcode-back" href="../code.html#stpwlmor.check_stab">[docs]</a><span class="k">def</span> <span class="nf">check_stab</span><span class="p">(</span> <span class="n">Matrix</span> <span class="p">):</span>
+	<span class="sd">&#39;&#39;&#39; Checks the stability of the Piecewise jacobians &#39;&#39;&#39;</span>
+
+	<span class="k">if</span> <span class="mf">1.0</span> <span class="ow">in</span> <span class="p">[</span> <span class="n">sign</span> <span class="p">(</span> <span class="nb">max</span><span class="p">(</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span> <span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigvals</span><span class="p">(</span> <span class="n">Matrix</span><span class="p">[</span> <span class="n">i</span> <span class="p">]</span><span class="o">.</span><span class="n">linPJac</span> <span class="p">)</span> <span class="p">)</span> <span class="p">)</span>  <span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="n">count</span> <span class="p">)</span> <span class="p">]</span> <span class="p">:</span>
+		<span class="k">print</span> <span class="s">&quot; Unstable&quot;</span>
+		<span class="k">return</span> <span class="bp">False</span>
+	<span class="k">else</span><span class="p">:</span>
+		<span class="k">return</span> <span class="bp">True</span>
+
+</div>
+<div class="viewcode-block" id="get_y0_MOR"><a class="viewcode-back" href="../code.html#stpwlmor.get_y0_MOR">[docs]</a><span class="k">def</span> <span class="nf">get_y0_MOR</span><span class="p">(</span> <span class="n">y</span> <span class="p">):</span>
+	<span class="sd">&#39;&#39;&#39; Function to get the initial condition in the required basis&#39;&#39;&#39;</span>
+	<span class="n">UlinP</span> <span class="o">=</span> <span class="p">(</span> <span class="n">get_U_linp</span><span class="p">(</span> <span class="n">Matrix</span> <span class="p">)</span> <span class="p">)[</span> <span class="mi">0</span> <span class="p">]</span>
+	<span class="n">VlinP</span> <span class="o">=</span> <span class="n">get_redBasis</span><span class="p">(</span> <span class="mi">2</span> <span class="p">,</span> <span class="n">order</span> <span class="p">,</span> <span class="n">redOrder</span> <span class="p">)</span>    
+	<span class="k">return</span> <span class="n">obliqueprojection</span><span class="p">(</span> <span class="n">UlinP</span> <span class="p">,</span> <span class="n">VlinP</span> <span class="p">,</span> <span class="n">y</span> <span class="p">)</span>
+</div>
+<div class="viewcode-block" id="get_MOR_Jac"><a class="viewcode-back" href="../code.html#stpwlmor.get_MOR_Jac">[docs]</a><span class="k">def</span> <span class="nf">get_MOR_Jac</span><span class="p">(</span> <span class="n">Matrix</span> <span class="p">,</span> <span class="n">B</span> <span class="p">,</span><span class="n">linP</span><span class="p">,</span>  <span class="n">count</span><span class="p">):</span>
+	<span class="sd">&#39;&#39;&#39; Returns the order reduced Jacobian and new B &#39;&#39;&#39;</span>
+	<span class="n">Ulinp</span> <span class="o">=</span> <span class="n">get_U_linp</span><span class="p">(</span> <span class="n">Matrix</span> <span class="p">)</span>
+	<span class="n">V</span> <span class="o">=</span> <span class="n">get_redBasis</span><span class="p">(</span> <span class="mi">2</span> <span class="p">,</span> <span class="n">order</span> <span class="p">,</span> <span class="n">redOrder</span> <span class="p">)</span>
+
+	<span class="n">linPJac_Red</span> <span class="o">=</span> <span class="p">[</span> <span class="p">[</span> <span class="n">nD</span><span class="p">(</span> <span class="n">nD</span><span class="p">((</span><span class="n">Ulinp</span><span class="p">[</span><span class="n">k</span><span class="p">])</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">Matrix</span><span class="p">[</span> <span class="n">i</span> <span class="p">]</span><span class="o">.</span><span class="n">linPJac</span> <span class="p">)</span> <span class="p">,</span> <span class="n">V</span> <span class="p">)</span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="n">count</span>  <span class="p">)</span> <span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="n">count</span> <span class="p">)</span> <span class="p">]</span>
+
+	<span class="n">Bnew</span> <span class="o">=</span> <span class="p">[</span> <span class="n">numpy</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span> <span class="n">B</span><span class="p">[</span> <span class="n">linpt</span> <span class="p">]</span> <span class="p">,</span> <span class="n">Matrix</span><span class="p">[</span> <span class="n">linpt</span> <span class="p">]</span><span class="o">.</span><span class="n">linPVal</span> <span class="o">-</span> <span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span> <span class="n">Matrix</span><span class="p">[</span> <span class="n">i</span> <span class="p">]</span><span class="o">.</span><span class="n">linPJac</span><span class="p">,</span> <span class="n">linP</span><span class="p">[</span> <span class="n">i</span> <span class="p">]</span> <span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span> <span class="n">order</span> <span class="p">,</span><span class="mi">1</span> <span class="p">)</span> <span class="p">),</span><span class="mi">1</span> <span class="p">)</span> <span class="k">for</span> <span class="n">linpt</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="n">count</span> <span class="p">)</span> <span class="p">]</span>
+
+	<span class="n">BRed</span> <span class="o">=</span> <span class="p">[</span> <span class="p">[</span>  <span class="n">nD</span><span class="p">(</span> <span class="p">(</span> <span class="n">Ulinp</span><span class="p">[</span> <span class="n">k</span> <span class="p">]</span> <span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">Bnew</span><span class="p">[</span> <span class="n">i</span> <span class="p">]</span> <span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="n">count</span>  <span class="p">)</span> <span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="n">count</span> <span class="p">)</span> <span class="p">]</span>
+	<span class="k">return</span> <span class="n">linPJac_Red</span> <span class="p">,</span> <span class="n">BRed</span>
+
+
+
+</div>
+<div class="viewcode-block" id="STPWLMOR"><a class="viewcode-back" href="../code.html#stpwlmor.STPWLMOR">[docs]</a><span class="k">class</span> <span class="nc">STPWLMOR</span><span class="p">(</span> <span class="nb">object</span> <span class="p">):</span>
+	<span class="sd">&#39;&#39;&#39;Contains all the information needed to carry out integration using STPWL-MOR algorithm on all Hurwitz system. &#39;&#39;&#39;</span>
+	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>        
+		<span class="bp">self</span><span class="o">.</span><span class="n">newBasis</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">matrix</span><span class="p">(</span> <span class="n">numpy</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">order</span><span class="p">,</span><span class="n">redOrder</span><span class="p">)</span> <span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">UlinP</span> <span class="o">=</span> <span class="n">get_U_linp</span><span class="p">(</span> <span class="n">Matrix</span> <span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">oldBasis</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">UlinP</span><span class="p">[</span> <span class="mi">0</span> <span class="p">]</span> 
+		<span class="bp">self</span><span class="o">.</span><span class="n">V</span> <span class="o">=</span> <span class="n">get_redBasis</span><span class="p">(</span> <span class="mi">2</span> <span class="p">,</span> <span class="n">order</span> <span class="p">,</span> <span class="n">redOrder</span> <span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">JacRed</span> <span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">BRed</span> <span class="o">=</span> <span class="n">get_MOR_Jac</span><span class="p">(</span><span class="n">Matrix</span><span class="p">,</span> <span class="n">B</span> <span class="p">,</span> <span class="n">linP</span><span class="p">,</span> <span class="n">count</span> <span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">linPRed</span> <span class="o">=</span> <span class="p">[</span> <span class="n">obliqueprojection</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">UlinP</span><span class="p">[</span> <span class="n">linpt</span> <span class="p">]</span> <span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">V</span> <span class="p">,</span> <span class="n">linP</span><span class="p">[</span> <span class="n">linpt</span> <span class="p">]</span> <span class="p">)</span> <span class="k">for</span> <span class="n">linpt</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="n">count</span> <span class="p">)</span> <span class="p">]</span>
+    
+<div class="viewcode-block" id="STPWLMOR.derv"><a class="viewcode-back" href="../code.html#stpwlmor.STPWLMOR.derv">[docs]</a>	<span class="k">def</span> <span class="nf">derv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span> <span class="p">,</span> <span class="n">t</span> <span class="p">):</span>
+		<span class="sd">&#39;&#39;&#39; Returns derivative of the state space at a given time-instant &#39;&#39;&#39;</span>
+        
+		<span class="n">mu</span> <span class="o">=</span> <span class="n">get_mu</span><span class="p">(</span><span class="n">y</span> <span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">oldBasis</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">V</span> <span class="p">,</span> <span class="n">linP</span> <span class="p">,</span><span class="n">redOrder</span> <span class="p">,</span> <span class="n">count</span> <span class="p">)</span>
+		<span class="n">U</span> <span class="o">=</span> <span class="n">get_U</span><span class="p">(</span> <span class="n">mu</span> <span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">UlinP</span> <span class="p">)</span>
+		<span class="c">#print mu</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">oldBasis</span> <span class="o">=</span> <span class="n">U</span>
+		<span class="c">#linPRed = obliqueprojection( U , V , list( linP ), fullD = True )</span>
+		<span class="c">#yNew = obliqueprojection( U , V , y , fullD = True)</span>
+		<span class="n">temp</span> <span class="o">=</span> <span class="mi">0</span> 
+		<span class="n">sub1</span> <span class="o">=</span> <span class="p">{</span> <span class="n">state</span><span class="p">[</span> <span class="nb">str</span><span class="p">(</span> <span class="n">input_list</span><span class="p">[</span> <span class="n">k</span> <span class="p">]</span> <span class="p">)</span> <span class="p">]</span>  <span class="p">:</span> <span class="p">(</span><span class="n">get_input_signals</span><span class="p">(</span> <span class="n">t</span> <span class="p">))[</span> <span class="n">k</span> <span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="nb">len</span><span class="p">(</span> <span class="n">input_list</span> <span class="p">)</span> <span class="p">)</span> <span class="p">}</span>
+		<span class="n">inputM</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span> <span class="p">(</span><span class="n">Sym2NumArray</span><span class="p">(</span> <span class="n">inputm</span><span class="o">.</span><span class="n">evalf</span><span class="p">(</span> <span class="n">subs</span> <span class="o">=</span> <span class="n">sub1</span><span class="p">)</span> <span class="p">)</span> <span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">matrix</span><span class="p">(</span> <span class="p">([</span> <span class="mf">1.0</span> <span class="p">])</span> <span class="p">)</span> <span class="p">)</span> <span class="p">,</span> <span class="mi">0</span><span class="p">)</span> 
+		<span class="c">#print inputM</span>
+		<span class="n">weight</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="p">(</span> <span class="n">y</span><span class="p">,</span> <span class="n">mu</span> <span class="p">)</span>
+		<span class="n">mutemp</span> <span class="o">=</span> <span class="mi">0</span> 
+		<span class="k">for</span> <span class="n">Mu</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="n">count</span> <span class="p">):</span>
+			<span class="n">temp</span> <span class="o">=</span> <span class="mi">0</span>
+			<span class="k">for</span> <span class="n">wei</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">count</span><span class="p">):</span>
+				<span class="n">temp</span> <span class="o">=</span> <span class="n">temp</span> <span class="o">+</span>  <span class="n">weight</span><span class="p">[</span> <span class="n">wei</span> <span class="p">]</span> <span class="o">*</span> <span class="p">(</span> <span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">JacRed</span><span class="p">[</span> <span class="n">Mu</span> <span class="p">]</span> <span class="p">[</span> <span class="n">wei</span> <span class="p">]</span> <span class="p">,</span> <span class="n">y</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span> <span class="n">redOrder</span> <span class="p">,</span> <span class="mi">1</span> <span class="p">)</span> <span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span> <span class="n">redOrder</span> <span class="p">,</span><span class="mi">1</span> <span class="p">)</span>  <span class="o">+</span> <span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">BRed</span><span class="p">[</span> <span class="n">Mu</span> <span class="p">][</span> <span class="n">wei</span> <span class="p">],</span> <span class="n">inputM</span> <span class="p">)</span> <span class="p">)</span> <span class="p">)</span>
+                
+			<span class="n">mutemp</span> <span class="o">=</span> <span class="n">mutemp</span> <span class="o">+</span> <span class="n">mu</span><span class="p">[</span> <span class="n">Mu</span> <span class="p">]</span> <span class="o">*</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="n">temp</span> <span class="p">)</span>
+        
+		<span class="k">return</span>  <span class="p">(</span> <span class="p">(</span> <span class="n">nD</span><span class="p">(</span> <span class="n">numpy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span> <span class="n">nD</span><span class="p">(</span> <span class="n">U</span><span class="o">.</span><span class="n">T</span> <span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">V</span> <span class="p">)</span> <span class="p">)</span> <span class="p">,</span> <span class="n">mutemp</span> <span class="p">)</span> <span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span> <span class="mi">1</span><span class="p">,</span> <span class="n">redOrder</span> <span class="p">)</span>  <span class="p">)</span> <span class="p">[</span> <span class="mi">0</span> <span class="p">]</span>
+    </div>
+<div class="viewcode-block" id="STPWLMOR.check_stab"><a class="viewcode-back" href="../code.html#stpwlmor.STPWLMOR.check_stab">[docs]</a>	<span class="k">def</span> <span class="nf">check_stab</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+		<span class="sd">&#39;&#39;&#39; Checks if the MOR of the system provides us with stable Jacobians&#39;&#39;&#39;</span>
+		<span class="k">if</span> <span class="mi">1</span> <span class="ow">in</span> <span class="p">[</span>  <span class="n">sign</span><span class="p">(</span> <span class="nb">max</span><span class="p">(</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="n">numpy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigvals</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">JacRed</span><span class="p">[</span> <span class="n">k</span> <span class="p">][</span> <span class="n">i</span> <span class="p">]</span> <span class="p">)</span> <span class="p">)</span> <span class="p">)</span> <span class="p">)</span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="n">count</span> <span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="n">count</span> <span class="p">)</span> <span class="p">]:</span>
+			<span class="c">#print &quot;There is an unstable MOR Jacobian &quot;</span>
+			<span class="k">return</span> <span class="bp">False</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="c">#print &quot; System is stable &quot;</span>
+			<span class="k">return</span> <span class="bp">True</span>  
+    </div>
+<div class="viewcode-block" id="STPWLMOR.get_STPWL_weights_Bound"><a class="viewcode-back" href="../code.html#stpwlmor.STPWLMOR.get_STPWL_weights_Bound">[docs]</a>	<span class="k">def</span> <span class="nf">get_STPWL_weights_Bound</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">mu</span> <span class="p">):</span>
+		<span class="sd">&#39;&#39;&#39;Calculates the numerical bound on the Weighing functions&#39;&#39;&#39;</span>
+		<span class="n">P</span> <span class="o">=</span> <span class="p">[</span> <span class="n">scipy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">solve_sylvester</span><span class="p">(</span> <span class="p">(</span> <span class="n">Matrix</span><span class="p">[</span> <span class="n">linpt</span> <span class="p">]</span><span class="o">.</span><span class="n">linPJac</span> <span class="p">)</span><span class="o">.</span><span class="n">T</span> <span class="p">,</span> <span class="p">(</span> <span class="n">Matrix</span><span class="p">[</span> <span class="n">linpt</span> <span class="p">]</span><span class="o">.</span><span class="n">linPJac</span> <span class="p">)</span> <span class="p">,</span> <span class="o">-</span><span class="n">numpy</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span> <span class="n">order</span> <span class="p">)</span> <span class="p">)</span> <span class="k">for</span> <span class="n">linpt</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="n">count</span> <span class="p">)</span> <span class="p">]</span>
+		<span class="n">Phat</span> <span class="o">=</span> <span class="p">[</span> <span class="n">nD</span><span class="p">(</span> <span class="n">nD</span><span class="p">(</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">V</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">P</span><span class="p">[</span> <span class="n">linpt</span> <span class="p">]</span> <span class="p">)</span> <span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">V</span> <span class="p">)</span> <span class="k">for</span> <span class="n">linpt</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="n">count</span> <span class="p">)</span> <span class="p">]</span>
+		<span class="n">MaxTerm</span> <span class="o">=</span> <span class="p">[]</span>
+		<span class="n">MinTerm</span> <span class="o">=</span> <span class="p">[]</span>
+		<span class="n">wStar</span> <span class="o">=</span> <span class="p">[]</span>
+		<span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="n">count</span> <span class="p">):</span>
+			<span class="n">rowSpan</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span> <span class="n">count</span> <span class="p">)</span> 
+			<span class="n">rowSpan</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span> <span class="n">m</span> <span class="p">)</span>
+			<span class="n">singluarValues</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span> <span class="p">(</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span> <span class="nb">max</span><span class="p">(</span> <span class="n">numpy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">svd</span><span class="p">(</span> <span class="n">nD</span><span class="p">(</span> <span class="n">Phat</span><span class="p">[</span> <span class="n">m</span> <span class="p">]</span> <span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">JacRed</span><span class="p">[</span> <span class="n">k</span> <span class="p">]</span> <span class="p">[</span> <span class="n">i</span> <span class="p">]</span> <span class="p">)</span> <span class="p">,</span> <span class="n">compute_uv</span><span class="o">=</span> <span class="bp">False</span> <span class="p">)</span> <span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">rowSpan</span> <span class="p">])</span> <span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="n">count</span> <span class="p">)</span> <span class="p">]</span> <span class="p">)</span>
+			<span class="n">MaxTerm</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">numpy</span><span class="o">.</span><span class="n">dot</span> <span class="p">(</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="n">mu</span> <span class="p">)</span> <span class="p">,</span> <span class="n">singluarValues</span> <span class="p">)</span> <span class="p">)</span>
+			<span class="n">MinTerm</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">mu</span><span class="p">[</span> <span class="n">m</span> <span class="p">]</span> <span class="o">*</span> <span class="nb">min</span> <span class="p">(</span> <span class="n">numpy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">svd</span><span class="p">(</span> <span class="n">nD</span><span class="p">(</span> <span class="n">Phat</span><span class="p">[</span> <span class="n">m</span> <span class="p">]</span> <span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">JacRed</span><span class="p">[</span> <span class="n">m</span> <span class="p">][</span> <span class="n">m</span> <span class="p">]</span> <span class="p">)</span> <span class="p">,</span> <span class="n">compute_uv</span><span class="o">=</span><span class="bp">False</span> <span class="p">)</span> <span class="p">)</span> <span class="p">)</span>
+			<span class="n">wStar</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">MaxTerm</span><span class="p">[</span> <span class="n">m</span> <span class="p">]</span>  <span class="o">/</span> <span class="p">(</span> <span class="n">MaxTerm</span><span class="p">[</span> <span class="n">m</span> <span class="p">]</span>  <span class="o">+</span> <span class="n">MinTerm</span><span class="p">[</span> <span class="n">m</span> <span class="p">]</span>  <span class="p">)</span> <span class="p">)</span>
+			<span class="c">#print MinTerm [ m ] </span>
+		<span class="k">return</span> <span class="n">wStar</span>
+        </div>
+<div class="viewcode-block" id="STPWLMOR.get_Beta"><a class="viewcode-back" href="../code.html#stpwlmor.STPWLMOR.get_Beta">[docs]</a>	<span class="k">def</span> <span class="nf">get_Beta</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">y</span> <span class="p">,</span> <span class="n">mu</span> <span class="p">):</span>
+		<span class="sd">&#39;&#39;&#39; Returns the Beta function required to construct the weighting function&#39;&#39;&#39;</span>
+        
+		<span class="n">wStar</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_STPWL_weights_Bound</span><span class="p">(</span> <span class="n">mu</span> <span class="p">)</span>
+		<span class="n">norm</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span> <span class="n">numpy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">linPRed</span><span class="p">[</span> <span class="n">i</span> <span class="p">]</span> <span class="o">-</span> <span class="n">y</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">redOrder</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span> <span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">count</span><span class="p">)</span> <span class="p">])</span>
+		<span class="k">for</span> <span class="n">Norm</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="nb">len</span><span class="p">(</span> <span class="n">norm</span> <span class="p">)</span> <span class="p">):</span>
+			<span class="k">if</span> <span class="nb">min</span><span class="p">(</span> <span class="n">norm</span> <span class="p">)</span> <span class="o">==</span> <span class="n">norm</span><span class="p">[</span> <span class="n">Norm</span> <span class="p">]:</span>
+				<span class="n">m</span> <span class="o">=</span> <span class="n">Norm</span>
+		<span class="n">deltaM</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="nb">max</span><span class="p">(</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span>   <span class="bp">self</span><span class="o">.</span><span class="n">linPRed</span><span class="p">[</span> <span class="n">m</span> <span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">linPRed</span><span class="p">[</span> <span class="n">linpt</span> <span class="p">]</span> <span class="p">)</span> <span class="k">for</span> <span class="n">linpt</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="n">count</span> <span class="p">)</span> <span class="p">]</span> <span class="p">)</span> <span class="p">)</span>
+		<span class="k">return</span> <span class="n">log</span><span class="p">(</span> <span class="n">wStar</span><span class="p">[</span> <span class="n">m</span> <span class="p">]</span> <span class="p">)</span><span class="o">/</span> <span class="n">deltaM</span><span class="o">**</span><span class="mi">2</span>
+    </div>
+<div class="viewcode-block" id="STPWLMOR.weights"><a class="viewcode-back" href="../code.html#stpwlmor.STPWLMOR.weights">[docs]</a>	<span class="k">def</span> <span class="nf">weights</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">mu</span>  <span class="p">):</span>
+		<span class="sd">&#39;&#39;&#39; Returns stabilizing weights for the STPWL &#39;&#39;&#39;</span>
+		<span class="n">beta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_Beta</span><span class="p">(</span> <span class="n">y</span><span class="p">,</span> <span class="n">mu</span>  <span class="p">)</span>
+		<span class="n">norm</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span> <span class="n">numpy</span><span class="o">.</span><span class="n">e</span><span class="o">**</span><span class="p">(</span><span class="n">beta</span><span class="o">*</span><span class="n">numpy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">linPRed</span><span class="p">[</span> <span class="n">i</span> <span class="p">]</span> <span class="o">-</span> <span class="n">y</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">redOrder</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span> <span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">count</span><span class="p">)</span> <span class="p">])</span>
+		<span class="k">return</span> <span class="n">norm</span> <span class="o">/</span> <span class="n">norm</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+                </div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">TPWL-MOR 1.0</a> &raquo;</li>
+          <li><a href="index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Bhargava Chintalapati.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

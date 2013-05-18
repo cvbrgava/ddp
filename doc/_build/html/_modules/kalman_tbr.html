@@ -1,0 +1,369 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>kalman_tbr &mdash; Trajectory based Order Reduction 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/logo.ico"/>
+    <link rel="top" title="Trajectory based Order Reduction 1.0 documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">TPWL-MOR 1.0</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for kalman_tbr</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">concatenate</span> <span class="k">as</span> <span class="n">nC</span>
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">dot</span> <span class="k">as</span> <span class="n">nD</span>
+<span class="kn">from</span> <span class="nn">numpy.linalg</span> <span class="kn">import</span> <span class="n">inv</span> <span class="k">as</span> <span class="n">nI</span>
+
+<span class="c"># This file contains all the functions generally used in control system analysis. </span>
+<span class="c"># The Kalman Decomposition of the system to obtain minimal realization is also provided.</span>
+<span class="c"># Certain linear algebraic functions such as finding Null-space , Columnspace have been added for readability of code</span>
+<span class="c"># Special functions such as finding intersection of basis and removal of basis have been introduced.</span>
+
+
+
+
+<div class="viewcode-block" id="observability"><a class="viewcode-back" href="../code.html#kalman_tbr.observability">[docs]</a><span class="k">def</span> <span class="nf">observability</span><span class="p">(</span> <span class="n">C</span> <span class="p">,</span> <span class="n">A</span>  <span class="p">):</span>
+	<span class="sd">&#39;&#39;&#39; Checks for the observability of the system. </span>
+<span class="sd">	Returns:</span>
+<span class="sd">	Observability matrix </span>
+<span class="sd">	True : if full rank</span>
+<span class="sd">	False : if rank deficient &#39;&#39;&#39;</span>
+
+	<span class="n">start</span> <span class="o">=</span> <span class="p">[</span> <span class="n">C</span> <span class="p">]</span>
+	<span class="n">order</span> <span class="o">=</span> <span class="p">(</span><span class="n">shape</span><span class="p">(</span> <span class="n">A</span> <span class="p">))[</span> <span class="mi">0</span> <span class="p">]</span>
+	<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="n">order</span> <span class="o">-</span> <span class="mi">1</span> <span class="p">)</span> <span class="p">:</span>
+		<span class="n">start</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">nD</span><span class="p">(</span> <span class="n">start</span><span class="p">[</span> <span class="o">-</span><span class="mi">1</span> <span class="p">],</span> <span class="n">A</span> <span class="p">)</span> <span class="p">)</span>
+	<span class="n">obs</span> <span class="o">=</span> <span class="n">nC</span><span class="p">(</span> <span class="n">start</span> <span class="p">,</span> <span class="mi">0</span> <span class="p">)</span>
+	<span class="k">if</span><span class="p">(</span> <span class="n">matrix_rank</span><span class="p">(</span> <span class="n">obs</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">order</span> <span class="p">)</span> <span class="p">:</span>
+		<span class="k">return</span> <span class="n">obs</span><span class="p">,</span> <span class="bp">False</span>
+	<span class="k">else</span><span class="p">:</span>
+		<span class="k">return</span> <span class="n">obs</span><span class="p">,</span> <span class="bp">True</span>
+</div>
+<div class="viewcode-block" id="controlability"><a class="viewcode-back" href="../code.html#kalman_tbr.controlability">[docs]</a><span class="k">def</span> <span class="nf">controlability</span><span class="p">(</span> <span class="n">B</span><span class="p">,</span> <span class="n">A</span> <span class="p">):</span>
+	<span class="sd">&#39;&#39;&#39; Returns the controllability matrix and also checks its rank</span>
+<span class="sd">	returns </span>
+<span class="sd">	False : if rank deficient</span>
+<span class="sd">	True : if full rank &#39;&#39;&#39;</span>
+	<span class="n">start</span> <span class="o">=</span> <span class="p">[</span> <span class="n">B</span> <span class="p">]</span> 
+	<span class="n">order</span> <span class="o">=</span> <span class="p">(</span><span class="n">shape</span><span class="p">(</span> <span class="n">A</span> <span class="p">))[</span> <span class="mi">0</span> <span class="p">]</span>
+	<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="n">order</span> <span class="o">-</span><span class="mi">1</span> <span class="p">):</span>
+		<span class="n">start</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">nD</span><span class="p">(</span> <span class="n">A</span><span class="p">,</span> <span class="n">start</span><span class="p">[</span> <span class="o">-</span><span class="mi">1</span> <span class="p">]</span> <span class="p">)</span> <span class="p">)</span>
+	<span class="n">cont</span> <span class="o">=</span> <span class="n">nC</span><span class="p">(</span> <span class="n">start</span><span class="p">,</span><span class="mi">1</span> <span class="p">)</span>
+    	<span class="k">if</span> <span class="p">(</span> <span class="n">matrix_rank</span><span class="p">(</span> <span class="n">cont</span> <span class="p">)</span> <span class="o">&lt;</span> <span class="n">order</span> <span class="p">):</span>
+		<span class="k">return</span> <span class="n">cont</span><span class="p">,</span> <span class="bp">False</span>
+	<span class="k">else</span> <span class="p">:</span>
+		<span class="k">return</span> <span class="n">cont</span><span class="p">,</span> <span class="bp">True</span>
+</div>
+<div class="viewcode-block" id="columnProj"><a class="viewcode-back" href="../code.html#kalman_tbr.columnProj">[docs]</a><span class="k">def</span> <span class="nf">columnProj</span><span class="p">(</span> <span class="n">column</span> <span class="p">,</span> <span class="n">vect</span> <span class="p">,</span><span class="n">ret</span> <span class="p">):</span>
+	<span class="sd">&#39;&#39;&#39; Generates the column-space projection of the vector onto the space spanned by columns of column.</span>
+<span class="sd">	 ret = 1 : returns the coefficients of the projection</span>
+<span class="sd">	 ret = 0 : returns the projection in standard basis&#39;&#39;&#39;</span>
+	<span class="k">if</span> <span class="n">ret</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+		<span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span> <span class="n">column</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">column</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">column</span> <span class="p">)),</span> <span class="n">numpy</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span> <span class="n">column</span><span class="o">.</span><span class="n">T</span><span class="p">,</span><span class="n">vect</span> <span class="p">)</span> <span class="p">)</span> <span class="p">)</span>
+	<span class="k">else</span><span class="p">:</span>
+		<span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">column</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">column</span> <span class="p">)),</span> <span class="n">numpy</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span> <span class="n">column</span><span class="o">.</span><span class="n">T</span><span class="p">,</span><span class="n">vect</span> <span class="p">)</span> <span class="p">)</span> 
+</div>
+<div class="viewcode-block" id="columspace"><a class="viewcode-back" href="../code.html#kalman_tbr.columspace">[docs]</a><span class="k">def</span> <span class="nf">columspace</span><span class="p">(</span> <span class="n">mat</span> <span class="p">):</span>
+	<span class="sd">&#39;&#39;&#39; Generates the Unitary basis vectors which span the column space of the given matrix&#39;&#39;&#39;</span>
+	<span class="n">col</span><span class="p">,</span><span class="n">eigen</span><span class="p">,</span><span class="n">row</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">svd</span><span class="p">(</span><span class="n">mat</span><span class="p">)</span>
+	<span class="k">return</span> <span class="n">col</span><span class="p">[:,:</span><span class="n">matrix_rank</span><span class="p">(</span><span class="n">mat</span><span class="p">)]</span>
+</div>
+<div class="viewcode-block" id="nullspace"><a class="viewcode-back" href="../code.html#kalman_tbr.nullspace">[docs]</a><span class="k">def</span> <span class="nf">nullspace</span><span class="p">(</span> <span class="n">mat</span> <span class="p">):</span>
+	<span class="sd">&#39;&#39;&#39;Generates the Unitary basis for the null-space of the given matrix&#39;&#39;&#39;</span>
+	<span class="n">col</span><span class="p">,</span> <span class="n">eigen</span><span class="p">,</span> <span class="n">row</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">svd</span><span class="p">(</span> <span class="n">mat</span> <span class="p">)</span>    
+	<span class="k">return</span> <span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">T</span><span class="p">)[:,(</span><span class="n">matrix_rank</span><span class="p">(</span><span class="n">mat</span><span class="p">)):]</span>
+</div>
+<div class="viewcode-block" id="KalmanBasis"><a class="viewcode-back" href="../code.html#kalman_tbr.KalmanBasis">[docs]</a><span class="k">def</span> <span class="nf">KalmanBasis</span><span class="p">(</span> <span class="n">check_A</span><span class="p">,</span> <span class="n">check_B</span><span class="p">,</span> <span class="n">check_C</span> <span class="p">):</span>
+	<span class="sd">&#39;&#39;&#39; This function also produces Kalman basis but the generation of basis is slightly abmiguous, use KalmanBasisNew for the latest methods for basis generation&#39;&#39;&#39;</span>
+	<span class="n">check_cont</span> <span class="p">,</span> <span class="n">bool_cont</span> <span class="o">=</span> <span class="n">controlability</span><span class="p">(</span> <span class="n">check_B</span> <span class="p">,</span> <span class="n">check_A</span> <span class="p">)</span>
+	<span class="n">check_obs</span><span class="p">,</span> <span class="n">bool_obs</span> <span class="o">=</span> <span class="n">observability</span><span class="p">(</span> <span class="n">check_C</span><span class="p">,</span> <span class="n">check_A</span> <span class="p">)</span>
+
+	<span class="n">range_cont</span> <span class="o">=</span> <span class="n">columspace</span><span class="p">(</span> <span class="n">check_cont</span> <span class="p">)</span> 
+	<span class="n">null_obs</span> <span class="o">=</span> <span class="n">nullspace</span><span class="p">(</span> <span class="n">check_obs</span> <span class="p">)</span>
+	<span class="n">inter</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span> <span class="n">numpy</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">matrix_rank</span><span class="p">(</span><span class="n">range_cont</span><span class="p">)</span> <span class="p">),</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span> <span class="p">(</span><span class="n">matrix_rank</span><span class="p">(</span> <span class="n">range_cont</span><span class="p">)</span> <span class="p">,</span> <span class="n">matrix_rank</span><span class="p">(</span> <span class="n">null_obs</span> <span class="p">)</span> <span class="p">)</span> <span class="p">)</span> <span class="p">)</span> <span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+	<span class="n">interBasis</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span> <span class="n">numpy</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span> <span class="n">range_cont</span><span class="p">,</span> <span class="n">inter</span> <span class="p">),</span> <span class="n">nullspace</span><span class="p">(</span> <span class="n">numpy</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span> <span class="p">(</span><span class="n">range_cont</span><span class="p">,</span><span class="n">null_obs</span><span class="p">)</span> <span class="p">,</span> <span class="mi">1</span> <span class="p">)</span> <span class="p">)</span> <span class="p">)</span>
+
+	<span class="n">dim_int</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">shape</span><span class="p">(</span><span class="n">interBasis</span><span class="p">))</span>
+	<span class="n">dim_C</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span> <span class="n">shape</span><span class="p">(</span> <span class="n">range_cont</span> <span class="p">)</span> <span class="p">)</span>
+	<span class="n">dim_N</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span> <span class="n">shape</span><span class="p">(</span> <span class="n">null_obs</span> <span class="p">)</span> <span class="p">)</span>
+
+	<span class="n">T1</span> <span class="o">=</span> <span class="n">range_cont</span><span class="p">[:,:(</span><span class="n">dim_C</span> <span class="o">-</span> <span class="n">dim_int</span><span class="p">)]</span>
+	<span class="n">T2</span> <span class="o">=</span> <span class="n">interBasis</span><span class="p">[:</span> <span class="p">,</span> <span class="p">:</span><span class="n">dim_int</span><span class="p">]</span>
+	<span class="n">T4</span> <span class="o">=</span> <span class="n">null_obs</span><span class="p">[:</span> <span class="p">,</span> <span class="n">dim_int</span><span class="p">:</span> <span class="n">dim_N</span><span class="p">]</span>
+	<span class="n">T3</span> <span class="o">=</span> <span class="n">nullspace</span><span class="p">(</span> <span class="p">(</span> <span class="n">numpy</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span> <span class="p">(</span><span class="n">T1</span><span class="p">,</span> <span class="n">T2</span><span class="p">,</span><span class="n">T4</span> <span class="p">),</span> <span class="mi">1</span> <span class="p">)</span> <span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+
+	<span class="n">KBasis</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span> <span class="p">(</span><span class="n">T1</span><span class="p">,</span><span class="n">T2</span><span class="p">,</span><span class="n">T3</span><span class="p">,</span><span class="n">T4</span><span class="p">)</span> <span class="p">,</span> <span class="mi">1</span> <span class="p">)</span>
+	
+	<span class="k">return</span> <span class="n">KBasis</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span> <span class="n">shape</span><span class="p">(</span> <span class="n">T1</span> <span class="p">)</span> <span class="p">)</span> <span class="p">,</span> <span class="nb">min</span><span class="p">(</span> <span class="n">shape</span><span class="p">(</span> <span class="n">T2</span> <span class="p">)</span> <span class="p">),</span> <span class="nb">min</span><span class="p">(</span> <span class="n">shape</span><span class="p">(</span> <span class="n">T3</span> <span class="p">)</span> <span class="p">),</span> <span class="nb">min</span><span class="p">(</span> <span class="n">shape</span><span class="p">(</span> <span class="n">T4</span> <span class="p">)</span> <span class="p">)</span> 
+</div>
+<div class="viewcode-block" id="removeBasis"><a class="viewcode-back" href="../code.html#kalman_tbr.removeBasis">[docs]</a><span class="k">def</span> <span class="nf">removeBasis</span><span class="p">(</span> <span class="n">space</span><span class="p">,</span> <span class="n">basis</span> <span class="p">):</span>
+	<span class="sd">&#39;&#39;&#39; Removes the mentioned basis and provides the remaining basis from the subspace.</span>
+<span class="sd">	returns basis which is unitary in the remaining space&#39;&#39;&#39;</span>    
+	<span class="n">to_remove</span> <span class="o">=</span> <span class="n">columnProj</span><span class="p">(</span> <span class="n">space</span><span class="p">,</span> <span class="n">basis</span><span class="p">,</span> <span class="mi">1</span> <span class="p">)</span> 
+	<span class="n">null</span> <span class="o">=</span> <span class="n">nullspace</span><span class="p">(</span> <span class="n">to_remove</span><span class="o">.</span><span class="n">T</span> <span class="p">)</span>
+	<span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span> <span class="n">space</span><span class="p">,</span> <span class="n">null</span> <span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="intersection"><a class="viewcode-back" href="../code.html#kalman_tbr.intersection">[docs]</a><span class="k">def</span> <span class="nf">intersection</span><span class="p">(</span> <span class="n">space1</span> <span class="p">,</span> <span class="n">space2</span> <span class="p">):</span>	
+	<span class="sd">&#39;&#39;&#39; Finds the basis for the intersection of two spaces&#39;&#39;&#39;</span>
+	<span class="n">inter</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span> <span class="n">numpy</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">matrix_rank</span><span class="p">(</span><span class="n">space1</span><span class="p">)</span> <span class="p">),</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span> <span class="p">(</span><span class="n">matrix_rank</span><span class="p">(</span> <span class="n">space1</span><span class="p">)</span> <span class="p">,</span> <span class="n">matrix_rank</span><span class="p">(</span> <span class="n">space2</span> <span class="p">)</span> <span class="p">)</span> <span class="p">)</span> <span class="p">)</span> <span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+	<span class="n">interBasis</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span> <span class="n">numpy</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span> <span class="n">space1</span><span class="p">,</span> <span class="n">inter</span> <span class="p">),</span> <span class="n">nullspace</span><span class="p">(</span> <span class="n">numpy</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span> <span class="p">(</span><span class="n">space1</span><span class="p">,</span><span class="n">space2</span><span class="p">)</span> <span class="p">,</span> <span class="mi">1</span> <span class="p">)</span> <span class="p">)</span> <span class="p">)</span>
+	<span class="k">return</span> <span class="n">interBasis</span>
+</div>
+<div class="viewcode-block" id="KalmanBasisNew"><a class="viewcode-back" href="../code.html#kalman_tbr.KalmanBasisNew">[docs]</a><span class="k">def</span> <span class="nf">KalmanBasisNew</span><span class="p">(</span> <span class="n">check_A</span><span class="p">,</span> <span class="n">check_B</span><span class="p">,</span> <span class="n">check_C</span> <span class="p">):</span>
+	<span class="sd">&#39;&#39;&#39; This produces the Kalman Basis needed for a kalman decomposition of the system, which is used for a minimal realization of the state space</span>
+<span class="sd">	+---------------------+---------------+-------------------+-----------+--------------+</span>
+<span class="sd">	|      Conditions     |       T1      |         T2        |     T3    |      T4      |</span>
+<span class="sd">	+---------------------+---------------+-------------------+-----------+--------------+</span>
+<span class="sd">	|        R, !N        |     R( C )    |         *         |  ~R( C )  |      *       |</span>
+<span class="sd">	|  ( R N ) full rank  |     R( C )    |         *         |     *     |    N( O )    |</span>
+<span class="sd">	|   ( R N ) low rank  |     R( C )    |         *         |  ~( R N ) |    N( O )    |</span>
+<span class="sd">	|       Kalman        |  R( C ) - T2  | R( C ) int N( O ) |  ~( R N ) | N( O ) - T2  |</span>
+<span class="sd">	+---------------------+---------------+-------------------+-----------+--------------+	&#39;&#39;&#39;</span>
+
+	<span class="n">check_cont</span> <span class="p">,</span> <span class="n">bool_cont</span> <span class="o">=</span> <span class="n">controlability</span><span class="p">(</span> <span class="n">check_B</span> <span class="p">,</span> <span class="n">check_A</span> <span class="p">)</span>
+	<span class="n">check_obs</span><span class="p">,</span> <span class="n">bool_obs</span> <span class="o">=</span> <span class="n">observability</span><span class="p">(</span> <span class="n">check_C</span><span class="p">,</span> <span class="n">check_A</span> <span class="p">)</span>
+
+	<span class="n">range_cont</span> <span class="o">=</span> <span class="n">columspace</span><span class="p">(</span> <span class="n">check_cont</span> <span class="p">)</span> 
+	<span class="n">null_obs</span> <span class="o">=</span> <span class="n">nullspace</span><span class="p">(</span> <span class="n">check_obs</span> <span class="p">)</span>
+
+
+	<span class="c"># The system has R( Cont ) but has not N( Obs ) =&gt; Fully observable but not controllable. Similarity Transform into Cont basis can finish the job.</span>
+	
+	<span class="k">if</span> <span class="ow">not</span> <span class="n">bool_obs</span> <span class="p">:</span>
+		<span class="n">interBasis</span> <span class="o">=</span> <span class="n">intersection</span><span class="p">(</span> <span class="n">range_cont</span> <span class="p">,</span> <span class="n">null_obs</span> <span class="p">)</span>
+	<span class="k">else</span> <span class="p">:</span>
+		<span class="k">print</span> <span class="s">&quot;Completely Observable system + Uncontrollable system&quot;</span>
+		<span class="n">new_A</span> <span class="p">,</span> <span class="n">new_B</span><span class="p">,</span> <span class="n">new_C</span><span class="p">,</span> <span class="n">KBasis</span> <span class="o">=</span> <span class="n">ContSpace</span><span class="p">(</span> <span class="n">check_A</span><span class="p">,</span> <span class="n">check_B</span><span class="p">,</span> <span class="n">check_C</span> <span class="p">,</span> <span class="bp">False</span> <span class="p">)</span>
+		<span class="k">return</span> <span class="n">KBasis</span><span class="p">,</span> <span class="n">matrix_rank</span><span class="p">(</span> <span class="n">check_cont</span> <span class="p">)</span> <span class="p">,</span> <span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span> <span class="n">matrix_rank</span><span class="p">(</span> <span class="n">check_obs</span> <span class="p">)</span> <span class="o">-</span> <span class="n">matrix_rank</span><span class="p">(</span> <span class="n">check_cont</span> <span class="p">)</span>
+	
+	
+	<span class="n">dim_int</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">shape</span><span class="p">(</span><span class="n">interBasis</span><span class="p">))</span>
+	<span class="n">dim_C</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span> <span class="n">shape</span><span class="p">(</span> <span class="n">range_cont</span> <span class="p">)</span> <span class="p">)</span>
+	<span class="n">dim_N</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span> <span class="n">shape</span><span class="p">(</span> <span class="n">null_obs</span> <span class="p">)</span> <span class="p">)</span>
+		
+	<span class="n">T2</span> <span class="o">=</span> <span class="n">interBasis</span><span class="p">[:</span> <span class="p">,</span> <span class="mi">0</span><span class="p">:</span><span class="n">dim_int</span><span class="p">]</span>
+
+	<span class="k">if</span> <span class="nb">min</span><span class="p">(</span> <span class="n">shape</span><span class="p">(</span> <span class="n">T2</span> <span class="p">)</span> <span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+		<span class="n">T1</span> <span class="o">=</span> <span class="n">range_cont</span>
+		<span class="n">T4</span> <span class="o">=</span> <span class="n">null_obs</span>
+		<span class="k">if</span> <span class="n">matrix_rank</span><span class="p">(</span> <span class="n">nC</span><span class="p">(</span> <span class="p">(</span><span class="n">T1</span><span class="p">,</span><span class="n">T4</span><span class="p">),</span> <span class="mi">1</span> <span class="p">)</span> <span class="p">)</span> <span class="o">==</span> <span class="nb">max</span><span class="p">(</span> <span class="n">shape</span><span class="p">(</span> <span class="n">check_A</span> <span class="p">)</span> <span class="p">):</span>
+			<span class="k">return</span> <span class="n">nC</span><span class="p">(</span> <span class="p">(</span> <span class="n">T1</span><span class="p">,</span> <span class="n">T4</span> <span class="p">)</span> <span class="p">,</span><span class="mi">1</span> <span class="p">),</span> <span class="nb">min</span><span class="p">(</span> <span class="n">shape</span><span class="p">(</span> <span class="n">T1</span> <span class="p">)</span> <span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">shape</span><span class="p">(</span><span class="n">T4</span><span class="p">)</span> <span class="p">)</span> 
+		<span class="k">else</span> <span class="p">:</span>
+			<span class="n">T3</span> <span class="o">=</span> <span class="n">nullspace</span> <span class="p">(</span> <span class="p">(</span> <span class="n">nC</span><span class="p">(</span> <span class="p">(</span> <span class="n">T1</span><span class="p">,</span><span class="n">T4</span><span class="p">)</span> <span class="p">,</span> <span class="mi">1</span> <span class="p">)</span> <span class="p">)</span><span class="o">.</span><span class="n">T</span> <span class="p">)</span>
+			<span class="k">return</span> <span class="n">nC</span><span class="p">(</span> <span class="p">(</span><span class="n">T1</span><span class="p">,</span><span class="n">T3</span><span class="p">,</span><span class="n">T4</span><span class="p">)</span> <span class="p">,</span> <span class="mi">1</span> <span class="p">)</span> <span class="p">,</span> <span class="nb">min</span><span class="p">(</span> <span class="n">shape</span><span class="p">(</span> <span class="n">T1</span> <span class="p">)</span> <span class="p">),</span> <span class="mi">0</span> <span class="p">,</span><span class="nb">min</span><span class="p">(</span> <span class="n">shape</span><span class="p">(</span> <span class="n">T3</span> <span class="p">)</span> <span class="p">),</span><span class="nb">min</span><span class="p">(</span> <span class="n">shape</span><span class="p">(</span> <span class="n">T4</span> <span class="p">)</span> <span class="p">)</span>
+	
+	<span class="k">else</span> <span class="p">:</span>	
+
+	<span class="c"># The system has R( Cont ) and N( Obs ) =&gt; Usual Kalman Decomposition can take place.</span>
+		<span class="n">T1</span> <span class="o">=</span> <span class="n">removeBasis</span><span class="p">(</span> <span class="n">range_cont</span><span class="p">,</span> <span class="n">T2</span> <span class="p">)</span>
+		<span class="n">T4</span> <span class="o">=</span> <span class="n">removeBasis</span><span class="p">(</span> <span class="n">null_obs</span> <span class="p">,</span> <span class="n">T2</span> <span class="p">)</span>    
+		<span class="n">T3</span> <span class="o">=</span> <span class="n">nullspace</span><span class="p">(</span> <span class="p">(</span> <span class="n">numpy</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span> <span class="p">(</span><span class="n">T1</span><span class="p">,</span> <span class="n">T2</span><span class="p">,</span><span class="n">T4</span> <span class="p">),</span> <span class="mi">1</span> <span class="p">)</span> <span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+
+
+
+		<span class="n">KBasis</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span> <span class="p">(</span><span class="n">T1</span><span class="p">,</span><span class="n">T2</span><span class="p">,</span><span class="n">T3</span><span class="p">,</span><span class="n">T4</span><span class="p">)</span> <span class="p">,</span> <span class="mi">1</span> <span class="p">)</span>
+
+		<span class="k">return</span> <span class="n">KBasis</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span> <span class="n">shape</span><span class="p">(</span> <span class="n">T1</span> <span class="p">)</span> <span class="p">)</span> <span class="p">,</span> <span class="nb">min</span><span class="p">(</span> <span class="n">shape</span><span class="p">(</span> <span class="n">T2</span> <span class="p">)</span> <span class="p">),</span> <span class="nb">min</span><span class="p">(</span> <span class="n">shape</span><span class="p">(</span> <span class="n">T3</span> <span class="p">)</span> <span class="p">),</span> <span class="nb">min</span><span class="p">(</span> <span class="n">shape</span><span class="p">(</span> <span class="n">T4</span> <span class="p">)</span> <span class="p">)</span> 
+
+</div>
+<div class="viewcode-block" id="KBasisContObs"><a class="viewcode-back" href="../code.html#kalman_tbr.KBasisContObs">[docs]</a><span class="k">def</span> <span class="nf">KBasisContObs</span><span class="p">(</span> <span class="n">check_A</span><span class="p">,</span> <span class="n">check_B</span><span class="p">,</span> <span class="n">check_C</span> <span class="p">):</span>
+	<span class="sd">&#39;&#39;&#39; This produces the Kalman Basis needed for a kalman decomposition of the system, which is used for a minimal realization of the state space Using a different algorithm than the one previously mentioned. This algorithm checks for controllability and then moves over to observability &#39;&#39;&#39;</span>
+	
+
+
+	<span class="n">check_cont</span> <span class="p">,</span> <span class="n">bool_cont</span> <span class="o">=</span> <span class="n">controlability</span><span class="p">(</span> <span class="n">check_B</span> <span class="p">,</span> <span class="n">check_A</span> <span class="p">)</span>
+	<span class="n">check_obs</span><span class="p">,</span> <span class="n">bool_obs</span> <span class="o">=</span> <span class="n">observability</span><span class="p">(</span> <span class="n">check_C</span><span class="p">,</span> <span class="n">check_A</span> <span class="p">)</span>
+
+	<span class="n">range_cont</span> <span class="o">=</span> <span class="n">columspace</span><span class="p">(</span> <span class="n">check_cont</span> <span class="p">)</span> 
+	<span class="n">null_obs</span> <span class="o">=</span> <span class="n">nullspace</span><span class="p">(</span> <span class="n">check_obs</span> <span class="p">)</span>
+
+	<span class="k">if</span> <span class="n">bool_obs</span> <span class="ow">and</span> <span class="n">bool_cont</span><span class="p">:</span>
+		<span class="k">print</span> <span class="s">&quot; Minimal realization already&quot;</span>
+		<span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span> <span class="nb">max</span><span class="p">(</span> <span class="n">shape</span><span class="p">(</span> <span class="n">check_A</span> <span class="p">)</span> <span class="p">)</span> <span class="p">),</span> <span class="nb">max</span><span class="p">(</span> <span class="n">shape</span><span class="p">(</span> <span class="n">check_A</span> <span class="p">)</span> <span class="p">)</span> <span class="p">,</span> <span class="nb">max</span><span class="p">(</span> <span class="n">shape</span><span class="p">(</span> <span class="n">check_A</span> <span class="p">)</span> <span class="p">),</span><span class="nb">max</span><span class="p">(</span> <span class="n">shape</span><span class="p">(</span> <span class="n">check_A</span> <span class="p">)</span> <span class="p">),</span><span class="nb">max</span><span class="p">(</span> <span class="n">shape</span><span class="p">(</span> <span class="n">check_A</span> <span class="p">)</span> <span class="p">)</span>
+
+	<span class="k">else</span><span class="p">:</span>
+		<span class="n">Cont_A</span><span class="p">,</span> <span class="n">Cont_B</span> <span class="p">,</span> <span class="n">Cont_C</span> <span class="p">,</span> <span class="n">Cont_col</span> <span class="o">=</span> <span class="n">ContSpace</span><span class="p">(</span> <span class="n">check_A</span><span class="p">,</span> <span class="n">check_B</span><span class="p">,</span> <span class="n">check_C</span><span class="p">,</span><span class="bp">False</span><span class="p">)</span>
+	    
+	<span class="c">#print Cont_A, Cont_B , Cont_C</span>
+
+	<span class="c"># Stage I : Checking for Controllablity</span>
+	<span class="c">#-------------------------------------</span>
+
+	<span class="n">C</span> <span class="o">=</span> <span class="n">matrix_rank</span><span class="p">(</span> <span class="n">range_cont</span> <span class="p">)</span>
+
+	<span class="n">ACont</span><span class="p">,</span><span class="n">BCont</span><span class="p">,</span> <span class="n">CCont</span> <span class="o">=</span> <span class="n">Cont_A</span><span class="p">[</span> <span class="p">:</span><span class="n">C</span> <span class="p">,</span> <span class="p">:</span><span class="n">C</span><span class="p">]</span> <span class="p">,</span> <span class="n">Cont_B</span><span class="p">[</span> <span class="p">:</span><span class="n">C</span> <span class="p">,</span> <span class="p">:</span> <span class="p">],</span><span class="n">Cont_C</span><span class="p">[</span> <span class="p">:</span> <span class="p">,</span> <span class="p">:</span><span class="n">C</span> <span class="p">]</span>
+
+	<span class="n">AUncont</span><span class="p">,</span> <span class="n">BUncont</span><span class="p">,</span> <span class="n">CUncont</span> <span class="o">=</span> <span class="n">Cont_A</span><span class="p">[</span> <span class="n">C</span><span class="p">:</span> <span class="p">,</span> <span class="n">C</span><span class="p">:</span> <span class="p">]</span> <span class="p">,</span><span class="n">Cont_B</span><span class="p">[</span> <span class="n">C</span><span class="p">:</span> <span class="p">,</span> <span class="p">:</span> <span class="p">],</span> <span class="n">Cont_C</span><span class="p">[</span> <span class="p">:,</span> <span class="n">C</span><span class="p">:</span> <span class="p">]</span>
+
+<span class="c">#	print AUncont, BUncont, CUncont</span>
+
+	<span class="c"># Stage II : checking for Observability</span>
+	<span class="c">#-------------------------------------</span>
+
+		<span class="c"># Stage II ( a ) : Checking for Observablity of Controllable states</span>
+		<span class="c">#--------------------------------------------------------------------</span>
+
+	<span class="n">check_obs</span> <span class="p">,</span> <span class="n">bool_obs</span> <span class="o">=</span> <span class="n">observability</span> <span class="p">(</span> <span class="n">CCont</span><span class="p">,</span> <span class="n">ACont</span> <span class="p">)</span>
+
+	<span class="n">ObsACont</span><span class="p">,</span> <span class="n">ObsBCont</span><span class="p">,</span> <span class="n">ObsCCont</span> <span class="p">,</span> <span class="n">ObsCont_row</span> <span class="o">=</span> <span class="n">ObsSpace</span><span class="p">(</span> <span class="n">ACont</span><span class="p">,</span> <span class="n">BCont</span> <span class="p">,</span> <span class="n">CCont</span> <span class="p">,</span><span class="bp">False</span> <span class="p">)</span> <span class="c"># Observable from Controllable</span>
+
+	<span class="c">#print ObsACont, ObsBCont, ObsCCont</span>
+	
+	<span class="n">O</span> <span class="o">=</span> <span class="n">matrix_rank</span><span class="p">(</span> <span class="n">check_obs</span> <span class="p">)</span>
+
+	<span class="n">AObsCont</span><span class="p">,</span><span class="n">BObsCont</span><span class="p">,</span> <span class="n">CObsCont</span> <span class="o">=</span> <span class="n">ObsACont</span><span class="p">[</span> <span class="p">:</span><span class="n">O</span> <span class="p">,</span> <span class="p">:</span><span class="n">O</span><span class="p">],</span><span class="n">ObsBCont</span><span class="p">[</span> <span class="p">:</span><span class="n">O</span> <span class="p">,</span> <span class="p">:</span> <span class="p">]</span> <span class="p">,</span> <span class="n">ObsCCont</span><span class="p">[</span> <span class="p">:</span> <span class="p">,</span> <span class="p">:</span><span class="n">O</span> <span class="p">]</span>
+
+		<span class="c"># Stage II ( b ) : Checking for Observability of Uncontrollable states </span>
+		<span class="c">#---------------------------------------------------------------------</span>
+
+	<span class="n">check_obs</span> <span class="p">,</span> <span class="n">bool_obs</span> <span class="o">=</span> <span class="n">observability</span> <span class="p">(</span> <span class="n">CUncont</span><span class="p">,</span> <span class="n">AUncont</span> <span class="p">)</span> 
+
+	<span class="n">ObsAUncont</span><span class="p">,</span> <span class="n">ObsBUncont</span><span class="p">,</span> <span class="n">ObsCUncont</span> <span class="p">,</span> <span class="n">ObsUncont_row</span> <span class="o">=</span> <span class="n">ObsSpace</span><span class="p">(</span> <span class="n">AUncont</span><span class="p">,</span> <span class="n">BUncont</span> <span class="p">,</span> <span class="n">CUncont</span> <span class="p">,</span><span class="bp">False</span> <span class="p">)</span> <span class="c"># Observable from Uncontrollable</span>
+
+<span class="c">#	print ObsAUncont, ObsBUncont, ObsCUncont</span>
+
+	<span class="n">O</span> <span class="o">=</span> <span class="n">matrix_rank</span><span class="p">(</span> <span class="n">check_obs</span> <span class="p">)</span>
+
+	<span class="n">AObsUncont</span><span class="p">,</span> <span class="n">BOBsUncont</span><span class="p">,</span> <span class="n">CObsUncont</span> <span class="o">=</span> <span class="n">ObsAUncont</span><span class="p">[</span> <span class="p">:</span><span class="n">O</span> <span class="p">,</span> <span class="p">:</span><span class="n">O</span><span class="p">]</span> <span class="p">,</span><span class="n">ObsBUncont</span><span class="p">[</span> <span class="p">:</span><span class="n">O</span> <span class="p">,</span> <span class="p">:</span> <span class="p">]</span> <span class="p">,</span> <span class="n">ObsCUncont</span><span class="p">[</span> <span class="p">:</span> <span class="p">,</span> <span class="p">:</span><span class="n">O</span> <span class="p">]</span>
+
+	<span class="c"># Stage III : Putting it all together, finding the basis of transformation</span>
+	<span class="c">#---------------------------------------------------------------------------</span>
+
+	<span class="n">Z1</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">matrix</span><span class="p">(</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span> <span class="p">(</span> <span class="n">shape</span><span class="p">(</span> <span class="n">nI</span><span class="p">(</span><span class="n">ObsCont_row</span><span class="p">)</span> <span class="p">)</span> <span class="p">[</span> <span class="mi">0</span> <span class="p">]</span> <span class="p">,</span> <span class="n">shape</span><span class="p">(</span> <span class="n">nI</span><span class="p">(</span><span class="n">ObsUncont_row</span><span class="p">)</span> <span class="p">)</span> <span class="p">[</span> <span class="mi">1</span> <span class="p">])</span> <span class="p">)</span> <span class="p">)</span>
+	<span class="n">Z2</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">matrix</span><span class="p">(</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span> <span class="p">(</span> <span class="n">shape</span><span class="p">(</span> <span class="n">nI</span><span class="p">(</span><span class="n">ObsUncont_row</span><span class="p">)</span> <span class="p">)</span> <span class="p">[</span> <span class="mi">0</span> <span class="p">]</span> <span class="p">,</span> <span class="n">shape</span><span class="p">(</span> <span class="n">nI</span><span class="p">(</span><span class="n">ObsCont_row</span><span class="p">)</span> <span class="p">)</span> <span class="p">[</span> <span class="mi">1</span> <span class="p">])</span> <span class="p">)</span> <span class="p">)</span>
+
+	<span class="n">PO</span> <span class="o">=</span> <span class="n">nC</span><span class="p">(</span> <span class="p">(</span> <span class="n">nC</span><span class="p">(</span> <span class="p">(</span><span class="n">nI</span><span class="p">(</span><span class="n">ObsCont_row</span><span class="p">),</span><span class="n">Z1</span><span class="p">)</span> <span class="p">,</span><span class="mi">1</span> <span class="p">)</span> <span class="p">,</span> <span class="n">nC</span><span class="p">(</span> <span class="p">(</span><span class="n">Z2</span><span class="p">,</span><span class="n">nI</span><span class="p">(</span><span class="n">ObsUncont_row</span><span class="p">))</span> <span class="p">,</span><span class="mi">1</span> <span class="p">)</span> <span class="p">),</span><span class="mi">0</span> <span class="p">)</span>
+	<span class="n">Kbasis</span> <span class="o">=</span> <span class="n">nD</span><span class="p">(</span> <span class="n">PO</span> <span class="p">,</span> <span class="n">nI</span><span class="p">(</span><span class="n">Cont_col</span><span class="p">)</span> <span class="p">)</span>
+	<span class="c"># Truncate output : AObsCont, BObsCont, CObsCont</span>
+	<span class="k">return</span> <span class="n">Kbasis</span><span class="o">.</span><span class="n">I</span> <span class="p">,</span> <span class="nb">max</span><span class="p">(</span> <span class="n">shape</span><span class="p">(</span> <span class="n">AObsCont</span> <span class="p">)</span> <span class="p">)</span> <span class="p">,</span> <span class="nb">max</span><span class="p">(</span> <span class="n">shape</span><span class="p">(</span><span class="n">BObsCont</span><span class="p">)</span> <span class="p">),</span> <span class="nb">max</span><span class="p">(</span> <span class="n">shape</span><span class="p">(</span> <span class="n">CObsCont</span> <span class="p">)</span> <span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="BasisTrans"><a class="viewcode-back" href="../code.html#kalman_tbr.BasisTrans">[docs]</a><span class="k">def</span> <span class="nf">BasisTrans</span><span class="p">(</span> <span class="n">A</span><span class="p">,</span><span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">Basis</span> <span class="p">):</span>
+	<span class="sd">&#39;&#39;&#39; Produces the state space after a similarity transformation&#39;&#39;&#39;</span>
+	<span class="n">new_A</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span> <span class="n">numpy</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span> <span class="n">Basis</span> <span class="p">),</span> <span class="n">A</span> <span class="p">),</span> <span class="n">Basis</span> <span class="p">)</span>
+	<span class="n">new_B</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span> <span class="n">numpy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">Basis</span><span class="p">)</span> <span class="p">,</span> <span class="n">B</span> <span class="p">)</span>
+	<span class="n">new_C</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span> <span class="n">C</span> <span class="p">,</span> <span class="n">Basis</span> <span class="p">)</span>
+	<span class="k">return</span> <span class="n">new_A</span> <span class="p">,</span> <span class="n">new_B</span> <span class="p">,</span> <span class="n">new_C</span> 
+</div>
+<div class="viewcode-block" id="minReal"><a class="viewcode-back" href="../code.html#kalman_tbr.minReal">[docs]</a><span class="k">def</span> <span class="nf">minReal</span><span class="p">(</span> <span class="n">check_A</span> <span class="p">,</span> <span class="n">check_B</span><span class="p">,</span> <span class="n">check_C</span> <span class="p">,</span> <span class="n">method</span> <span class="o">=</span> <span class="s">&#39;k&#39;</span><span class="p">):</span>
+	<span class="sd">&#39;&#39;&#39; Produces the minimal realization of the state space using Kalman decomposition procedure</span>
+<span class="sd">	Returns only the space which is both controllable and observable&#39;&#39;&#39;</span>
+
+	<span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s">&#39;k&#39;</span><span class="p">:</span>
+		<span class="n">KBasis</span> <span class="p">,</span> <span class="n">CO</span> <span class="p">,</span> <span class="n">C_O</span> <span class="p">,</span> <span class="n">_CO</span> <span class="p">,</span> <span class="n">_C_O</span> <span class="o">=</span> <span class="n">KalmanBasisNew</span><span class="p">(</span> <span class="n">check_A</span> <span class="p">,</span> <span class="n">check_B</span><span class="p">,</span> <span class="n">check_C</span> <span class="p">)</span>
+	<span class="k">else</span> <span class="p">:</span>
+		<span class="n">KBasis</span> <span class="p">,</span> <span class="n">CO</span> <span class="p">,</span> <span class="n">C_O</span> <span class="p">,</span> <span class="n">_CO</span>  <span class="o">=</span> <span class="n">KBasisContObs</span><span class="p">(</span> <span class="n">check_A</span> <span class="p">,</span> <span class="n">check_B</span><span class="p">,</span> <span class="n">check_C</span> <span class="p">)</span>
+<span class="c">#        print matrix_rank( KBasis ) </span>
+	<span class="n">new_A</span><span class="p">,</span> <span class="n">new_B</span> <span class="p">,</span> <span class="n">new_C</span> <span class="o">=</span> <span class="n">BasisTrans</span><span class="p">(</span> <span class="n">check_A</span> <span class="p">,</span> <span class="n">check_B</span><span class="p">,</span> <span class="n">check_C</span> <span class="p">,</span> <span class="n">KBasis</span> <span class="p">)</span>
+	<span class="n">minR_A</span> <span class="o">=</span> <span class="n">new_A</span><span class="p">[:</span><span class="n">CO</span><span class="p">,</span> <span class="p">:</span><span class="n">CO</span><span class="p">]</span>
+	<span class="n">minR_B</span> <span class="o">=</span> <span class="n">new_B</span><span class="p">[</span> <span class="p">:</span><span class="n">CO</span><span class="p">,</span> <span class="p">:</span> <span class="p">]</span>
+	<span class="n">minR_C</span> <span class="o">=</span> <span class="n">new_C</span><span class="p">[</span> <span class="p">:,</span> <span class="p">:</span><span class="n">CO</span> <span class="p">]</span>
+	<span class="k">return</span> <span class="n">minR_A</span><span class="p">,</span> <span class="n">minR_B</span><span class="p">,</span> <span class="n">minR_C</span>
+</div>
+<div class="viewcode-block" id="ObsSpace"><a class="viewcode-back" href="../code.html#kalman_tbr.ObsSpace">[docs]</a><span class="k">def</span> <span class="nf">ObsSpace</span><span class="p">(</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span><span class="n">conv</span><span class="o">=</span><span class="bp">True</span> <span class="p">):</span>
+	<span class="sd">&#39;&#39;&#39;Does a basis transformation into the space where Observable and Unobservable states are orthogonal &#39;&#39;&#39;</span>
+	<span class="n">obs</span><span class="p">,</span> <span class="n">obs_bool</span> <span class="o">=</span> <span class="n">observability</span><span class="p">(</span> <span class="n">C</span> <span class="p">,</span><span class="n">A</span> <span class="p">)</span>
+	<span class="n">col</span><span class="p">,</span> <span class="n">eigen</span><span class="p">,</span> <span class="n">row</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">svd</span><span class="p">(</span> <span class="n">obs</span> <span class="p">)</span>
+	<span class="n">new_A</span> <span class="p">,</span> <span class="n">new_B</span><span class="p">,</span> <span class="n">new_C</span> <span class="o">=</span> <span class="n">BasisTrans</span><span class="p">(</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span><span class="n">C</span><span class="p">,</span> <span class="n">row</span><span class="o">.</span><span class="n">T</span> <span class="p">)</span>
+	<span class="k">if</span> <span class="n">conv</span> <span class="p">:</span>
+		<span class="k">return</span> <span class="n">new_A</span> <span class="p">,</span> <span class="n">new_B</span><span class="p">,</span> <span class="n">new_C</span>
+	<span class="k">else</span> <span class="p">:</span>
+		<span class="k">return</span> <span class="n">new_A</span> <span class="p">,</span> <span class="n">new_B</span><span class="p">,</span> <span class="n">new_C</span><span class="p">,</span><span class="n">row</span><span class="o">.</span><span class="n">T</span>
+</div>
+<div class="viewcode-block" id="ContSpace"><a class="viewcode-back" href="../code.html#kalman_tbr.ContSpace">[docs]</a><span class="k">def</span> <span class="nf">ContSpace</span><span class="p">(</span> <span class="n">A</span> <span class="p">,</span> <span class="n">B</span> <span class="p">,</span><span class="n">C</span> <span class="p">,</span><span class="n">conv</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+	<span class="sd">&#39;&#39;&#39;Does a basis transformation into the space where Controllable and Uncontrollable states are orthogonal &#39;&#39;&#39;</span>
+	<span class="n">cont</span><span class="p">,</span> <span class="n">cont_bool</span> <span class="o">=</span> <span class="n">controlability</span><span class="p">(</span> <span class="n">B</span> <span class="p">,</span> <span class="n">A</span> <span class="p">)</span>
+	<span class="n">col</span> <span class="p">,</span> <span class="n">eigen</span> <span class="p">,</span> <span class="n">row</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">svd</span><span class="p">(</span> <span class="n">cont</span> <span class="p">)</span>
+	<span class="n">new_A</span> <span class="p">,</span> <span class="n">new_B</span> <span class="p">,</span> <span class="n">new_C</span> <span class="o">=</span> <span class="n">BasisTrans</span><span class="p">(</span><span class="n">A</span> <span class="p">,</span> <span class="n">B</span> <span class="p">,</span> <span class="n">C</span> <span class="p">,</span> <span class="n">col</span> <span class="p">)</span>
+	<span class="k">if</span> <span class="n">conv</span> <span class="p">:</span>
+		<span class="k">return</span> <span class="n">new_A</span><span class="p">,</span> <span class="n">new_B</span><span class="p">,</span> <span class="n">new_C</span>
+	<span class="k">else</span> <span class="p">:</span>
+		<span class="k">return</span> <span class="n">new_A</span><span class="p">,</span> <span class="n">new_B</span><span class="p">,</span> <span class="n">new_C</span><span class="p">,</span> <span class="n">col</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">TPWL-MOR 1.0</a> &raquo;</li>
+          <li><a href="index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Bhargava Chintalapati.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

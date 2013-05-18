@@ -1,0 +1,19 @@
+* Z:\home\bhargava\ddp\SPICE\cmnsrc.asc
+V1 N001 0 5
+R3 N001 inp 300
+R4 inp 0 200
+M1 drain inp 0 0 CMOSN l=0.3u w=3u
+C1 inp input 1
+V2 input 0 SINE(2 1 10000K 0.5u 0)
+R1 drain N001 500
+R2 output 0 2000
+C2 output drain 1
+.model NMOS NMOS
+.model PMOS PMOS
+.lib C:\Program Files\LTC\LTspiceIV\lib\cmp\standard.mos
+.include level1MOS.lib
+;op
+.tran 0 5us 0 0.01m
+.option numdgt=10
+.backanno
+.end

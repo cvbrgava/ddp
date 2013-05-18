@@ -1,0 +1,184 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Differential Amplifier &mdash; Trajectory based Order Reduction 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="shortcut icon" href="_static/logo.ico"/>
+    <link rel="top" title="Trajectory based Order Reduction 1.0 documentation" href="index.html" />
+    <link rel="next" title="4 input NAND Gate" href="4inpNAND.html" />
+    <link rel="prev" title="Common Source Amplifier" href="Commonsource.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="4inpNAND.html" title="4 input NAND Gate"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Commonsource.html" title="Common Source Amplifier"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">TPWL-MOR 1.0</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="differential-amplifier">
+<h1>Differential Amplifier<a class="headerlink" href="#differential-amplifier" title="Permalink to this headline">¶</a></h1>
+<p>The Differential Amplifier with common mode feedback is a fairly complicated 13 dimensional system.</p>
+<p>The state space equations for this system are in the config file <a class="reference internal" href="#resources">Resources</a></p>
+<p>For implementing current equations, we used <strong>level1 MOS</strong> equations. The net list of the circuit is provide in <a class="reference internal" href="#resources">Resources</a> section</p>
+<div class="section" id="tpwl-integration">
+<h2>TPWL Integration<a class="headerlink" href="#tpwl-integration" title="Permalink to this headline">¶</a></h2>
+<p>Piece-wise linearization and integration gives the following results.</p>
+<div class="figure">
+<img alt="_images/n001.png" src="_images/n001.png" />
+</div>
+<div class="figure">
+<img alt="_images/n002.png" src="_images/n002.png" />
+</div>
+<div class="figure">
+<img alt="_images/n005.png" src="_images/n005.png" />
+</div>
+<div class="figure">
+<img alt="_images/cfmb2.png" src="_images/cfmb2.png" />
+</div>
+<div class="figure">
+<img alt="_images/vom.png" src="_images/vom.png" />
+</div>
+<div class="figure">
+<img alt="_images/vop.png" src="_images/vop.png" />
+</div>
+<div class="figure">
+<img alt="_images/n009.png" src="_images/n009.png" />
+</div>
+<div class="figure">
+<img alt="_images/n007.png" src="_images/n007.png" />
+</div>
+<div class="figure">
+<img alt="_images/cmfb1.png" src="_images/cmfb1.png" />
+</div>
+<div class="figure">
+<img alt="_images/out1neg.png" src="_images/out1neg.png" />
+</div>
+<div class="figure">
+<img alt="_images/out1pos.png" src="_images/out1pos.png" />
+</div>
+<div class="figure">
+<img alt="_images/ig9.png" src="_images/ig9.png" />
+</div>
+<div class="figure">
+<img alt="_images/ig7.png" src="_images/ig7.png" />
+</div>
+</div>
+<div class="section" id="resources">
+<h2>Resources<a class="headerlink" href="#resources" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p><a class="reference download internal" href="_downloads/config.py"><tt class="xref download docutils literal"><span class="pre">Differential</span> <span class="pre">Amplifier</span> <span class="pre">config</span> <span class="pre">file</span></tt></a></p>
+<p><a class="reference download internal" href="_downloads/diffamp.net"><tt class="xref download docutils literal"><span class="pre">Net</span> <span class="pre">list</span></tt></a></p>
+</div></blockquote>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/logo.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Differential Amplifier</a><ul>
+<li><a class="reference internal" href="#tpwl-integration">TPWL Integration</a></li>
+<li><a class="reference internal" href="#resources">Resources</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Commonsource.html"
+                        title="previous chapter">Common Source Amplifier</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="4inpNAND.html"
+                        title="next chapter">4 input NAND Gate</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/DifferentialAmplifier.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="4inpNAND.html" title="4 input NAND Gate"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Commonsource.html" title="Common Source Amplifier"
+             >previous</a> |</li>
+        <li><a href="index.html">TPWL-MOR 1.0</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Bhargava Chintalapati.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

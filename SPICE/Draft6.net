@@ -1,0 +1,7 @@
+* Z:\home\bhargava\ddp\SPICE\Draft6.asc
+XU1 0 N002 N001 opamp Aol=100K GBW=10Meg
+V1 N002 0 PULSE(0 1 1us 10us 0 100us)
+.tran 0 15us 0
+.lib opamp.sub
+.backanno
+.end

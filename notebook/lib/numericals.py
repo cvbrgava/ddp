@@ -16,8 +16,9 @@ class matrices( object ) :
 		self.name = name
 		self.linPJac = sympy.zeros( (order,order) )
 		self.linPVal = sympy.zeros( (order, 1) )
-		self.B = sympy.zeros ( (order , 3 * len( input_list ) ) )
-	
+		self.B = sympy.zeros ( (order , 1 * len( input_list ) ) ) #Changed for Model3
+		self.inpVal = sympy.zeros( (len( input_list) , 1) )
+		self.Bnew = numpy.concatenate( ( numpy.array(self.B), numpy.array(self.linPVal) ) , 1 )
 	def call( self ):
 		print self.name
 
@@ -107,7 +108,7 @@ def get_statematrices(  B, C, D, inputm, count, order, regions, state, regexp, d
 		#diff=(linPVal[linpt]-numpy.dot(linPJac[linpt],linP[linpt]))
 		#offset[linpt]=proj*diff
 		Matrix[ linpt ].linPVal = parse_within ( linpt  , Matrix[ linpt ].linPVal , order, state , datapoints )
-
+		
 	    	for i in range( order ):
         		(Matrix[ linpt ].linPJac)[ i,:] = parse_within ( linpt  ,( Matrix[ linpt ].linPJac)[ i,: ] , order, state , datapoints )
 	pbar.finish()

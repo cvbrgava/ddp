@@ -1,0 +1,26 @@
+* Z:\home\bhargava\ddp\SPICE\4inpNAND_inv.asc
+M1 nandout Ainp N001 N001 CMOSN l=0.36u w=0.72u
+M2 N001 Binp N002 N002 CMOSN l=0.36u w=0.72u
+M3 N002 Cinp N003 N003 CMOSN l=0.36u w=0.72u
+M4 N003 Dinp 0 0 CMOSN l=0.36u w=0.72u
+M5 nandout Binp Vdd Vdd CMOSP l=0.36u w=2.88u
+M6 nandout Ainp Vdd Vdd CMOSP l=0.36u w=2.88u
+M7 nandout Cinp Vdd Vdd CMOSP l=0.36u w=2.88u
+M8 nandout Dinp Vdd Vdd CMOSP l=0.36u w=2.88u
+V1 Vdd 0 5
+V2 Ainp 0 PULSE(1 5 0.5us 1us 0 5us)
+V3 Binp 0 5
+V4 Cinp 0 5
+V5 Dinp 0 5
+M9 invout nandout Vdd Vdd CMOSP l=0.36u w=1.44u
+M10 invout nandout 0 0 CMOSN l=0.36u w=0.72u
+R1 invout 0 100k
+.model NMOS NMOS
+.model PMOS PMOS
+.lib C:\Program Files\LTC\LTspiceIV\lib\cmp\standard.mos
+.tran 0 4us 0.5us
+.include level1MOS.lib
+.option numdgt=10
+.backanno
+.end
+
